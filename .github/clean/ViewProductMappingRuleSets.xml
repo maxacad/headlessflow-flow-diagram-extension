@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DPipeline dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeline" id="Pipeline1" >
+<name>ViewProductMappingRuleSets</name>
+<type>view</type>
+<nodes>
+<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DCallNode" id="Call1" >
+<startNameRef>DetermineRepositories-Suppliers</startNameRef>
+<display>
+<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DCallNodeDisplay">
+<center>
+<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+<x>1</x>
+<y>2</y>
+</DPoint>
+</center>
+<outConnectors>
+<DCustomConnector dbo.type="com.intershop.beehive.core.rapi.pipeline.DCustomConnector">
+<name>next</name>
+</DCustomConnector>
+</outConnectors>
+</DNodeDisplay>
+</display>
+</DNode>
+<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DCallNode" id="Call3" >
+<startNameRef>DetermineRepositories-ParentChannel</startNameRef>
+<display>
+<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DCallNodeDisplay">
+<center>
+<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+<x>1</x>
+<y>1</y>
+</DPoint>
+</center>
+<outConnectors>
+<DCustomConnector dbo.type="com.intershop.beehive.core.rapi.pipeline.DCustomConnector">
+<name>next</name>
+</DCustomConnector>
+</outConnectors>
+</DNodeDisplay>
+</display>
+</DNode>
+<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DInteractionNode" id="InteractionEnd1" >
+<transactionRequired>false</transactionRequired>
+<display>
+<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+<center>
+<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+<x>1</x>
+<y>4</y>
+</DPoint>
+</center>
+</DNodeDisplay>
+</display>
+<template>
+<DTemplate dbo.type="com.intershop.beehive.core.rapi.pipeline.DTemplate">
+<templateName>application/ApplicationFrame</templateName>
+<dynamic>false</dynamic>
+<buffered>true</buffered>
+</DTemplate>
+</template>
+</DNode>
+<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletNode" id="PrepareApplicationView1" >
+<pipeletName>PrepareApplicationView</pipeletName>
+<configProperties>
+<DPipeletConfigProperty dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletConfigProperty">
+<key>SelectedMenuItem</key>
+<value>Syndication</value>
+</DPipeletConfigProperty>
+<DPipeletConfigProperty dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletConfigProperty">
+<key>WorkingTemplate</key>
+<value>syndication/ProductMappingRuleSets</value>
+</DPipeletConfigProperty>
+</configProperties>
+<display>
+<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+<center>
+<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+<x>1</x>
+<y>3</y>
+</DPoint>
+</center>
+</DNodeDisplay>
+</display>
+<pipeletSetIdentifier>
+<DPipeletSetIdentifier dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletSetIdentifier">
+<id>bc_foundation</id>
+</DPipeletSetIdentifier>
+</pipeletSetIdentifier>
+</DNode>
+<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DStartNode" id="Start2" >
+<name>ListAll</name>
+<display>
+<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+<center>
+<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+<x>1</x>
+<y>0</y>
+</DPoint>
+</center>
+</DNodeDisplay>
+</display>
+</DNode>
+</nodes>
+<transitions>
+<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="Transition1" >
+<fromId>PrepareApplicationView1</fromId>
+<fromConnector>next</fromConnector>
+<toId>InteractionEnd1</toId>
+<toConnector>in</toConnector>
+</DTransition>
+<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="Transition2" >
+<fromId>Start2</fromId>
+<fromConnector>next</fromConnector>
+<toId>Call3</toId>
+<toConnector>in</toConnector>
+</DTransition>
+<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="Transition3" >
+<fromId>Call3</fromId>
+<fromConnector>next</fromConnector>
+<toId>Call1</toId>
+<toConnector>in</toConnector>
+</DTransition>
+<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="Transition4" >
+<fromId>Call1</fromId>
+<fromConnector>next</fromConnector>
+<toId>PrepareApplicationView1</toId>
+<toConnector>in</toConnector>
+</DTransition>
+</transitions>
+</DPipeline>

@@ -1,0 +1,51 @@
+flow: "ViewAuditItemReportDetails"
+kind: "view"
+
+entries:
+  - id: "StartNode2"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "GetAuditItemBO1"
+    type: "pipelet"
+    ref: "GetAuditItemBO"
+    bindings:
+      ID: "AuditItemID"
+      CreationDate: "AuditItemCreationDateObject"
+      AuditItemBO: "AuditItemBO"
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "MassDataTasks"
+      WorkingTemplate: "auditing/AuditItemReportDetails"
+
+links:
+  - from: "GetAuditItemBO1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "GetAuditItemBO1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "GetAuditItemBO1"
+    into: "in"

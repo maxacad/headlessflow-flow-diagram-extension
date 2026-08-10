@@ -1,0 +1,81 @@
+flow: "ProcessIncludeViewContextCategory"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "GetPageletEntryPoint"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ViewContext"
+        type: "com.intershop.component.pmc.capi.viewcontext.ViewContext"
+        required: true
+      - key: "CategoryBO"
+        type: "com.intershop.component.catalog.capi.CatalogCategoryBO"
+        required: true
+      - key: "ListNavigationVO"
+        type: "java.lang.Object"
+        required: false
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "PageletEntryPoint"
+        type: "com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"
+        guaranteed: true
+  - id: "EndNode18"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "GetPageletEntryPointByViewContext1"
+    type: "pipelet"
+    ref: "GetPageletEntryPointByViewContext"
+    config:
+      Strategy: "Category"
+    bindings:
+      Site: "CurrentDomain:Site"
+      Domain: "Repository:RepositoryDomain"
+  - id: "GetValuesFromRequest3"
+    type: "pipelet"
+    ref: "GetValuesFromRequest"
+    config:
+      Namespace: "ApplicationRepository"
+    bindings:
+      Namespace: "null"
+      Key: "null"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ViewContextInclusionName"
+      Value: "includeCategory"
+
+links:
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "GetPageletEntryPointByViewContext1"
+    into: "in"
+  - from: "GetPageletEntryPointByViewContext1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "GetPageletEntryPointByViewContext1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "GetValuesFromRequest3"
+    via: "error"
+    to: "EndNode18"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "GetValuesFromRequest3"
+    into: "in"
+  - from: "GetValuesFromRequest3"
+    via: "next"
+    to: "SetDictionaryValue1"
+    into: "in"

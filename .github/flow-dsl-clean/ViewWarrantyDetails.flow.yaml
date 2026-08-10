@@ -1,0 +1,78 @@
+flow: "ViewWarrantyDetails"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "NotFound"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "GetProductBySKU1"
+    type: "pipelet"
+    ref: "GetProductBySKU"
+    bindings:
+      Domain: "CurrentProductRepository:RepositoryDomain"
+  - id: "GetWarrantyBO1"
+    type: "pipelet"
+    ref: "GetWarrantyBO"
+    bindings:
+      SKU: "Product:SKU"
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "ViewWarrantyDetails-NotFound"
+  - id: "JumpNode2"
+    type: "jump"
+    ref: "Error-Page"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "ApplicationBO:Extension(\"Warranty\"):WarrantyBORepository(Product)"
+      OutValue_1: "WarrantyBORepository"
+  - id: "SetDictionaryValue3"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ErrorCode"
+      Value: "ProductNotFound"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "GetProductBySKU1"
+    into: "in"
+  - from: "GetProductBySKU1"
+    via: "error"
+    to: "JumpNode1"
+    into: "in"
+  - from: "GetWarrantyBO1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "SetDictionaryValue3"
+    into: "in"
+  - from: "SetDictionaryValue3"
+    via: "next"
+    to: "JumpNode2"
+    into: "in"
+  - from: "GetProductBySKU1"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "GetWarrantyBO1"
+    into: "in"

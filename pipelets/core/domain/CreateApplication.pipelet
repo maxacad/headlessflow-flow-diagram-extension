@@ -1,0 +1,22 @@
+name: CreateApplication
+version: 1
+trigger: manual
+handler: ./CreateApplication.ts
+ai:
+  skill: core-createapplication
+  title: CreateApplication
+  description: Intershop core pipelet – CreateApplication.
+  tags: [integration, data]
+  capabilities:
+    - execute-domain-operation
+inputs:
+  OwningDomain: any
+  Site: any
+  App: any
+  UrlIdentifier: string
+outputs:
+  Application: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.domain.CreateApplication

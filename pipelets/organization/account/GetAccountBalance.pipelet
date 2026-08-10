@@ -1,0 +1,22 @@
+name: GetAccountBalance
+version: 1
+trigger: manual
+handler: ./GetAccountBalance.ts
+ai:
+  skill: organization-getaccountbalance
+  title: GetAccountBalance
+  description: Intershop organization pipelet – GetAccountBalance.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  Account: any
+  TransactionsFrom: any
+  TransactionsTo: any
+outputs:
+  AccountBalance: any
+  AccountBalances: map
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.GetAccountBalance

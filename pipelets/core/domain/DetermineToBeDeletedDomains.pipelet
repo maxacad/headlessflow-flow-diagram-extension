@@ -1,0 +1,19 @@
+name: DetermineToBeDeletedDomains
+version: 1
+trigger: manual
+handler: ./DetermineToBeDeletedDomains.ts
+ai:
+  skill: core-determinetobedeleteddomains
+  title: DetermineToBeDeletedDomains
+  description: Intershop core pipelet – DetermineToBeDeletedDomains.
+  tags: [integration, data]
+  capabilities:
+    - execute-domain-operation
+inputs:
+  CurrentDomain: any
+outputs:
+  Domains: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.domain.DetermineToBeDeletedDomains

@@ -1,0 +1,43 @@
+flow: "ProcessCategoryLinks"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "GetServiceTypeMappings"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "AddMultipleEntriesToMap1"
+    type: "pipelet"
+    ref: "AddMultipleEntriesToMap"
+    config:
+      Mode: "OverwriteValue"
+    bindings:
+      InMap: "null"
+      Key1: "\"ES_GiftWrap_C\""
+      Value1: "\"ES_GiftWrap\""
+      Key2: "\"ES_GiftMessage_C\""
+      Value2: "\"ES_GiftMessage\""
+      Key3: "\"ES_Warranty_C\""
+      Value3: "\"ES_Warranty_Dependent\""
+      OutMap: "CategoryProductServiceTypes"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "CategoryProductServiceTypes"
+        type: "java.util.Map"
+        guaranteed: true
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "AddMultipleEntriesToMap1"
+    into: "in"
+  - from: "AddMultipleEntriesToMap1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

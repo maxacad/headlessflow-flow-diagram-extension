@@ -1,0 +1,20 @@
+name: LoadQuery
+version: 1
+trigger: manual
+handler: ./LoadQuery.ts
+ai:
+  skill: core-loadquery
+  title: LoadQuery
+  description: Intershop core pipelet – LoadQuery.
+  tags: [integration, data]
+  capabilities:
+    - execute-query-operation
+inputs:
+  CurrentDomain: any
+  QueryName: string
+outputs:
+  Query: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.query.LoadQuery

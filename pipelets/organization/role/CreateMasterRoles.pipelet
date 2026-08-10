@@ -1,0 +1,20 @@
+name: CreateMasterRoles
+version: 1
+trigger: manual
+handler: ./CreateMasterRoles.ts
+ai:
+  skill: organization-createmasterroles
+  title: CreateMasterRoles
+  description: Intershop organization pipelet – CreateMasterRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  MasterRoleConfiguration: string
+outputs:
+  Roles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CreateMasterRoles

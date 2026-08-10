@@ -1,0 +1,20 @@
+name: GetShippingSurchargeAndOverrideByShippingMethod
+version: 1
+trigger: manual
+handler: ./GetShippingSurchargeAndOverrideByShippingMethod.ts
+ai:
+  skill: shipping-getshippingsurchargeandoverridebyshippingmethod
+  title: GetShippingSurchargeAndOverrideByShippingMethod
+  description: Intershop shipping pipelet – GetShippingSurchargeAndOverrideByShippingMethod.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  ShippingMethod: any
+outputs:
+  ShippingSurcharges: iterator
+  ShippingOverrides: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.GetShippingSurchargeAndOverrideByShippingMethod

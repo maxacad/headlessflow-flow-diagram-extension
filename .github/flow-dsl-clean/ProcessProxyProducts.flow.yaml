@@ -1,0 +1,137 @@
+flow: "ProcessProxyProducts"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+  - id: "StartNode2"
+    name: "Remove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProxyProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+  - id: "StartNode3"
+    name: "Create"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ES_ProxyCategory"
+        type: "com.intershop.component.catalog.capi.CatalogCategoryBO"
+        required: true
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+      - key: "ShortDescription"
+        type: "java.lang.String"
+        required: false
+      - key: "LongDescription"
+        type: "java.lang.String"
+        required: false
+      - key: "Name"
+        type: "java.lang.String"
+        required: false
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: true
+
+steps:
+  - id: "CreateProxyProductBO1"
+    type: "pipelet"
+    ref: "CreateProxyProductBO"
+    bindings:
+      ES_ProxyCategoryBO: "ES_ProxyCategory"
+  - id: "DetermineProxyProductBOs1"
+    type: "pipelet"
+    ref: "DetermineProxyProductBOs"
+    config:
+      ProductLinkType: 0
+    bindings:
+      ProductBO: "ProductBO"
+      ProxyProductBOs: "ProxyProductBOs"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductRef"
+        type: "com.intershop.beehive.xcs.common.ProductRef"
+        guaranteed: false
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProxyProductBOs"
+        type: "java.util.Collection"
+        guaranteed: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProxyProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        guaranteed: false
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+  - id: "DeleteProductBO1"
+    type: "pipelet"
+    ref: "DeleteProductBO"
+    bindings:
+      ProductBO: "ProxyProductBO"
+      ProductRef: "ProductRef"
+  - id: "UpdateProduct1"
+    type: "pipelet"
+    ref: "UpdateProduct"
+    bindings:
+      Product: "ProxyProductBO:ProductPO"
+      ProductName: "Name"
+      ProductLongDescription: "LongDescription"
+      ProductShortDescription: "ShortDescription"
+
+links:
+  - from: "DeleteProductBO1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "UpdateProduct1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "DeleteProductBO1"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "CreateProxyProductBO1"
+    into: "in"
+  - from: "DeleteProductBO1"
+    via: "error"
+    to: "EndNode6"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "DetermineProxyProductBOs1"
+    into: "in"
+  - from: "DetermineProxyProductBOs1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "CreateProxyProductBO1"
+    via: "next"
+    to: "UpdateProduct1"
+    into: "in"
+  - from: "CreateProxyProductBO1"
+    via: "error"
+    to: "EndNode5"
+    into: "in"

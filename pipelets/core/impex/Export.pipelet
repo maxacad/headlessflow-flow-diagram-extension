@@ -1,0 +1,25 @@
+name: Export
+version: 1
+trigger: manual
+handler: ./Export.ts
+ai:
+  skill: core-export
+  title: Export
+  description: Intershop core pipelet – Export.
+  tags: [integration, data]
+  capabilities:
+    - execute-impex-operation
+inputs:
+  Controller: any
+  <TargetID>: any
+  UIDescription: string
+  LogFacility: string
+  TargetID: string
+  Template: string
+outputs:
+  Exception: any
+  BuildNumber: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.impex.Export

@@ -1,0 +1,23 @@
+name: CalculateBudget
+version: 1
+trigger: manual
+handler: ./CalculateBudget.ts
+ai:
+  skill: organization-calculatebudget
+  title: CalculateBudget
+  description: Intershop organization pipelet – CalculateBudget.
+  tags: [budget, finance]
+  capabilities:
+    - execute-budget-operation
+inputs:
+  Budget: any
+  Date: any
+  NonStrictPeriodMatching: boolean
+outputs:
+  Amount: any
+  Spending: any
+  Remaining: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.budget.CalculateBudget

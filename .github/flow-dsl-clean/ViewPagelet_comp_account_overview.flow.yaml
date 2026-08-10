@@ -1,0 +1,123 @@
+flow: "ViewPagelet_comp_account_overview"
+kind: "view"
+
+entries:
+  - id: "StartNode2"
+    name: "GetLatestOrders"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+  - id: "StartNode3"
+    name: "GetLatestWishlistItems"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "DetermineOrganizations-Current"
+  - id: "CallNode2"
+    type: "call"
+    ref: "DetermineOrganizations-Current"
+  - id: "CallNode4"
+    type: "call"
+    ref: "Prefix-DetermineApplication"
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "SortedOrders"
+        type: "java.util.Iterator"
+        guaranteed: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "WishlistItems"
+        type: "java.util.Collection"
+        guaranteed: true
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "order/OrderSearch"
+      ParameterName_01: "Buyer"
+      ParameterName_02: "Limit"
+      ParameterName_03: "OrderDomain"
+      ParameterName_04: "SearchForAuctionOrders"
+    bindings:
+      Connection: "null"
+      Query: "null"
+      Parameters: "null"
+      SearchResult: "SortedOrders"
+      ParameterValue_01: "CurrentUser"
+      ParameterValue_02: "\"(Integer)5\""
+      ParameterValue_03: "CurrentOrganization:OwningDomain"
+      ParameterValue_04: "\"(Boolean)false\""
+  - id: "GetCustomerBO2"
+    type: "pipelet"
+    ref: "GetCustomerBO"
+    bindings:
+      CustomerID: "CurrentUser:ID"
+  - id: "GetLatestWishlistItems1"
+    type: "pipelet"
+    ref: "GetLatestWishlistItems"
+    bindings:
+      Limit: "\"(Integer)5\""
+  - id: "KeyMapper12"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "ApplicationBO:Extension(\"Customer\"):CustomerBORepository(CurrentOrganization)"
+      OutValue_1: "CustomerBORepository"
+  - id: "KeyMapper13"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "CustomerBO:Extension(\"Wishlist\")"
+      OutValue_1: "WishlistBORepository"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "CallNode4"
+    via: "next"
+    to: "KeyMapper12"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "CallNode4"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "KeyMapper12"
+    via: "next"
+    to: "GetCustomerBO2"
+    into: "in"
+  - from: "KeyMapper13"
+    via: "next"
+    to: "GetLatestWishlistItems1"
+    into: "in"
+  - from: "GetCustomerBO2"
+    via: "next"
+    to: "KeyMapper13"
+    into: "in"
+  - from: "GetLatestWishlistItems1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"

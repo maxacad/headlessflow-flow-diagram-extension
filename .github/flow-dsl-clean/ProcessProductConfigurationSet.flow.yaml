@@ -1,0 +1,619 @@
+flow: "ProcessProductConfigurationSet"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Create"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ID"
+        type: "java.lang.String"
+        required: true
+      - key: "Description"
+        type: "java.lang.String"
+        required: false
+      - key: "DisplayName"
+        type: "java.lang.String"
+        required: false
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+      - key: "ProductConfigurationSetBORepository"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBORepository"
+        required: true
+  - id: "StartNode10"
+    name: "MultipleRemove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ConfigurationSetIDs"
+        type: "java.util.Iterator"
+        required: true
+      - key: "ProductConfigurationSetBORepository"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBORepository"
+        required: true
+  - id: "StartNode11"
+    name: "Update"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+      - key: "Description"
+        type: "java.lang.String"
+        required: false
+      - key: "DisplayName"
+        type: "java.lang.String"
+        required: false
+      - key: "ID"
+        type: "java.lang.String"
+        required: false
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+  - id: "StartNode12"
+    name: "GetAssignedProductsWithoutProxyProducts"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+      - key: "PageSize"
+        type: "java.lang.Integer"
+        required: false
+  - id: "StartNode13"
+    name: "GetAssignedProductIDs"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+  - id: "StartNode2"
+    name: "Get"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ID"
+        type: "java.lang.String"
+        required: true
+      - key: "ProductConfigurationSetBORepository"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBORepository"
+        required: true
+  - id: "StartNode3"
+    name: "GetConfigurationSetsSorted"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "SortAttribute"
+        type: "java.lang.String"
+        required: false
+      - key: "SortOrder"
+        type: "java.lang.String"
+        required: false
+      - key: "ProductConfigurationSetBORepository"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBORepository"
+        required: true
+  - id: "StartNode4"
+    name: "Remove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+      - key: "ProductConfigurationSetBORepository"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBORepository"
+        required: true
+  - id: "StartNode5"
+    name: "GetAssignedProducts"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+      - key: "PageSize"
+        type: "java.lang.Integer"
+        required: false
+  - id: "StartNode6"
+    name: "AssignProductToSet"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+  - id: "StartNode7"
+    name: "UnassignProductFromSet"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+  - id: "StartNode8"
+    name: "Copy"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+  - id: "StartNode9"
+    name: "MultipleCopy"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ConfigurationSetIDs"
+        type: "java.util.Iterator"
+        required: true
+      - key: "ProductConfigurationSetBORepository"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBORepository"
+        required: true
+
+steps:
+  - id: "AddObjectToVector1"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      Object: "null"
+      OutVector: "AssignedProductUUIDs"
+      Iterator: "AssignedProductUUIDIterator"
+      InVector: "null"
+      Objects: "null"
+  - id: "AddObjectToVector2"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      Object: "AssignedProduct:ID"
+      OutVector: "AssignedProductUUIDs"
+      Iterator: "AssignedProductUUIDIterator"
+      InVector: "AssignedProductUUIDs"
+  - id: "AssignProductBOToProductConfigurationSetBO1"
+    type: "pipelet"
+    ref: "AssignProductBOToProductConfigurationSetBO"
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessProductConfigurationSet-Remove"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessProductConfigurationSet-Copy"
+  - id: "CopyProductConfigurationSetBO1"
+    type: "pipelet"
+    ref: "CopyProductConfigurationSetBO"
+  - id: "CreatePageableFromCollection1"
+    type: "pipelet"
+    ref: "CreatePageableFromCollection"
+    bindings:
+      Collection: "ProductsCollection"
+      Pageable: "Products"
+  - id: "CreatePageableFromCollection2"
+    type: "pipelet"
+    ref: "CreatePageableFromCollection"
+    bindings:
+      Collection: "ProductsCollection"
+      Pageable: "Products"
+  - id: "CreatePageableFromCollection3"
+    type: "pipelet"
+    ref: "CreatePageableFromCollection"
+    bindings:
+      Collection: "ProductsCollection"
+      Pageable: "AssignedProducts"
+  - id: "CreatePageableFromCollection4"
+    type: "pipelet"
+    ref: "CreatePageableFromCollection"
+    bindings:
+      Collection: "ProductConfigSetBOsCollection"
+      Pageable: "ProductConfigurationSetBOs"
+  - id: "CreateProductConfigurationSetBO1"
+    type: "pipelet"
+    ref: "CreateProductConfigurationSetBO"
+  - id: "DeleteProductConfigurationSetBO1"
+    type: "pipelet"
+    ref: "DeleteProductConfigurationSetBO"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        guaranteed: true
+  - id: "EndNode10"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "NewProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        guaranteed: false
+  - id: "EndNode11"
+    type: "end"
+    strict: true
+  - id: "EndNode12"
+    type: "end"
+    strict: true
+  - id: "EndNode13"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "AssignedProductUUIDIterator"
+        type: "java.util.Iterator"
+        guaranteed: true
+  - id: "EndNode14"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        guaranteed: true
+  - id: "EndNode15"
+    type: "end"
+    strict: true
+  - id: "EndNode16"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Products"
+        type: "java.util.Collection"
+        guaranteed: true
+  - id: "EndNode17"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationSetBOs"
+        type: "java.util.Collection"
+        guaranteed: false
+  - id: "EndNode7"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Products"
+        type: "java.util.Collection"
+        guaranteed: true
+  - id: "EndNode8"
+    type: "end"
+    strict: true
+  - id: "EndNode9"
+    type: "end"
+    strict: true
+  - id: "GetProductConfigurationSetBOByID1"
+    type: "pipelet"
+    ref: "GetProductConfigurationSetBOByID"
+  - id: "GetProductConfigurationSetBOByID2"
+    type: "pipelet"
+    ref: "GetProductConfigurationSetBOByID"
+    bindings:
+      SetID: "ID"
+  - id: "GetProductConfigurationSetBOByID3"
+    type: "pipelet"
+    ref: "GetProductConfigurationSetBOByID"
+  - id: "GetProductsAssignedToProductConfigurationSet1"
+    type: "pipelet"
+    ref: "GetProductsAssignedToProductConfigurationSet"
+    config:
+      DefaultPageSize: 15
+      Mode: 0
+    bindings:
+      ProductConfigurationSet: "ProductConfigurationSetBO"
+      Products: "ProductsCollection"
+  - id: "GetProductsAssignedToProductConfigurationSet2"
+    type: "pipelet"
+    ref: "GetProductsAssignedToProductConfigurationSet"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      ProductConfigurationSet: "ProductConfigurationSetBO"
+      Products: "ProductsCollection"
+  - id: "GetProductsAssignedToProductConfigurationSet3"
+    type: "pipelet"
+    ref: "GetProductsAssignedToProductConfigurationSet"
+    config:
+      DefaultPageSize: 15
+      Mode: 1
+    bindings:
+      ProductConfigurationSet: "ProductConfigurationSetBO"
+      Products: "ProductsCollection"
+  - id: "GetSortedProductConfigurationSetBOs1"
+    type: "pipelet"
+    ref: "GetSortedProductConfigurationSetBOs"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      SortBy: "SortAttribute"
+      SortDirection: "SortOrder"
+      ProductConfigurationSetBOs: "ProductConfigSetBOsCollection"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode3"
+    type: "join"
+  - id: "LoopNode1"
+    type: "loop"
+  - id: "LoopNode2"
+    type: "loop"
+  - id: "LoopNode4"
+    type: "loop"
+  - id: "UnassignProductBOFromProductConfigurationSetBO1"
+    type: "pipelet"
+    ref: "UnassignProductBOFromProductConfigurationSetBO"
+  - id: "UpdatePageSize1"
+    type: "pipelet"
+    ref: "UpdatePageSize"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      PageableIterator: "Products"
+  - id: "UpdatePageSize2"
+    type: "pipelet"
+    ref: "UpdatePageSize"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      PageableIterator: "Products"
+  - id: "UpdatePageSize3"
+    type: "pipelet"
+    ref: "UpdatePageSize"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      PageableIterator: "AssignedProducts"
+  - id: "UpdatePageSize4"
+    type: "pipelet"
+    ref: "UpdatePageSize"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      PageableIterator: "ProductConfigurationSetBOs"
+  - id: "UpdateProductConfigurationSetBO1"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationSetBO"
+  - id: "UpdateProductConfigurationSetBO2"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationSetBO"
+
+links:
+  - from: "CreateProductConfigurationSetBO1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "DeleteProductConfigurationSetBO1"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "JoinNode3"
+    via: "next"
+    to: "LoopNode4"
+    into: "loop"
+  - from: "LoopNode4"
+    via: "next"
+    to: "EndNode12"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JoinNode3"
+    into: "in1"
+  - from: "LoopNode4"
+    via: "do"
+    to: "GetProductConfigurationSetBOByID1"
+    into: "in"
+  - from: "StartNode10"
+    via: "next"
+    to: "LoopNode4"
+    into: "in"
+  - from: "GetProductConfigurationSetBOByID1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "GetProductConfigurationSetBOByID1"
+    via: "error"
+    to: "JoinNode3"
+    into: "in1"
+  - from: "StartNode2"
+    via: "next"
+    to: "GetProductConfigurationSetBOByID2"
+    into: "in"
+  - from: "GetProductConfigurationSetBOByID2"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CreateProductConfigurationSetBO1"
+    into: "in"
+  - from: "GetProductConfigurationSetBOByID2"
+    via: "error"
+    to: "EndNode4"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "GetSortedProductConfigurationSetBOs1"
+    into: "in"
+  - from: "StartNode6"
+    via: "next"
+    to: "AssignProductBOToProductConfigurationSetBO1"
+    into: "in"
+  - from: "AssignProductBOToProductConfigurationSetBO1"
+    via: "next"
+    to: "EndNode8"
+    into: "in"
+  - from: "StartNode7"
+    via: "next"
+    to: "UnassignProductBOFromProductConfigurationSetBO1"
+    into: "in"
+  - from: "UnassignProductBOFromProductConfigurationSetBO1"
+    via: "next"
+    to: "EndNode9"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "LoopNode1"
+    via: "do"
+    to: "GetProductConfigurationSetBOByID3"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "LoopNode1"
+    into: "loop"
+  - from: "StartNode9"
+    via: "next"
+    to: "LoopNode1"
+    into: "in"
+  - from: "UpdateProductConfigurationSetBO1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "LoopNode2"
+    via: "do"
+    to: "AddObjectToVector2"
+    into: "in"
+  - from: "GetProductConfigurationSetBOByID3"
+    via: "error"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "GetProductConfigurationSetBOByID3"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "AddObjectToVector1"
+    via: "next"
+    to: "LoopNode2"
+    into: "in"
+  - from: "AddObjectToVector2"
+    via: "next"
+    to: "LoopNode2"
+    into: "loop"
+  - from: "LoopNode1"
+    via: "next"
+    to: "EndNode11"
+    into: "in"
+  - from: "UpdatePageSize2"
+    via: "next"
+    to: "EndNode16"
+    into: "in"
+  - from: "LoopNode2"
+    via: "next"
+    to: "EndNode13"
+    into: "in"
+  - from: "StartNode13"
+    via: "next"
+    to: "GetProductsAssignedToProductConfigurationSet2"
+    into: "in"
+  - from: "GetProductsAssignedToProductConfigurationSet2"
+    via: "next"
+    to: "CreatePageableFromCollection3"
+    into: "in"
+  - from: "CreateProductConfigurationSetBO1"
+    via: "next"
+    to: "UpdateProductConfigurationSetBO1"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "CopyProductConfigurationSetBO1"
+    into: "in"
+  - from: "CopyProductConfigurationSetBO1"
+    via: "error"
+    to: "EndNode15"
+    into: "in"
+  - from: "StartNode12"
+    via: "next"
+    to: "GetProductsAssignedToProductConfigurationSet3"
+    into: "in"
+  - from: "StartNode11"
+    via: "next"
+    to: "UpdateProductConfigurationSetBO2"
+    into: "in"
+  - from: "UpdateProductConfigurationSetBO2"
+    via: "next"
+    to: "EndNode14"
+    into: "in"
+  - from: "CopyProductConfigurationSetBO1"
+    via: "next"
+    to: "EndNode10"
+    into: "in"
+  - from: "GetProductsAssignedToProductConfigurationSet3"
+    via: "next"
+    to: "CreatePageableFromCollection2"
+    into: "in"
+  - from: "CreatePageableFromCollection2"
+    via: "next"
+    to: "UpdatePageSize2"
+    into: "in"
+  - from: "CreatePageableFromCollection1"
+    via: "next"
+    to: "UpdatePageSize1"
+    into: "in"
+  - from: "UpdatePageSize1"
+    via: "next"
+    to: "EndNode7"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "GetProductsAssignedToProductConfigurationSet1"
+    into: "in"
+  - from: "CreatePageableFromCollection3"
+    via: "next"
+    to: "UpdatePageSize3"
+    into: "in"
+  - from: "UpdatePageSize3"
+    via: "next"
+    to: "AddObjectToVector1"
+    into: "in"
+  - from: "CreatePageableFromCollection4"
+    via: "next"
+    to: "UpdatePageSize4"
+    into: "in"
+  - from: "UpdatePageSize4"
+    via: "next"
+    to: "EndNode6"
+    into: "in"
+  - from: "GetProductsAssignedToProductConfigurationSet1"
+    via: "next"
+    to: "CreatePageableFromCollection1"
+    into: "in"
+  - from: "GetSortedProductConfigurationSetBOs1"
+    via: "next"
+    to: "CreatePageableFromCollection4"
+    into: "in"
+  - from: "GetSortedProductConfigurationSetBOs1"
+    via: "error"
+    to: "EndNode17"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "DeleteProductConfigurationSetBO1"
+    into: "in"

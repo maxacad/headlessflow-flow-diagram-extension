@@ -1,0 +1,47 @@
+flow: "ProtectFromAccessByBrowserHistory"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "RedirectPipeline"
+  - id: "DispatchPostData1"
+    type: "pipelet"
+    ref: "DispatchPostData"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "InteractionNode2"
+    type: "interaction"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "DispatchPostData1"
+    into: "in"
+  - from: "DispatchPostData1"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "EndNode1"
+    into: "in"
+  - from: "DispatchPostData1"
+    via: "error"
+    to: "InteractionNode2"
+    into: "in"

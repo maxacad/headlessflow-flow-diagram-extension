@@ -1,0 +1,20 @@
+name: ShareWishList
+version: 1
+trigger: manual
+handler: ./ShareWishList.ts
+ai:
+  skill: wishlist-sharewishlist
+  title: ShareWishList
+  description: Intershop wishlist pipelet – ShareWishList.
+  tags: [wishlist, sharing, security]
+  capabilities:
+    - execute-securecode-operation
+inputs:
+  WishlsitBO: object
+  RecipientMail: string
+outputs:
+  SecureCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.wishlist.pipelet.securecode.ShareWishList

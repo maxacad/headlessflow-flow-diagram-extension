@@ -1,0 +1,179 @@
+flow: "ProcessProductConfigurationValue"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Create"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationOptionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationOptionBO"
+        required: true
+  - id: "StartNode12"
+    name: "MultipleRemove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValueIDs"
+        type: "java.util.Iterator"
+        required: true
+      - key: "ProductConfigurationOption"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationOptionBO"
+        required: true
+  - id: "StartNode2"
+    name: "Update"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationValueBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationValueBO"
+        required: true
+      - key: "OrderRequiredAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "ConsumerExposedAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "Image"
+        type: "java.lang.String"
+        required: false
+      - key: "ServiceProduct"
+        type: "com.intershop.beehive.xcs.capi.product.Product"
+        required: false
+      - key: "OrderCode"
+        type: "java.lang.String"
+        required: false
+      - key: "Position"
+        type: "java.lang.Double"
+        required: false
+      - key: "Value"
+        type: "java.lang.Object"
+        required: false
+      - key: "Prices"
+        type: "java.util.Iterator"
+        required: false
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+  - id: "StartNode3"
+    name: "Remove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationValueBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationValueBO"
+        required: true
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessProductConfigurationValue-Remove"
+    bindings:
+      ProductConfigurationValueBO: "ProductConfigurationValue"
+  - id: "CreateProductConfigurationValueBO1"
+    type: "pipelet"
+    ref: "CreateProductConfigurationValueBO"
+  - id: "DeleteProductConfigurationValueBO1"
+    type: "pipelet"
+    ref: "DeleteProductConfigurationValueBO"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationValueBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationValueBO"
+        guaranteed: true
+  - id: "EndNode18"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationValueBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationValueBO"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+  - id: "GetProductConfigurationValueByID1"
+    type: "pipelet"
+    ref: "GetProductConfigurationValueByID"
+    bindings:
+      ID: "ValueID"
+  - id: "JoinNode5"
+    type: "join"
+  - id: "LoopNode2"
+    type: "loop"
+  - id: "UpdateProductConfigurationValueBO1"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationValueBO"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "CreateProductConfigurationValueBO1"
+    into: "in"
+  - from: "LoopNode2"
+    via: "next"
+    to: "EndNode18"
+    into: "in"
+  - from: "JoinNode5"
+    via: "next"
+    to: "LoopNode2"
+    into: "loop"
+  - from: "StartNode12"
+    via: "next"
+    to: "LoopNode2"
+    into: "in"
+  - from: "GetProductConfigurationValueByID1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JoinNode5"
+    into: "in1"
+  - from: "GetProductConfigurationValueByID1"
+    via: "error"
+    to: "JoinNode5"
+    into: "in1"
+  - from: "DeleteProductConfigurationValueBO1"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "DeleteProductConfigurationValueBO1"
+    via: "error"
+    to: "EndNode5"
+    into: "in"
+  - from: "CreateProductConfigurationValueBO1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "CreateProductConfigurationValueBO1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "UpdateProductConfigurationValueBO1"
+    into: "in"
+  - from: "UpdateProductConfigurationValueBO1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "DeleteProductConfigurationValueBO1"
+    into: "in"
+  - from: "LoopNode2"
+    via: "do"
+    to: "GetProductConfigurationValueByID1"
+    into: "in"

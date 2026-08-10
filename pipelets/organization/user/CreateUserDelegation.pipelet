@@ -1,0 +1,24 @@
+name: CreateUserDelegation
+version: 1
+trigger: manual
+handler: ./CreateUserDelegation.ts
+ai:
+  skill: organization-createuserdelegation
+  title: CreateUserDelegation
+  description: Intershop organization pipelet – CreateUserDelegation.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  Delegator: any
+  Delegate: any
+  DelegationType: string
+  DelegationStart: any
+  DelegationEnd: any
+  IsActiveDelegation: string
+outputs:
+  UserDelegation: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.CreateUserDelegation

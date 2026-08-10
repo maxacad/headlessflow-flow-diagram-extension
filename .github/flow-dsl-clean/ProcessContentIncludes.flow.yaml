@@ -1,0 +1,97 @@
+flow: "ProcessContentIncludes"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "GetContentIncludes"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "PageSize"
+        type: "java.lang.Integer"
+        required: false
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "DetermineRepositories-Master"
+  - id: "CallNode3"
+    type: "call"
+    ref: "Prefix-GetChannelRepository"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ContentIncludes"
+        type: "com.intershop.beehive.core.capi.paging.PageableIterator"
+        guaranteed: false
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ErrorCode"
+        type: "java.lang.String"
+        guaranteed: false
+  - id: "ExecutePageableQuery1"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      QueryName: "content/GetContentIncludes"
+      ParameterName_01: "ContentRepository"
+      DefaultPageSize: -1
+      ParameterName_02: "Dynamic"
+      ParameterName_03: "Locale"
+    bindings:
+      SearchResult: "ContentIncludes"
+      ParameterValue_01: "Repository"
+      ParameterValue_02: "\"false\""
+      ParameterValue_03: "CurrentRequest:Locale"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "CurrentChannel"
+      OutValue_1: "Repository"
+  - id: "Pipelet7"
+    type: "pipelet"
+    ref: "GetApplicationState"
+
+links:
+  - from: "CallNode3"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "Pipelet7"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "CallNode3"
+    via: "ERROR"
+    to: "CallNode1"
+    into: "in"
+  - from: "ExecutePageableQuery1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "ExecutePageableQuery1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "Pipelet7"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "ExecutePageableQuery1"
+    into: "in"

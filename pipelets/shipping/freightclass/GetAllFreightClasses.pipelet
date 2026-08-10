@@ -1,0 +1,18 @@
+name: GetAllFreightClasses
+version: 1
+trigger: manual
+handler: ./GetAllFreightClasses.ts
+ai:
+  skill: shipping-getallfreightclasses
+  title: GetAllFreightClasses
+  description: Intershop shipping pipelet – GetAllFreightClasses.
+  tags: [freight, shipping, class]
+  capabilities:
+    - execute-freightclass-operation
+outputs:
+  FreightClasses: iterator
+  FreightClassesMap: map
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.freightclass.GetAllFreightClasses

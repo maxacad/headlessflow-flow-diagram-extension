@@ -1,0 +1,123 @@
+flow: "ProcessRecurringRequisitionSearch"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "SearchRecurringRequisitions"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode3"
+    name: "SearchRecurringDates"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "RecurringRequisitionID"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "End2"
+    type: "end"
+    strict: false
+  - id: "End3"
+    type: "end"
+    strict: false
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode3"
+    type: "end"
+    strict: false
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "requisition/SearchRecurringDates"
+      Datasource: "current ORM connection"
+      ParameterName_01: "RecurringRequisitionID"
+    bindings:
+      SearchResult: "RecurringDates"
+      ParameterValue_01: "RecurringRequisitionUUID"
+  - id: "ExecutePageableQuery2"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      QueryName: "requisition/GetRecurringRequisitions"
+      DefaultPageSize: 15
+      ParameterName_01: "DomainID"
+      ParameterName_02: "UserID"
+      ParameterName_03: "SortingAttribute"
+      ParameterName_04: "LocaleInformation"
+      ParameterName_05: "SortingDirection"
+    bindings:
+      SearchResult: "RecurringRequisitions"
+      ParameterValue_01: "OrganizationDomain:DomainID"
+      ParameterValue_02: "CurrentUser:ID"
+      ParameterValue_03: "SortingAttribute"
+      ParameterValue_04: "LocaleInformation"
+      ParameterValue_05: "SortingDirection"
+  - id: "GetLocale2"
+    type: "pipelet"
+    ref: "GetLocale"
+    config:
+      LocaleFallback: "Lead Locale"
+    bindings:
+      LocaleId: "null"
+      Locale: "LocaleInformation"
+  - id: "GetOrganizationByUser1"
+    type: "pipelet"
+    ref: "GetOrganizationByUser"
+    bindings:
+      User: "CurrentUser"
+  - id: "JoinNode10"
+    type: "join"
+  - id: "JoinNode9"
+    type: "join"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "GetOrganizationByUser1"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "error"
+    to: "End2"
+    into: "in"
+  - from: "JoinNode9"
+    via: "next"
+    to: "JoinNode10"
+    into: "in1"
+  - from: "ExecutePageableQuery2"
+    via: "error"
+    to: "JoinNode10"
+    into: "in2"
+  - from: "GetOrganizationByUser1"
+    via: "error"
+    to: "JoinNode9"
+    into: "in2"
+  - from: "GetOrganizationByUser1"
+    via: "next"
+    to: "GetLocale2"
+    into: "in"
+  - from: "ExecutePageableQuery2"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"
+  - from: "JoinNode10"
+    via: "next"
+    to: "End3"
+    into: "in"
+  - from: "GetLocale2"
+    via: "next"
+    to: "ExecutePageableQuery2"
+    into: "in"

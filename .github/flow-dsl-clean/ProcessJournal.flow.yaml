@@ -1,0 +1,34 @@
+flow: "ProcessJournal"
+kind: "process"
+
+entries:
+  - id: "StartNode2"
+    name: "CleanUpJournal"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "Pipelet2"
+    type: "pipelet"
+    ref: "RemoveExpiredJournalEntries"
+    config:
+      State: "All"
+    bindings:
+      LifeTime: "\"(java.lang.Integer)0\""
+
+links:
+  - from: "Pipelet2"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "Pipelet2"
+    into: "in"

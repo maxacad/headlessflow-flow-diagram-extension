@@ -1,0 +1,19 @@
+name: ReceiveMessage
+version: 1
+trigger: manual
+handler: ./ReceiveMessage.ts
+ai:
+  skill: core-receivemessage
+  title: ReceiveMessage
+  description: Intershop core pipelet – ReceiveMessage.
+  tags: [messaging, async, event]
+  capabilities:
+    - execute-messenger-operation
+inputs:
+  MessengerPoolID: string
+outputs:
+  Message: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.messenger.ReceiveMessage

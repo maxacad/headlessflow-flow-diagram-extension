@@ -1,0 +1,18 @@
+name: RefreshWebAdapterCaches
+version: 1
+trigger: manual
+handler: ./RefreshWebAdapterCaches.ts
+ai:
+  skill: core-refreshwebadaptercaches
+  title: RefreshWebAdapterCaches
+  description: Intershop core pipelet – RefreshWebAdapterCaches.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcess: any
+  PageCacheInvalidationPolicy: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.RefreshWebAdapterCaches

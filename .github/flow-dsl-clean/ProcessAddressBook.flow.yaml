@@ -1,0 +1,53 @@
+flow: "ProcessAddressBook"
+kind: "process"
+
+entries:
+  - id: "Start"
+    name: "Get"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CheckUserLoggedIn1"
+    type: "pipelet"
+    ref: "CheckUserLoggedIn"
+  - id: "DetermineAddresses1"
+    type: "pipelet"
+    ref: "DetermineAddresses"
+  - id: "DetermineUserProfile1"
+    type: "pipelet"
+    ref: "DetermineUserProfile"
+  - id: "End2"
+    type: "end"
+  - id: "End3"
+    type: "end"
+  - id: "End7"
+    type: "end"
+
+links:
+  - from: "DetermineAddresses1"
+    via: "next"
+    to: "End2"
+    into: "in"
+  - from: "Start"
+    via: "next"
+    to: "CheckUserLoggedIn1"
+    into: "in"
+  - from: "CheckUserLoggedIn1"
+    via: "error"
+    to: "End3"
+    into: "in"
+  - from: "DetermineUserProfile1"
+    via: "error"
+    to: "End7"
+    into: "in"
+  - from: "CheckUserLoggedIn1"
+    via: "next"
+    to: "DetermineUserProfile1"
+    into: "in"
+  - from: "DetermineUserProfile1"
+    via: "next"
+    to: "DetermineAddresses1"
+    into: "in"

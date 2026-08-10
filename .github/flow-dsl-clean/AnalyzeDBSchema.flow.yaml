@@ -1,0 +1,28 @@
+flow: "AnalyzeDBSchema"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "GatherDatabaseStatistics0"
+    type: "pipelet"
+    ref: "GatherDatabaseStatistics"
+
+links:
+  - from: "GatherDatabaseStatistics0"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "GatherDatabaseStatistics0"
+    into: "in"

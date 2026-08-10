@@ -1,0 +1,24 @@
+name: CreateBudget
+version: 1
+trigger: manual
+handler: ./CreateBudget.ts
+ai:
+  skill: organization-createbudget
+  title: CreateBudget
+  description: Intershop organization pipelet – CreateBudget.
+  tags: [budget, finance]
+  capabilities:
+    - execute-budget-operation
+inputs:
+  Account: any
+  Scope: any
+  ScopeType: string
+  TypeCode: string
+  DefaultScopeType: number
+  DefaultTypeCode: number
+outputs:
+  Budget: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.budget.CreateBudget

@@ -1,0 +1,143 @@
+flow: "BatchProcessContentLabelAssignments"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "AssignLabel"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode11"
+    name: "InitAssignLabel"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode12"
+    name: "PostAssignLabel"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "ResolveObject"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Object"
+        type: "com.intershop.beehive.core.capi.domain.PersistentObject"
+        required: true
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "BatchProcessLog-CleanLogger"
+  - id: "CallNode15"
+    type: "call"
+    ref: "BatchProcessLog-PrepareLogger"
+  - id: "CallNode18"
+    type: "call"
+    ref: "ProcessLabel-AssignLabel"
+    bindings:
+      Object: "ResolvedObject"
+      LabelID: "LabelUUID"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessContentWizard-ResolvePagelet"
+    bindings:
+      Pagelet: "ResolvedObject"
+  - id: "CallNode3"
+    type: "call"
+    ref: "BatchProcessContentLabelAssignments-ResolveObject"
+  - id: "DecisionNode9"
+    type: "decision"
+    condition: "Object:FactoryName"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ResolvedObject"
+        type: "com.intershop.beehive.core.capi.domain.PersistentObject"
+        guaranteed: true
+  - id: "EndNode11"
+    type: "end"
+    strict: false
+  - id: "EndNode12"
+    type: "end"
+    strict: false
+  - id: "EndNode7"
+    type: "end"
+    strict: false
+  - id: "JoinNode1"
+    type: "join"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "ResolvedObject"
+      InValue_1: "Object"
+  - id: "Loop1"
+    type: "loop"
+
+links:
+  - from: "StartNode12"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "DecisionNode9"
+    via: "no"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "CallNode2"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "Loop1"
+    via: "do"
+    to: "CallNode3"
+    into: "in"
+  - from: "CallNode3"
+    via: "next"
+    to: "CallNode18"
+    into: "in"
+  - from: "StartNode11"
+    via: "next"
+    to: "CallNode15"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "EndNode11"
+    into: "in"
+  - from: "CallNode15"
+    via: "next"
+    to: "EndNode7"
+    into: "in"
+  - from: "CallNode18"
+    via: "next"
+    to: "Loop1"
+    into: "loop"
+  - from: "DecisionNode9"
+    via: "yes"
+    to: "CallNode2"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "Loop1"
+    into: "in"
+  - from: "Loop1"
+    via: "next"
+    to: "EndNode12"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "DecisionNode9"
+    into: "in"

@@ -1,0 +1,40 @@
+flow: "ViewChannelProductImage"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "ShowImage"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode31"
+    name: "GenerateThumbnail"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode52"
+    type: "call"
+    ref: "ProcessProductDetails-ProcessGenerateThumbnail"
+  - id: "InteractionNode2"
+    type: "interaction"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "ViewProductImage-ShowImage"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "StartNode31"
+    via: "next"
+    to: "CallNode52"
+    into: "in"
+  - from: "CallNode52"
+    via: "next"
+    to: "InteractionNode2"
+    into: "in"

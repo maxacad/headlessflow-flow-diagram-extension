@@ -1,0 +1,20 @@
+name: GetLocalizedResources
+version: 1
+trigger: manual
+handler: ./GetLocalizedResources.ts
+ai:
+  skill: core-getlocalizedresources
+  title: GetLocalizedResources
+  description: Intershop core pipelet – GetLocalizedResources.
+  tags: [integration, data]
+  capabilities:
+    - execute-localization-operation
+inputs:
+  ResourceBundleName: string
+  Locale: any
+outputs:
+  Resources: map
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.localization.GetLocalizedResources

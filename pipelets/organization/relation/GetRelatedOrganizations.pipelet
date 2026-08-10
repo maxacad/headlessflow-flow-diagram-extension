@@ -1,0 +1,22 @@
+name: GetRelatedOrganizations
+version: 1
+trigger: manual
+handler: ./GetRelatedOrganizations.ts
+ai:
+  skill: organization-getrelatedorganizations
+  title: GetRelatedOrganizations
+  description: Intershop organization pipelet – GetRelatedOrganizations.
+  tags: [relation, hierarchy]
+  capabilities:
+    - execute-relation-operation
+inputs:
+  DefaultRelationName: string
+  DefaultRoleName: string
+  Source: any
+  RelationName: string
+outputs:
+  Targets: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.relation.GetRelatedOrganizations

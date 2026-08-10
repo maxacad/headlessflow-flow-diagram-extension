@@ -1,0 +1,231 @@
+flow: "ViewProductLinksCategorySelectWizard"
+kind: "view"
+
+entries:
+  - id: "Start1"
+    name: "CategoryTree"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start10"
+    name: "CatalogDetails"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start11"
+    name: "CategoryDetails"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start12"
+    name: "Dispatch"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start13"
+    name: "Cancel"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start14"
+    name: "Finish"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start2"
+    name: "Expand"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start3"
+    name: "ListCatalogs"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start5"
+    name: "PrepareCatalogAssignment"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start6"
+    name: "DoSelectCatalog"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start8"
+    name: "SelectCatalog"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start9"
+    name: "Collapse"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode1"
+    name: "Prefix"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DispatchFormAction1"
+    type: "pipelet"
+    ref: "DispatchFormAction"
+    config:
+      OutValue_0: "ViewProductLinksCategorySelectWizard-DoSelectCatalog"
+      OutValue_1: "ViewProductLinksCategorySelectWizard-Cancel"
+      OutValue_2: "ViewProductLinksCategorySelectWizard-Finish"
+      OutValue_3: "ViewProductLinksCategorySelectWizard-ListCatalogs"
+      OutValue_4: "ViewPipelineComponent-CallBackToPipeline"
+      OutValue_5: "ViewProductLinksCategorySelectWizard-Expand"
+      OutValue_6: "ViewProductLinksCategorySelectWizard-Collapse"
+    bindings:
+      Key_0: "selectCatalog"
+      Key_1: "cancel"
+      Key_2: "finish"
+      Key_3: "previousStep3"
+      SelectionKey: "JumpTarget"
+      Key_4: "backToCallingWizard"
+      Key_5: "expand.x"
+      Key_6: "collapse.x"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "JoinNode2"
+    type: "join"
+  - id: "Jump3"
+    type: "jump"
+    ref: "SecureJump-Start"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-Cancel"
+  - id: "JumpNode10"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-CategoryDetails"
+  - id: "JumpNode11"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-DoSelectCatalog"
+  - id: "JumpNode2"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-Finish"
+  - id: "JumpNode3"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-PrepareCatalogAssignment"
+  - id: "JumpNode4"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-ListCatalogs"
+  - id: "JumpNode5"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-SelectCatalog"
+  - id: "JumpNode6"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-CategoryTree"
+  - id: "JumpNode7"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-Expand"
+  - id: "JumpNode8"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-Collapse"
+  - id: "JumpNode9"
+    type: "jump"
+    ref: "ViewCategorySelectWizard-CatalogDetails"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Value: "ViewProductLinksCategorySelectWizard-ListCatalogs"
+      Name: "JumpTarget"
+  - id: "SetDictionaryValue2"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Value: "ViewProductLinksCategorySelectWizard"
+      Name: "WizardPipeline"
+
+links:
+  - from: "DispatchFormAction1"
+    via: "error"
+    to: "SetDictionaryValue1"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "JumpNode7"
+    into: "in"
+  - from: "Start9"
+    via: "next"
+    to: "JumpNode8"
+    into: "in"
+  - from: "Start10"
+    via: "next"
+    to: "JumpNode9"
+    into: "in"
+  - from: "Start11"
+    via: "next"
+    to: "JumpNode10"
+    into: "in"
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "JoinNode2"
+    into: "in3"
+  - from: "Start13"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "DispatchFormAction1"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "Start6"
+    via: "next"
+    to: "JumpNode11"
+    into: "in"
+  - from: "JoinNode2"
+    via: "next"
+    to: "Jump3"
+    into: "in"
+  - from: "Start14"
+    via: "next"
+    to: "JumpNode2"
+    into: "in"
+  - from: "Start12"
+    via: "next"
+    to: "DispatchFormAction1"
+    into: "in"
+  - from: "Start5"
+    via: "next"
+    to: "JumpNode3"
+    into: "in"
+  - from: "SetDictionaryValue2"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "SetDictionaryValue2"
+    into: "in"
+  - from: "Start3"
+    via: "next"
+    to: "JumpNode4"
+    into: "in"
+  - from: "Start8"
+    via: "next"
+    to: "JumpNode5"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "JumpNode6"
+    into: "in"

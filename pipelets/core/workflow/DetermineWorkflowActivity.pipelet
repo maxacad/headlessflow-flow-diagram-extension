@@ -1,0 +1,21 @@
+name: DetermineWorkflowActivity
+version: 1
+trigger: manual
+handler: ./DetermineWorkflowActivity.ts
+ai:
+  skill: core-determineworkflowactivity
+  title: DetermineWorkflowActivity
+  description: Intershop core pipelet – DetermineWorkflowActivity.
+  tags: [workflow, approval, process]
+  capabilities:
+    - execute-workflow-operation
+inputs:
+  WorkflowActivityUUID: string
+outputs:
+  WorkflowActivity: any
+  WorkflowThread: any
+  WorkflowProcess: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.workflow.DetermineWorkflowActivity

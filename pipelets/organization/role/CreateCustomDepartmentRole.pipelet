@@ -1,0 +1,23 @@
+name: CreateCustomDepartmentRole
+version: 1
+trigger: manual
+handler: ./CreateCustomDepartmentRole.ts
+ai:
+  skill: organization-createcustomdepartmentrole
+  title: CreateCustomDepartmentRole
+  description: Intershop organization pipelet – CreateCustomDepartmentRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  RoleID: string
+  Name: string
+  Description: string
+  Department: any
+  LocaleInformation: any
+outputs:
+  Role: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CreateCustomDepartmentRole

@@ -1,0 +1,27 @@
+name: DetermineMailNotificationData
+version: 1
+trigger: manual
+handler: ./DetermineMailNotificationData.ts
+ai:
+  skill: core-determinemailnotificationdata
+  title: DetermineMailNotificationData
+  description: Intershop core pipelet – DetermineMailNotificationData.
+  tags: [workflow, approval, process]
+  capabilities:
+    - execute-workflow-operation
+inputs:
+  WorkflowActivity: any
+  CurrentUser: any
+  Users: iterator
+  DefaultEmailFrom: string
+  Mode: string
+outputs:
+  MailFrom: string
+  MailTo: string
+  MailSubject: string
+  MailTemplate: string
+  LocaleID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.workflow.DetermineMailNotificationData

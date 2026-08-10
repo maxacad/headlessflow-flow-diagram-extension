@@ -1,0 +1,23 @@
+name: CheckShippingWindowParameters
+version: 1
+trigger: manual
+handler: ./CheckShippingWindowParameters.ts
+ai:
+  skill: shipping-checkshippingwindowparameters
+  title: CheckShippingWindowParameters
+  description: Intershop shipping pipelet – CheckShippingWindowParameters.
+  tags: [shipping, rule, action]
+  capabilities:
+    - execute-shippingrule-operation
+inputs:
+  MinValueOperator: string
+  MaxValueOperator: string
+  MinValue: string
+  MaxValue: string
+  ConditionForm: any
+outputs:
+  ErrorCreateCondition: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.shippingrule.CheckShippingWindowParameters

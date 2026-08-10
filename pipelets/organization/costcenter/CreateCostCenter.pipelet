@@ -1,0 +1,25 @@
+name: CreateCostCenter
+version: 1
+trigger: manual
+handler: ./CreateCostCenter.ts
+ai:
+  skill: organization-createcostcenter
+  title: CreateCostCenter
+  description: Intershop organization pipelet – CreateCostCenter.
+  tags: [integration, data]
+  capabilities:
+    - execute-costcenter-operation
+inputs:
+  CostCenterID: string
+  CostCenterName: string
+  ErpID: string
+  CostCenterDesc: string
+  CostCenterAdminGroup: any
+  Organization: any
+  LocaleInformation: any
+outputs:
+  CostCenter: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.costcenter.CreateCostCenter

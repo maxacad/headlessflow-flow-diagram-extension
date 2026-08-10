@@ -1,0 +1,19 @@
+name: GetAccountTransactionByUUID
+version: 1
+trigger: manual
+handler: ./GetAccountTransactionByUUID.ts
+ai:
+  skill: organization-getaccounttransactionbyuuid
+  title: GetAccountTransactionByUUID
+  description: Intershop organization pipelet – GetAccountTransactionByUUID.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  AccountTransactionUUID: string
+outputs:
+  AccountTransaction: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.GetAccountTransactionByUUID

@@ -1,0 +1,161 @@
+flow: "ProcessSyndicationSearch"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "GetSyndicationsByDomain"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "SortBy"
+        type: "java.lang.Object"
+        required: false
+      - key: "SortDirection"
+        type: "java.lang.Object"
+        required: false
+  - id: "StartNode2"
+    name: "GetSyndicationByJobID"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "JobConfigurationUUID"
+        type: "java.lang.String"
+        required: true
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "SyndicationSearchError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Syndications"
+        type: "com.intershop.beehive.core.capi.paging.PageableIterator"
+        guaranteed: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Syndication"
+        type: "com.intershop.component.foundation.capi.syndication.Syndication"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "SyndicationSearchError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "syndication/GetSyndicationsByJobID"
+      Datasource: "current ORM connection"
+    bindings:
+      ErrorCode: "SyndicationSearchError"
+      Parameters: "SyndicationSearchParameters"
+  - id: "ExecutePageableQuery1"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      DefaultPageSize: 15
+      QueryName: "syndication/GetSyndicationsByDomain"
+    bindings:
+      SearchResult: "Syndications"
+      Parameters: "SyndicationSearchParameters"
+      ErrorCode: "SyndicationSearchError"
+  - id: "GetFirstElementOfIterator1"
+    type: "pipelet"
+    ref: "GetFirstElementOfIterator"
+    bindings:
+      Iterator: "SearchResult"
+      FirstElement: "Syndication"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "\"SyndicationNotFound\""
+      OutValue_1: "ErrorCode"
+  - id: "UpdateDictionary1"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "Domain"
+      Name_02: "SortBy"
+      Name_03: "SortDirection"
+    bindings:
+      Value_01: "Domain"
+      OutDictionary: "SyndicationSearchParameters"
+      InDictionary: "null"
+      Value_02: "SortBy"
+      Value_03: "SortDirection"
+  - id: "UpdateDictionary2"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "JobConfigurationID"
+    bindings:
+      Value_01: "JobConfigurationUUID"
+      OutDictionary: "SyndicationSearchParameters"
+      InDictionary: "null"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "UpdateDictionary1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "UpdateDictionary2"
+    into: "in"
+  - from: "UpdateDictionary2"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "error"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "GetFirstElementOfIterator1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "JoinNode2"
+    into: "in2"
+  - from: "JoinNode2"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "GetFirstElementOfIterator1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "ExecutePageableQuery1"
+    via: "error"
+    to: "EndNode1"
+    into: "in"
+  - from: "ExecutePageableQuery1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "UpdateDictionary1"
+    via: "next"
+    to: "ExecutePageableQuery1"
+    into: "in"
+  - from: "GetFirstElementOfIterator1"
+    via: "error"
+    to: "KeyMapper1"
+    into: "in"

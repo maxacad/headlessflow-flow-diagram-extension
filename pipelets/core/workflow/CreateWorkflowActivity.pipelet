@@ -1,0 +1,22 @@
+name: CreateWorkflowActivity
+version: 1
+trigger: manual
+handler: ./CreateWorkflowActivity.ts
+ai:
+  skill: core-createworkflowactivity
+  title: CreateWorkflowActivity
+  description: Intershop core pipelet – CreateWorkflowActivity.
+  tags: [workflow, approval, process]
+  capabilities:
+    - execute-workflow-operation
+inputs:
+  WorkflowThread: any
+  CurrentUser: any
+  CurrentDomain: any
+  NotificationTemplate: string
+outputs:
+  WorkflowActivity: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.workflow.CreateWorkflowActivity

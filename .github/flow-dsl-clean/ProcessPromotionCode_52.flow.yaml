@@ -1,0 +1,133 @@
+flow: "ProcessPromotionCode_52"
+kind: "process"
+
+entries:
+  - id: "StartNode6"
+    name: "ProcessParametricConsumerSearch"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "SearchTerm"
+        type: "java.lang.String"
+        required: false
+      - key: "PromotionCode"
+        type: "com.intershop.component.marketing.capi.code.PromotionCode"
+        required: true
+      - key: "SortBy"
+        type: "java.lang.String"
+        required: false
+      - key: "SortDirection"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "DecisionNode4"
+    type: "decision"
+    condition: "SearchTerm"
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Consumers"
+        type: "com.intershop.beehive.core.capi.paging.PageableIterator"
+        guaranteed: false
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+  - id: "ExecutePageableQuery2"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      DefaultPageSize: 10
+      QueryName: "marketing/PromotionCodeConsumerSearch_52"
+      ParameterName_01: "Domain"
+    bindings:
+      SearchResult: "Consumers"
+      Parameters: "QueryParameters"
+      ParameterValue_01: "Domain"
+  - id: "GetLocale1"
+    type: "pipelet"
+    ref: "GetLocale"
+    config:
+      LocaleFallback: "Lead Locale"
+    bindings:
+      LocaleId: "null"
+      Locale: "LeadLocale"
+  - id: "JoinNode10"
+    type: "join"
+  - id: "JoinNode4"
+    type: "join"
+  - id: "UpdateDictionary1"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_02: "Locale"
+      Name_01: "Domain"
+      Name_03: "Code"
+      Name_04: "SearchTerm"
+      Name_05: "SortBy"
+      Name_06: "SortDirection"
+    bindings:
+      InDictionary: "QueryParameters"
+      Value_01: "Domain"
+      Value_02: "LeadLocale"
+      OutDictionary: "QueryParameters"
+      Value_03: "PromotionCode:Code"
+      Value_04: "SearchExpression"
+      Value_05: "SortBy"
+      Value_06: "SortDirection"
+  - id: "VerifySearchTerm1"
+    type: "pipelet"
+    ref: "VerifySearchTerm"
+    bindings:
+      UserSearchTerm: "SearchTerm"
+      ErrorCode: "null"
+
+links:
+  - from: "GetLocale1"
+    via: "next"
+    to: "UpdateDictionary1"
+    into: "in"
+  - from: "DecisionNode4"
+    via: "no"
+    to: "VerifySearchTerm1"
+    into: "in"
+  - from: "VerifySearchTerm1"
+    via: "next"
+    to: "JoinNode10"
+    into: "in1"
+  - from: "JoinNode10"
+    via: "next"
+    to: "GetLocale1"
+    into: "in"
+  - from: "UpdateDictionary1"
+    via: "next"
+    to: "ExecutePageableQuery2"
+    into: "in"
+  - from: "ExecutePageableQuery2"
+    via: "error"
+    to: "JoinNode4"
+    into: "in1"
+  - from: "JoinNode4"
+    via: "next"
+    to: "EndNode6"
+    into: "in"
+  - from: "VerifySearchTerm1"
+    via: "error"
+    to: "JoinNode4"
+    into: "in2"
+  - from: "StartNode6"
+    via: "next"
+    to: "DecisionNode4"
+    into: "in"
+  - from: "ExecutePageableQuery2"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "DecisionNode4"
+    via: "yes"
+    to: "JoinNode10"
+    into: "in2"

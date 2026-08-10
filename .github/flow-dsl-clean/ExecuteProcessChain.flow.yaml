@@ -1,0 +1,61 @@
+flow: "ExecuteProcessChain"
+kind: "job"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "XmlFileName"
+        type: "java.lang.String"
+        required: true
+      - key: "CurrentDomain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: false
+      - key: "ProcessChainDomain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: false
+      - key: "Process"
+        type: "com.intershop.beehive.core.capi.locking.Process"
+        required: true
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProcessChainResult"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProcessChainResult"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "ExecuteProcessChain1"
+    type: "pipelet"
+    ref: "ExecuteProcessChain"
+  - id: "LoadXmlProcessChain1"
+    type: "pipelet"
+    ref: "LoadXmlProcessChain"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "LoadXmlProcessChain1"
+    into: "in"
+  - from: "LoadXmlProcessChain1"
+    via: "next"
+    to: "ExecuteProcessChain1"
+    into: "in"
+  - from: "ExecuteProcessChain1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "LoadXmlProcessChain1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"

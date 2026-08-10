@@ -1,0 +1,24 @@
+name: UpdateAccountTransaction
+version: 1
+trigger: manual
+handler: ./UpdateAccountTransaction.ts
+ai:
+  skill: organization-updateaccounttransaction
+  title: UpdateAccountTransaction
+  description: Intershop organization pipelet – UpdateAccountTransaction.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  AccountTransaction: any
+  TimeStamp: any
+  AmountValue: any
+  AmountCurrency: string
+  Amount: any
+  DefaultAmountValue: string
+  DefaultAmountCurrency: string
+  AmountUpdatePolicy: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.UpdateAccountTransaction

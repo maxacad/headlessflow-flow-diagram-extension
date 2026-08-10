@@ -1,0 +1,284 @@
+flow: "ProcessAuditReport"
+kind: "process"
+
+entries:
+  - id: "Start11"
+    name: "GetChannels"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CurrentDomain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: false
+      - key: "CurrentOrganization"
+        type: "com.intershop.component.organization.capi.Organization"
+        required: false
+      - key: "CurrentRequest"
+        type: "com.intershop.beehive.core.capi.request.Request"
+        required: false
+  - id: "StartNode1"
+    name: "GetUsers"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CurrentRequest"
+        type: "java.lang.Object"
+        required: false
+      - key: "Organization"
+        type: "java.lang.Object"
+        required: false
+      - key: "OrganizationDomain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: false
+  - id: "StartNode2"
+    name: "GetObjectTypes"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ApplicationBO"
+        type: "com.intershop.component.application.capi.ApplicationBO"
+        required: false
+  - id: "StartNode3"
+    name: "GetActionTypes"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+  - id: "StartNode4"
+    name: "Search"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "AuditItemQueryParameters"
+        type: "java.util.Map"
+        required: true
+      - key: "PageSize"
+        type: "java.lang.Integer"
+        required: false
+
+steps:
+  - id: "AddObjectToVector1"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      InVector: "null"
+      Object: "null"
+      Objects: "AuthorizedChannels"
+      OutVector: "AuthorizedChannels"
+      Iterator: "null"
+  - id: "AddObjectToVector2"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      InVector: "AuthorizedChannels"
+      Object: "Repository"
+      Objects: "null"
+      OutVector: "AuthorizedChannels"
+      Iterator: "null"
+  - id: "Call12"
+    type: "call"
+    ref: "ProcessUserList-List"
+  - id: "Call3"
+    type: "call"
+    ref: "ProcessChannelList-ListAll"
+  - id: "CheckUserPermission1"
+    type: "pipelet"
+    ref: "CheckUserPermission"
+    config:
+      DefaultPermissionID: "SLD_VIEW_AUDIT_REPORTS"
+    bindings:
+      AuthorizationObject: "Repository:RepositoryDomain"
+  - id: "DecisionNode2"
+    type: "decision"
+    condition: "AuthorizedChannels"
+  - id: "End1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "AuthorizedChannels"
+        type: "java.util.Vector"
+        guaranteed: false
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Users"
+        type: "java.util.Iterator<E>"
+        guaranteed: false
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "AuditReportObjectTypes"
+        type: "java.util.Set<java.lang.String>"
+        guaranteed: false
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "AuditActionTypes"
+        type: "java.util.Collection<String>"
+        guaranteed: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "AuditItemBOs"
+        type: "com.intershop.beehive.core.capi.paging.PageableIterator"
+        guaranteed: false
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ErrorCode"
+        type: "java.lang.String"
+        guaranteed: false
+  - id: "GetAuditActionTypes1"
+    type: "pipelet"
+    ref: "GetAuditActionTypes"
+  - id: "GetAuditReportObjectTypes1"
+    type: "pipelet"
+    ref: "GetAuditReportObjectTypes"
+  - id: "Join8"
+    type: "join"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "OrganizationDomain"
+      OutValue_1: "UserDomain"
+  - id: "Loop1"
+    type: "loop"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      DefaultPageSize: 10
+      QueryName: "audititem/AuditItemSearch"
+    bindings:
+      Parameters: "AuditItemQueryParameters"
+      SearchResult: "AuditItemBOs"
+  - id: "SortIteratorByComparator1"
+    type: "pipelet"
+    ref: "SortIteratorByComparator"
+    config:
+      DefaultSortingAttribute: "ID"
+      DefaultSortingOrder: true
+    bindings:
+      Iterator: "AuthorizedChannels:Iterator"
+      SortingAttribute: "null"
+      SortingOrder: "null"
+      SortedIterator: "AuthorizedChannels"
+  - id: "UpdatePageSize1"
+    type: "pipelet"
+    ref: "UpdatePageSize"
+    bindings:
+      PageableIterator: "Users"
+      PageSize: "Users:ElementCount"
+
+links:
+  - from: "AddObjectToVector1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "AddObjectToVector2"
+    via: "next"
+    to: "Join8"
+    into: "in1"
+  - from: "Call12"
+    via: "ERROR"
+    to: "EndNode2"
+    into: "in"
+  - from: "Call12"
+    via: "next"
+    to: "UpdatePageSize1"
+    into: "in"
+  - from: "Call3"
+    via: "next"
+    to: "Loop1"
+    into: "in"
+  - from: "CheckUserPermission1"
+    via: "error"
+    to: "Join8"
+    into: "in1"
+  - from: "CheckUserPermission1"
+    via: "next"
+    to: "AddObjectToVector2"
+    into: "in"
+  - from: "DecisionNode2"
+    via: "no"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "DecisionNode2"
+    via: "yes"
+    to: "SortIteratorByComparator1"
+    into: "in"
+  - from: "GetAuditActionTypes1"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "GetAuditReportObjectTypes1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "Join8"
+    via: "next"
+    to: "Loop1"
+    into: "loop"
+  - from: "JoinNode1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "Call12"
+    into: "in"
+  - from: "Loop1"
+    via: "do"
+    to: "CheckUserPermission1"
+    into: "in"
+  - from: "Loop1"
+    via: "next"
+    to: "DecisionNode2"
+    into: "in"
+  - from: "Pipelet1"
+    via: "error"
+    to: "EndNode6"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "SortIteratorByComparator1"
+    via: "next"
+    to: "AddObjectToVector1"
+    into: "in"
+  - from: "Start11"
+    via: "next"
+    to: "Call3"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "GetAuditReportObjectTypes1"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "GetAuditActionTypes1"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "UpdatePageSize1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

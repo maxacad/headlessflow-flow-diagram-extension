@@ -1,0 +1,52 @@
+flow: "ViewPriceListList"
+kind: "view"
+
+entries:
+  - id: "Start1"
+    name: "ListAll"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start3"
+    name: "Dispatch"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DispatchFormAction1"
+    type: "pipelet"
+    ref: "DispatchFormAction"
+    bindings:
+      SelectionKey: "JumpTarget"
+  - id: "InteractionEnd2"
+    type: "interaction"
+  - id: "Jump5"
+    type: "jump"
+    ref: "SecureJump-Start"
+  - id: "PrepareApplicationView2"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "PriceLists"
+      WorkingTemplate: "pricelist/MasterPriceListList"
+
+links:
+  - from: "Start1"
+    via: "next"
+    to: "PrepareApplicationView2"
+    into: "in"
+  - from: "DispatchFormAction1"
+    via: "next"
+    to: "Jump5"
+    into: "in"
+  - from: "Start3"
+    via: "next"
+    to: "DispatchFormAction1"
+    into: "in"
+  - from: "PrepareApplicationView2"
+    via: "next"
+    to: "InteractionEnd2"
+    into: "in"

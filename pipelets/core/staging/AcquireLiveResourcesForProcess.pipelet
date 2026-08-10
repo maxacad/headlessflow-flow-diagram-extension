@@ -1,0 +1,22 @@
+name: AcquireLiveResourcesForProcess
+version: 1
+trigger: manual
+handler: ./AcquireLiveResourcesForProcess.ts
+ai:
+  skill: core-acquireliveresourcesforprocess
+  title: AcquireLiveResourcesForProcess
+  description: Intershop core pipelet – AcquireLiveResourcesForProcess.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingService: object
+  StagingProcessID: string
+  CurrentDomain: any
+outputs:
+  ErrorStatus: string
+  Exception: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.AcquireLiveResourcesForProcess

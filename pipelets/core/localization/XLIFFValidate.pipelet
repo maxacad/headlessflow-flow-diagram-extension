@@ -1,0 +1,21 @@
+name: XLIFFValidate
+version: 1
+trigger: manual
+handler: ./XLIFFValidate.ts
+ai:
+  skill: core-xliffvalidate
+  title: XLIFFValidate
+  description: Intershop core pipelet – XLIFFValidate.
+  tags: [integration, data]
+  capabilities:
+    - execute-localization-operation
+inputs:
+  Domain: any
+  JobConfiguration: any
+outputs:
+  Error: string
+  VerificationResult: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.localization.XLIFFValidate

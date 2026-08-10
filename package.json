@@ -1,0 +1,437 @@
+{
+  "name": "reactdnd",
+  "displayName": "React Flow Node Editor",
+  "description": "VSCode WebView Custom Editor with React Flow drag-and-drop node editor",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "flow-pipeline",
+        "aliases": [
+          "Flow Pipeline",
+          "flow"
+        ],
+        "extensions": [
+          ".flow"
+        ],
+        "icon": {
+          "light": "resources/flow-file-icon.svg",
+          "dark": "resources/flow-file-icon.svg"
+        }
+      },
+      {
+        "id": "pipelet",
+        "aliases": [
+          "Pipelet",
+          "pipelet"
+        ],
+        "extensions": [
+          ".pipelet"
+        ],
+        "icon": {
+          "light": "resources/pipelet-file-icon.svg",
+          "dark": "resources/pipelet-file-icon.svg"
+        }
+      },
+      {
+        "id": "webform",
+        "aliases": [
+          "Web Form",
+          "webform"
+        ],
+        "extensions": [
+          ".webform"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "reactdnd.flowEditor",
+        "displayName": "Flow Node Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.flow"
+          }
+        ],
+        "priority": "default"
+      },
+      {
+        "viewType": "reactdnd.webFormEditor",
+        "displayName": "Web Form Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.webform"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "reactdnd.newFlow",
+        "title": "New Flow File",
+        "category": "Flow Editor"
+      },
+      {
+        "command": "reactdnd.newWebForm",
+        "title": "New Web Form",
+        "category": "Web Form Editor"
+      },
+      {
+        "command": "reactdnd.toggleDagDebugMode",
+        "title": "Toggle DAG Debug Mode",
+        "category": "Flow Editor",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "reactdnd.enableDagDebugMode",
+        "title": "Start DAG Debug Mode",
+        "category": "Flow Editor",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "reactdnd.disableDagDebugMode",
+        "title": "Stop DAG Debug Mode",
+        "category": "Flow Editor",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "reactdnd.webFormSplit",
+        "title": "Split View",
+        "category": "Web Form Editor",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "reactdnd.webFormJson",
+        "title": "JSON Editor",
+        "category": "Web Form Editor",
+        "icon": "$(code)"
+      },
+      {
+        "command": "reactdnd.webFormPreview",
+        "title": "Form Preview",
+        "category": "Web Form Editor",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "reactdnd.armPipeletPlacement",
+        "title": "Arm Pipelet Placement",
+        "category": "Flow Editor"
+      },
+      {
+        "command": "reactdnd.insertPipeletToFlow",
+        "title": "Insert Pipelet To Flow",
+        "category": "Flow Editor"
+      },
+      {
+        "command": "reactdnd.openApiRefresh",
+        "title": "Refresh",
+        "category": "OpenAPI Explorer",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "reactdnd.openApiEditConfig",
+        "title": "Edit Sources Config",
+        "category": "OpenAPI Explorer",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "reactdnd.openApiEndpointAction",
+        "title": "Endpoint Action",
+        "category": "OpenAPI Explorer"
+      },
+      {
+        "command": "reactdnd.insertEndpointToFlow",
+        "title": "Insert Endpoint to Flow",
+        "category": "OpenAPI Explorer"
+      },
+      {
+        "command": "reactdnd.flowSyncRefresh",
+        "title": "Refresh",
+        "category": ".flow Sync",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "reactdnd.flowSyncEditConfig",
+        "title": "Edit Sync Config",
+        "category": ".flow Sync",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "reactdnd.flowSyncActive",
+        "title": "Sync Active .flow",
+        "category": ".flow Sync",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "reactdnd.flowSyncFile",
+        "title": "Sync This .flow",
+        "category": ".flow Sync",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "reactdnd.flowSyncAll",
+        "title": "Sync All .flow Files",
+        "category": ".flow Sync",
+        "icon": "$(repo-push)"
+      },
+      {
+        "command": "reactdnd.flowSyncRollbackVersion",
+        "title": "Rollback To Version",
+        "category": ".flow Sync"
+      },
+      {
+        "command": "reactdnd.flowSyncPullLatest",
+        "title": "Pull Latest To Local",
+        "category": ".flow Sync",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "reactdnd.cartridgeExplorerRefresh",
+        "title": "Refresh",
+        "category": "Cartridge Explorer",
+        "icon": "$(refresh)"
+      }
+    ],
+    "configuration": {
+      "title": "DAG Flow Debug",
+      "properties": {
+        "dagDebug.defaultService": {
+          "type": "string",
+          "default": "dag-flow-service",
+          "description": "Default service name used to isolate DAG debug sessions and events."
+        },
+        "dagDebug.orchestratorUrl": {
+          "type": "string",
+          "default": "http://localhost:4000/api/v1",
+          "description": "Base URL for the distributed debugging orchestrator REST API."
+        },
+        "dagDebug.orchestratorWsUrl": {
+          "type": "string",
+          "default": "http://localhost:4000",
+          "description": "Base URL for the orchestrator Socket.IO debug gateway."
+        },
+        "dagDebug.localAgentUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:9240/api/v1",
+          "description": "Local DAG debug agent API URL."
+        },
+        "dagDebug.runtimeAgentWsUrl": {
+          "type": "string",
+          "default": "ws://127.0.0.1:4001",
+          "description": "Runtime-agent WebSocket URL used by the local DAG debug agent."
+        },
+        "dagDebug.flowEngineUrl": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "Flow engine HTTP base URL used as a fallback for debug start requests."
+        },
+        "dagDebug.flowEngineWsUrl": {
+          "type": "string",
+          "default": "ws://localhost:3000/ws",
+          "description": "Flow engine WebSocket URL used to send Start With Debug payloads and selected breakpoints."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "reactdnd",
+          "title": "Flow",
+          "icon": "resources/flow-view-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "reactdnd": [
+        {
+          "id": "reactdnd.nodeLibraryView",
+          "name": "Flow Node Library",
+          "type": "webview",
+          "icon": "resources/flow-view-icon.svg"
+        },
+        {
+          "id": "reactdnd.nodeDetailView",
+          "name": "Node Detail",
+          "type": "webview",
+          "icon": "resources/flow-view-icon.svg"
+        },
+        {
+          "id": "reactdnd.pipeletExplorerView",
+          "name": "Pipelet File Explorer",
+          "icon": "resources/pipelet-file-icon.svg"
+        },
+        {
+          "id": "reactdnd.cartridgeExplorerView",
+          "name": "Cartridge Explorer",
+          "icon": "resources/cartridge-icon.svg"
+        },
+        {
+          "id": "reactdnd.openApiExplorerView",
+          "name": "OpenAPI Explorer",
+          "icon": "resources/openapi-icon.svg"
+        },
+        {
+          "id": "reactdnd.flowSyncView",
+          "name": ".flow Sync",
+          "icon": "resources/flow-view-icon.svg"
+        }
+      ]
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "reactdnd.enableDagDebugMode",
+          "when": "resourceExtname == .flow && !reactdnd.dagDebugModeActive",
+          "group": "navigation@1"
+        },
+        {
+          "command": "reactdnd.disableDagDebugMode",
+          "when": "resourceExtname == .flow && reactdnd.dagDebugModeActive",
+          "group": "navigation@1"
+        },
+        {
+          "command": "reactdnd.webFormSplit",
+          "when": "resourceExtname == .webform",
+          "group": "navigation@1"
+        },
+        {
+          "command": "reactdnd.webFormJson",
+          "when": "resourceExtname == .webform",
+          "group": "navigation@2"
+        },
+        {
+          "command": "reactdnd.webFormPreview",
+          "when": "resourceExtname == .webform",
+          "group": "navigation@3"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "reactdnd.openApiRefresh",
+          "when": "view == reactdnd.openApiExplorerView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "reactdnd.openApiEditConfig",
+          "when": "view == reactdnd.openApiExplorerView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "reactdnd.flowSyncRefresh",
+          "when": "view == reactdnd.flowSyncView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "reactdnd.flowSyncActive",
+          "when": "view == reactdnd.flowSyncView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "reactdnd.flowSyncAll",
+          "when": "view == reactdnd.flowSyncView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "reactdnd.flowSyncEditConfig",
+          "when": "view == reactdnd.flowSyncView",
+          "group": "navigation@4"
+        },
+        {
+          "command": "reactdnd.cartridgeExplorerRefresh",
+          "when": "view == reactdnd.cartridgeExplorerView",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "reactdnd.flowSyncFile",
+          "when": "view == reactdnd.flowSyncView && viewItem == flowSyncFilePending",
+          "group": "inline@0"
+        },
+        {
+          "command": "reactdnd.flowSyncPullLatest",
+          "when": "view == reactdnd.flowSyncView && viewItem == flowSyncFile",
+          "group": "inline@1"
+        },
+        {
+          "command": "reactdnd.flowSyncPullLatest",
+          "when": "view == reactdnd.flowSyncView && viewItem == flowSyncFilePending",
+          "group": "inline@1"
+        },
+        {
+          "command": "reactdnd.flowSyncRollbackVersion",
+          "when": "view == reactdnd.flowSyncView && viewItem == flowSyncVersion",
+          "group": "inline@1"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "reactdnd.nodeLibraryView",
+        "contents": "Drag node templates from here and use them in your flow editor."
+      },
+      {
+        "view": "reactdnd.pipeletExplorerView",
+        "contents": "No .pipelet files found in workspace. Add .pipelet files to list them here and drag into Flow Editor canvas."
+      },
+      {
+        "view": "reactdnd.cartridgeExplorerView",
+        "contents": "No cartridges found in workspace.\nA cartridge is a folder containing at least one recognised sub-folder (model, components, pipelines, …)."
+      },
+      {
+        "view": "reactdnd.openApiExplorerView",
+        "contents": "No OpenAPI sources configured.\n[Edit Config](command:reactdnd.openApiEditConfig) to add OpenAPI/Swagger JSON URLs."
+      },
+      {
+        "view": "reactdnd.flowSyncView",
+        "contents": "Sync .flow files with your versioned service.\nUse toolbar actions to sync active/all files, then rollback from version items."
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "webpack --mode production",
+    "build:extension": "webpack --mode development --config-name extension",
+    "build:webview": "webpack --mode development --config-name webview",
+    "build:node-detail": "webpack --mode development --config-name nodeDetail",
+    "build:webform": "webpack --mode development --config-name webform",
+    "dev": "webpack --mode development --watch",
+    "dev:extension": "webpack --mode development --watch --config-name extension",
+    "compile": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/styled-components": "^5.1.36",
+    "@types/vscode": "^1.85.0",
+    "@types/ws": "^8.5.13",
+    "css-loader": "^6.8.1",
+    "style-loader": "^3.3.3",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@vscode/webview-ui-toolkit": "^1.4.0",
+    "@xyflow/react": "^12.0.0",
+    "antd": "^5.29.3",
+    "form-render": "^2.5.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io-client": "^4.8.1",
+    "styled-components": "^6.4.1",
+    "ws": "^8.18.0"
+  }
+}

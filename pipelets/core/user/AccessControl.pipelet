@@ -1,0 +1,20 @@
+name: AccessControl
+version: 1
+trigger: manual
+handler: ./AccessControl.ts
+ai:
+  skill: core-accesscontrol
+  title: AccessControl
+  description: Intershop core pipelet – AccessControl.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  CurrentUser: any
+  CurrentDomain: any
+outputs:
+  ErrorMessage: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.AccessControl

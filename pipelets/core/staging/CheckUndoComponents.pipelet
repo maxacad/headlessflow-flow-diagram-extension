@@ -1,0 +1,20 @@
+name: CheckUndoComponents
+version: 1
+trigger: manual
+handler: ./CheckUndoComponents.ts
+ai:
+  skill: core-checkundocomponents
+  title: CheckUndoComponents
+  description: Intershop core pipelet – CheckUndoComponents.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingService: object
+  UndoComponents: any
+outputs:
+  ErrorStatus: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.CheckUndoComponents

@@ -1,0 +1,30 @@
+flow: "ViewChannelCatalogOverview_32"
+kind: "view"
+
+entries:
+  - id: "Start1"
+    name: "Show"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "InteractionEnd1"
+    type: "interaction"
+  - id: "PrepareApplicationView2"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "CatalogOverview"
+      WorkingTemplate: "channel/ChannelCatalogOverview_32"
+
+links:
+  - from: "PrepareApplicationView2"
+    via: "next"
+    to: "InteractionEnd1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "PrepareApplicationView2"
+    into: "in"

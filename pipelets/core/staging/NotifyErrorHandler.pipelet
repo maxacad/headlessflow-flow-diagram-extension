@@ -1,0 +1,19 @@
+name: NotifyErrorHandler
+version: 1
+trigger: manual
+handler: ./NotifyErrorHandler.ts
+ai:
+  skill: core-notifyerrorhandler
+  title: NotifyErrorHandler
+  description: Intershop core pipelet – NotifyErrorHandler.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  ErrorStatus: string
+  ErrorHandler: any
+  Exception: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.NotifyErrorHandler

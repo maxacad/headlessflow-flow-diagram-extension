@@ -1,0 +1,312 @@
+flow: "ProcessProductConfigurationSection"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Create"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "TemplateDescription"
+        type: "java.lang.String"
+        required: false
+      - key: "SectionGroup"
+        type: "java.lang.String"
+        required: false
+      - key: "DisplayName"
+        type: "java.lang.String"
+        required: false
+      - key: "Description"
+        type: "java.lang.String"
+        required: false
+      - key: "OrderCode"
+        type: "java.lang.String"
+        required: false
+      - key: "Position"
+        type: "java.lang.Double"
+        required: false
+      - key: "Hidden"
+        type: "java.lang.Boolean"
+        required: false
+      - key: "SingleOptionSelect"
+        type: "java.lang.Boolean"
+        required: false
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+      - key: "ConsumerExposedAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "OrderRequiredAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "SectionBOID"
+        type: "java.lang.String"
+        required: true
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+      - key: "MessageType"
+        type: "java.lang.String"
+        required: false
+      - key: "DisplayDescription"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode2"
+    name: "Update"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ID"
+        type: "java.lang.String"
+        required: true
+      - key: "TemplateDescription"
+        type: "java.lang.String"
+        required: false
+      - key: "DisplayName"
+        type: "java.lang.String"
+        required: false
+      - key: "Description"
+        type: "java.lang.String"
+        required: false
+      - key: "OrderCode"
+        type: "java.lang.String"
+        required: false
+      - key: "Position"
+        type: "java.lang.Double"
+        required: false
+      - key: "Hidden"
+        type: "java.lang.Boolean"
+        required: false
+      - key: "SingleOptionSelect"
+        type: "java.lang.Boolean"
+        required: false
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+      - key: "ConsumerExposedAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "OrderRequiredAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "ProductConfigurationSectionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSectionBO"
+        required: true
+      - key: "MessageType"
+        type: "java.lang.String"
+        required: false
+      - key: "DisplayDescription"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode3"
+    name: "Remove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationSectionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSectionBO"
+        required: true
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+  - id: "StartNode4"
+    name: "MultipleRemove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "ProductConfigurationSetBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSetBO"
+        required: true
+      - key: "SectionIDs"
+        type: "java.util.Iterator"
+        required: false
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "This:Remove"
+  - id: "CreateProductConfigurationSectionBO1"
+    type: "pipelet"
+    ref: "CreateProductConfigurationSectionBO"
+  - id: "DeleteProductConfigurationSectionBO1"
+    type: "pipelet"
+    ref: "DeleteProductConfigurationSectionBO"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationSectionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSectionBO"
+        guaranteed: false
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+  - id: "EndNode7"
+    type: "end"
+    strict: true
+  - id: "GetProductConfigurationSectionByID1"
+    type: "pipelet"
+    ref: "GetProductConfigurationSectionByID"
+    bindings:
+      ProductConfigurationSet: "ProductConfigurationSetBO"
+      ID: "SectionID"
+      ProductConfigurationSection: "ProductConfigurationSectionBO"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "LoopNode4"
+    type: "loop"
+  - id: "UpdateCustomAttribute1"
+    type: "pipelet"
+    ref: "UpdateCustomAttribute"
+    config:
+      DefaultAttributeName: "MessageType"
+      DefaultAttributeType: "String"
+    bindings:
+      AttributeName: "null"
+      AttributeType: "null"
+      ExtensibleObject: "ProductConfigurationSectionBO:CustomAttributes"
+      AttributeValue: "MessageType"
+      LocaleInformation: "null"
+  - id: "UpdateCustomAttribute2"
+    type: "pipelet"
+    ref: "UpdateCustomAttribute"
+    config:
+      DefaultAttributeName: "MessageType"
+      DefaultAttributeType: "String"
+    bindings:
+      AttributeName: "null"
+      AttributeType: "null"
+      ExtensibleObject: "ProductConfigurationSectionBO:CustomAttributes"
+      AttributeValue: "MessageType"
+      LocaleInformation: "null"
+  - id: "UpdateCustomAttribute3"
+    type: "pipelet"
+    ref: "UpdateCustomAttribute"
+    config:
+      DefaultAttributeName: "displayDescription"
+      DefaultAttributeType: "String"
+    bindings:
+      AttributeName: "null"
+      AttributeType: "null"
+      ExtensibleObject: "ProductConfigurationSectionBO:CustomAttributes"
+      AttributeValue: "DisplayDescription"
+      LocaleInformation: "Locale"
+  - id: "UpdateCustomAttribute4"
+    type: "pipelet"
+    ref: "UpdateCustomAttribute"
+    config:
+      DefaultAttributeName: "displayDescription"
+      DefaultAttributeType: "String"
+    bindings:
+      AttributeName: "null"
+      AttributeType: "null"
+      ExtensibleObject: "ProductConfigurationSectionBO:CustomAttributes"
+      AttributeValue: "DisplayDescription"
+      LocaleInformation: "Locale"
+  - id: "UpdateProductConfigurationSectionBO1"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationSectionBO"
+  - id: "UpdateProductConfigurationSectionBO2"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationSectionBO"
+    bindings:
+      SectionGroup: "null"
+      Description: "null"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "CreateProductConfigurationSectionBO1"
+    into: "in"
+  - from: "UpdateCustomAttribute1"
+    via: "next"
+    to: "UpdateCustomAttribute4"
+    into: "in"
+  - from: "DeleteProductConfigurationSectionBO1"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "DeleteProductConfigurationSectionBO1"
+    into: "in"
+  - from: "UpdateCustomAttribute2"
+    via: "next"
+    to: "UpdateCustomAttribute3"
+    into: "in"
+  - from: "GetProductConfigurationSectionByID1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "GetProductConfigurationSectionByID1"
+    via: "error"
+    to: "JoinNode2"
+    into: "in2"
+  - from: "CallNode1"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "JoinNode2"
+    via: "next"
+    to: "LoopNode4"
+    into: "loop"
+  - from: "LoopNode4"
+    via: "next"
+    to: "EndNode7"
+    into: "in"
+  - from: "UpdateCustomAttribute3"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "UpdateCustomAttribute4"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "UpdateProductConfigurationSectionBO1"
+    via: "next"
+    to: "UpdateCustomAttribute1"
+    into: "in"
+  - from: "CreateProductConfigurationSectionBO1"
+    via: "next"
+    to: "UpdateProductConfigurationSectionBO1"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "LoopNode4"
+    into: "in"
+  - from: "LoopNode4"
+    via: "do"
+    to: "GetProductConfigurationSectionByID1"
+    into: "in"
+  - from: "CreateProductConfigurationSectionBO1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "UpdateProductConfigurationSectionBO2"
+    via: "next"
+    to: "UpdateCustomAttribute2"
+    into: "in"
+  - from: "DeleteProductConfigurationSectionBO1"
+    via: "error"
+    to: "EndNode6"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "UpdateProductConfigurationSectionBO2"
+    into: "in"

@@ -1,0 +1,20 @@
+name: GetUserBOsByCustomerID
+version: 1
+trigger: manual
+handler: ./GetUserBOsByCustomerID.ts
+ai:
+  skill: customer-getuserbosbycustomerid
+  title: GetUserBOsByCustomerID
+  description: Intershop customer pipelet – GetUserBOsByCustomerID.
+  tags: [integration, data]
+  capabilities:
+    - execute-GetUserBOsByCustomerID-operation
+inputs:
+  CustomerID: string
+  CustomerBORepository: object
+outputs:
+  UserBOs: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.customer.pipelet.GetUserBOsByCustomerID

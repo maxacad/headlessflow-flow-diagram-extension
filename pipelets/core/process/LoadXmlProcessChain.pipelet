@@ -1,0 +1,22 @@
+name: LoadXmlProcessChain
+version: 1
+trigger: manual
+handler: ./LoadXmlProcessChain.ts
+ai:
+  skill: core-loadxmlprocesschain
+  title: LoadXmlProcessChain
+  description: Intershop core pipelet – LoadXmlProcessChain.
+  tags: [integration, data]
+  capabilities:
+    - execute-process-operation
+inputs:
+  XmlFileName: string
+  CurrentDomain: any
+  ProcessChainDomain: any
+outputs:
+  ProcessChain: any
+  ProcessChainResult: number
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.process.LoadXmlProcessChain

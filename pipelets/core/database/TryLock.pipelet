@@ -1,0 +1,18 @@
+name: TryLock
+version: 1
+trigger: manual
+handler: ./TryLock.ts
+ai:
+  skill: core-trylock
+  title: TryLock
+  description: Intershop core pipelet – TryLock.
+  tags: [integration, data]
+  capabilities:
+    - execute-database-operation
+inputs:
+  Timeout: number
+  LockObject: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.database.TryLock

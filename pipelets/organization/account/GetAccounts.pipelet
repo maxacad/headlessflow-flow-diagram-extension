@@ -1,0 +1,19 @@
+name: GetAccounts
+version: 1
+trigger: manual
+handler: ./GetAccounts.ts
+ai:
+  skill: organization-getaccounts
+  title: GetAccounts
+  description: Intershop organization pipelet – GetAccounts.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  Domain: any
+outputs:
+  Accounts: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.GetAccounts

@@ -1,0 +1,21 @@
+name: CreateStagingProcess
+version: 1
+trigger: manual
+handler: ./CreateStagingProcess.ts
+ai:
+  skill: core-createstagingprocess
+  title: CreateStagingProcess
+  description: Intershop core pipelet – CreateStagingProcess.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingContentProvider: object
+  StagingContext: any
+outputs:
+  StagingProcess: any
+  StagingProcessID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.CreateStagingProcess

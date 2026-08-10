@@ -1,0 +1,64 @@
+flow: "UpdateReplicationProcessState"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "StagingProcess:EndDate"
+  - id: "EndNode1"
+    type: "end"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "GetStagingProcess"
+  - id: "Pipelet3"
+    type: "pipelet"
+    ref: "UpdateReplicationProcessState"
+    bindings:
+      ReplicationProcess: "StagingContentProvider"
+  - id: "Pipelet4"
+    type: "pipelet"
+    ref: "Wait"
+    config:
+      MillisecondsToWait: 10000
+  - id: "TextNode1"
+    type: "text"
+
+links:
+  - from: "Pipelet4"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "Pipelet1"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "Pipelet4"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "Pipelet3"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "Pipelet3"
+    into: "in"

@@ -1,0 +1,20 @@
+name: CreateAccessRole
+version: 1
+trigger: manual
+handler: ./CreateAccessRole.ts
+ai:
+  skill: organization-createaccessrole
+  title: CreateAccessRole
+  description: Intershop organization pipelet – CreateAccessRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  PermissionGroup: any
+  Domain: any
+outputs:
+  AccessRole: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CreateAccessRole

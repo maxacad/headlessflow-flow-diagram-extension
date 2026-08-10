@@ -1,0 +1,19 @@
+name: ReencryptObjectsData
+version: 1
+trigger: manual
+handler: ./ReencryptObjectsData.ts
+ai:
+  skill: core-reencryptobjectsdata
+  title: ReencryptObjectsData
+  description: Intershop core pipelet – ReencryptObjectsData.
+  tags: [integration, data]
+  capabilities:
+    - execute-crypt-operation
+inputs:
+  Handler: string
+  Objects: iterator
+  ProcessedRowsPerTransaction: number
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.crypt.ReencryptObjectsData

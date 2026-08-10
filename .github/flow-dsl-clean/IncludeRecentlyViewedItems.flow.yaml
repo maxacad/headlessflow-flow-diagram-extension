@@ -1,0 +1,84 @@
+flow: "IncludeRecentlyViewedItems"
+kind: "include"
+
+entries:
+  - id: "StartNode2"
+    name: "AddRecentlyViewedProduct"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "ProductUUID"
+        type: "java.lang.String"
+        required: true
+      - key: "ProductDomainUUID"
+        type: "java.lang.String"
+        required: true
+  - id: "StartNode3"
+    name: "AddRecentlyViewedCategory"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode4"
+    name: "AddRecentlyViewedSearchTerm"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessRecentlyViewedItems-AddRecentlyViewedProduct"
+  - id: "CallNode3"
+    type: "call"
+    ref: "ProcessRecentlyViewedItems-AddRecentlyViewedCategory"
+    bindings:
+      Domain: "CurrentDomain"
+  - id: "CallNode4"
+    type: "call"
+    ref: "ProcessRecentlyViewedItems-AddRecentlyViewedSearchTerm"
+    bindings:
+      Domain: "CurrentDomain"
+  - id: "GetDomainByUUID1"
+    type: "pipelet"
+    ref: "GetDomainByUUID"
+    bindings:
+      DomainUUID: "ProductDomainUUID"
+      Domain: "ProductDomain"
+  - id: "InteractionNode2"
+    type: "interaction"
+  - id: "InteractionNode3"
+    type: "interaction"
+  - id: "InteractionNode4"
+    type: "interaction"
+
+links:
+  - from: "CallNode4"
+    via: "next"
+    to: "InteractionNode4"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "CallNode4"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "GetDomainByUUID1"
+    into: "in"
+  - from: "GetDomainByUUID1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "InteractionNode2"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "CallNode3"
+    via: "next"
+    to: "InteractionNode3"
+    into: "in"

@@ -1,0 +1,20 @@
+name: GetAccessRolesByObject
+version: 1
+trigger: manual
+handler: ./GetAccessRolesByObject.ts
+ai:
+  skill: organization-getaccessrolesbyobject
+  title: GetAccessRolesByObject
+  description: Intershop organization pipelet – GetAccessRolesByObject.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  AuthorizationObject: any
+  Role: any
+outputs:
+  AccessRoles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetAccessRolesByObject

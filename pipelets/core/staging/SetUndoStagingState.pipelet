@@ -1,0 +1,20 @@
+name: SetUndoStagingState
+version: 1
+trigger: manual
+handler: ./SetUndoStagingState.ts
+ai:
+  skill: core-setundostagingstate
+  title: SetUndoStagingState
+  description: Intershop core pipelet – SetUndoStagingState.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingContext: any
+  StagingProcessID: string
+  UndoComponentsState: string
+  NoneUndoComponentsState: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.SetUndoStagingState

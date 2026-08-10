@@ -1,0 +1,23 @@
+name: AcquireResourcesForProcess
+version: 1
+trigger: manual
+handler: ./AcquireResourcesForProcess.ts
+ai:
+  skill: core-acquireresourcesforprocess
+  title: AcquireResourcesForProcess
+  description: Intershop core pipelet – AcquireResourcesForProcess.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  Process: any
+  ResourceIDs: string
+  Resources: iterator
+  AcquisitionTimeout: number
+  RecursiveLockingEnabled: boolean
+outputs:
+  ResourceAcquisitionResult: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.AcquireResourcesForProcess

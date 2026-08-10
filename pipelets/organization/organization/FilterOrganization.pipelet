@@ -1,0 +1,21 @@
+name: FilterOrganization
+version: 1
+trigger: manual
+handler: ./FilterOrganization.ts
+ai:
+  skill: organization-filterorganization
+  title: FilterOrganization
+  description: Intershop organization pipelet – FilterOrganization.
+  tags: [integration, data]
+  capabilities:
+    - execute-organization-operation
+inputs:
+  Organizations: any
+  FilterDomains: iterator
+  Pagesize: number
+outputs:
+  FilteredOrganizations: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.organization.FilterOrganization

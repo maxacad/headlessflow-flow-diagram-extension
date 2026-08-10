@@ -1,0 +1,22 @@
+name: GetRelations
+version: 1
+trigger: manual
+handler: ./GetRelations.ts
+ai:
+  skill: organization-getrelations
+  title: GetRelations
+  description: Intershop organization pipelet – GetRelations.
+  tags: [relation, hierarchy]
+  capabilities:
+    - execute-relation-operation
+inputs:
+  Organization: any
+  Pagesize: number
+  DefaultRoleName: string
+  DefaultRelationName: string
+outputs:
+  RelatedOrganizations: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.relation.GetRelations

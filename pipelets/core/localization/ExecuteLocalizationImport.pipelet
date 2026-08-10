@@ -1,0 +1,22 @@
+name: ExecuteLocalizationImport
+version: 1
+trigger: manual
+handler: ./ExecuteLocalizationImport.ts
+ai:
+  skill: core-executelocalizationimport
+  title: ExecuteLocalizationImport
+  description: Intershop core pipelet – ExecuteLocalizationImport.
+  tags: [integration, data]
+  capabilities:
+    - execute-localization-operation
+inputs:
+  LocalizationContext: any
+  JobConfiguration: any
+  ModifiedLocalesIterator: iterator
+  Domain: any
+outputs:
+  Error: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.localization.ExecuteLocalizationImport

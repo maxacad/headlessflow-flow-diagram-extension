@@ -1,0 +1,82 @@
+flow: "AffiliatePrefix"
+kind: "include"
+
+entries:
+  - id: "StartNode0"
+    name: "DetermineAffiliate"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "Prefix-Start"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessAffiliate-GetProgramByRequest"
+  - id: "EndNode0"
+    type: "end"
+    strict: false
+  - id: "JoinNode1"
+    type: "join"
+  - id: "Jump4"
+    type: "jump"
+    ref: "ViewHomepage-DisplayCachedHomepage"
+  - id: "Pipelet3"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Put Object to Session"
+      SessionObjectName: "ProgramUUID"
+    bindings:
+      SaveObject: "ProgramUUID"
+  - id: "Pipelet4"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Put Object to Session"
+      SessionObjectName: "PartnerUUID"
+    bindings:
+      SaveObject: "PartnerUUID"
+
+links:
+  - from: "CallNode1"
+    via: "next"
+    to: "Jump4"
+    into: "in"
+  - from: "CallNode2"
+    via: "ERROR"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "CallNode2"
+    via: "next"
+    to: "Pipelet3"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode0"
+    into: "in"
+  - from: "Pipelet3"
+    via: "next"
+    to: "Pipelet4"
+    into: "in"
+  - from: "Pipelet4"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "StartNode0"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"

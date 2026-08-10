@@ -1,0 +1,93 @@
+flow: "ProcessBranding"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "GetBrandingInstallationByApplication"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Unit"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: true
+      - key: "Application"
+        type: "com.intershop.beehive.core.capi.domain.Application"
+        required: true
+  - id: "Start4"
+    name: "GetBrandingInstallation"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Site"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "Unit"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+      - key: "AppID"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "End1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "BrandingInstallation"
+        type: "com.intershop.component.foundation.capi.branding.BrandingInstallation"
+        guaranteed: true
+  - id: "End2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "BrandingInstallation"
+        type: "com.intershop.component.foundation.capi.branding.BrandingInstallation"
+        guaranteed: true
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "GetBrandingInstallationByApplication1"
+    type: "pipelet"
+    ref: "GetBrandingInstallationByApplication"
+    bindings:
+      LocaleID: "Locale:LocaleID"
+  - id: "GetBrandingInstallationBySite1"
+    type: "pipelet"
+    ref: "GetBrandingInstallationBySite"
+  - id: "TextNode1"
+    type: "text"
+
+links:
+  - from: "GetBrandingInstallationBySite1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start4"
+    via: "next"
+    to: "GetBrandingInstallationBySite1"
+    into: "in"
+  - from: "GetBrandingInstallationBySite1"
+    via: "error"
+    to: "EndNode1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "GetBrandingInstallationByApplication1"
+    into: "in"
+  - from: "GetBrandingInstallationByApplication1"
+    via: "next"
+    to: "End2"
+    into: "in"
+  - from: "GetBrandingInstallationByApplication1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"

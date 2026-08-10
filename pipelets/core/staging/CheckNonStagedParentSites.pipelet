@@ -1,0 +1,19 @@
+name: CheckNonStagedParentSites
+version: 1
+trigger: manual
+handler: ./CheckNonStagedParentSites.ts
+ai:
+  skill: core-checknonstagedparentsites
+  title: CheckNonStagedParentSites
+  description: Intershop core pipelet – CheckNonStagedParentSites.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingService: object
+  StagingContentProvider: object
+  StagingProcess: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.CheckNonStagedParentSites

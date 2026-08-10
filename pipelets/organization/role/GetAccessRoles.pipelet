@@ -1,0 +1,22 @@
+name: GetAccessRoles
+version: 1
+trigger: manual
+handler: ./GetAccessRoles.ts
+ai:
+  skill: organization-getaccessroles
+  title: GetAccessRoles
+  description: Intershop organization pipelet – GetAccessRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  Pagesize: string
+  SolutionPrefix: string
+  OrganizationTypeCode: string
+outputs:
+  Roles: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetAccessRoles

@@ -1,0 +1,22 @@
+name: CreateModifiedLocale
+version: 1
+trigger: manual
+handler: ./CreateModifiedLocale.ts
+ai:
+  skill: core-createmodifiedlocale
+  title: CreateModifiedLocale
+  description: Intershop core pipelet – CreateModifiedLocale.
+  tags: [integration, data]
+  capabilities:
+    - execute-localization-operation
+inputs:
+  SourceLocaleID: string
+  TargetLocaleID: string
+  ModifiedSourceID: string
+  ModifiedTargetID: string
+outputs:
+  ModifiedLocaleHolder: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.localization.CreateModifiedLocale

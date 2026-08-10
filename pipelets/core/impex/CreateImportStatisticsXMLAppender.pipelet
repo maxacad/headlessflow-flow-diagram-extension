@@ -1,0 +1,24 @@
+name: CreateImportStatisticsXMLAppender
+version: 1
+trigger: manual
+handler: ./CreateImportStatisticsXMLAppender.ts
+ai:
+  skill: core-createimportstatisticsxmlappender
+  title: CreateImportStatisticsXMLAppender
+  description: Intershop core pipelet – CreateImportStatisticsXMLAppender.
+  tags: [integration, data]
+  capabilities:
+    - execute-impex-operation
+inputs:
+  Controller: any
+  ImportStatisticsXMLLogFileNamePrefix: string
+  ImportStatisticsXMLMaxLogFileSize: string
+  ProcessID: string
+  ImportStatisticsXMLLayoutClassName: string
+  LogInformationHolder: any
+outputs:
+  ImportStatisticsXMLAppender: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.impex.CreateImportStatisticsXMLAppender

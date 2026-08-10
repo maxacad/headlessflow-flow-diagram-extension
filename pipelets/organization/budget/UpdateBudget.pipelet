@@ -1,0 +1,26 @@
+name: UpdateBudget
+version: 1
+trigger: manual
+handler: ./UpdateBudget.ts
+ai:
+  skill: organization-updatebudget
+  title: UpdateBudget
+  description: Intershop organization pipelet – UpdateBudget.
+  tags: [budget, finance]
+  capabilities:
+    - execute-budget-operation
+inputs:
+  Budget: any
+  AmountValue: string
+  AmountCurrency: string
+  Amount: any
+  Interval: string
+  DefaultAmountValue: string
+  DefaultAmountCurrency: string
+  DefaultInterval: number
+outputs:
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.budget.UpdateBudget

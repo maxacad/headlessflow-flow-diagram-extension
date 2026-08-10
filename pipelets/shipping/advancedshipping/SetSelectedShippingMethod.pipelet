@@ -1,0 +1,19 @@
+name: SetSelectedShippingMethod
+version: 1
+trigger: manual
+handler: ./SetSelectedShippingMethod.ts
+ai:
+  skill: shipping-setselectedshippingmethod
+  title: SetSelectedShippingMethod
+  description: Intershop shipping pipelet – SetSelectedShippingMethod.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  ProductLineItems: iterator
+  ShippingMethod: any
+  SpecialShippingInstructions: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.SetSelectedShippingMethod

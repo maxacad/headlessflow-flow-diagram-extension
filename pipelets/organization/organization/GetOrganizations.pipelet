@@ -1,0 +1,21 @@
+name: GetOrganizations
+version: 1
+trigger: manual
+handler: ./GetOrganizations.ts
+ai:
+  skill: organization-getorganizations
+  title: GetOrganizations
+  description: Intershop organization pipelet – GetOrganizations.
+  tags: [integration, data]
+  capabilities:
+    - execute-organization-operation
+inputs:
+  DefaultOrganizationType: number
+  Owner: any
+  OrganizationType: number
+outputs:
+  Organizations: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.organization.GetOrganizations

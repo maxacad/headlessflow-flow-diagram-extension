@@ -1,0 +1,20 @@
+name: CopyStagingProcessToTargetSystem
+version: 1
+trigger: manual
+handler: ./CopyStagingProcessToTargetSystem.ts
+ai:
+  skill: core-copystagingprocesstotargetsystem
+  title: CopyStagingProcessToTargetSystem
+  description: Intershop core pipelet – CopyStagingProcessToTargetSystem.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingService: object
+  StagingProcessID: string
+outputs:
+  Exception: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.CopyStagingProcessToTargetSystem

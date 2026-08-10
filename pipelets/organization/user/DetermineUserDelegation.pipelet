@@ -1,0 +1,19 @@
+name: DetermineUserDelegation
+version: 1
+trigger: manual
+handler: ./DetermineUserDelegation.ts
+ai:
+  skill: organization-determineuserdelegation
+  title: DetermineUserDelegation
+  description: Intershop organization pipelet – DetermineUserDelegation.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  DelegationUuid: string
+outputs:
+  Delegation: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.DetermineUserDelegation

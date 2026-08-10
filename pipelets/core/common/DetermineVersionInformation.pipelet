@@ -1,0 +1,27 @@
+name: DetermineVersionInformation
+version: 1
+trigger: manual
+handler: ./DetermineVersionInformation.ts
+ai:
+  skill: core-determineversioninformation
+  title: DetermineVersionInformation
+  description: Intershop core pipelet – DetermineVersionInformation.
+  tags: [utility, data, collection]
+  capabilities:
+    - execute-common-operation
+inputs:
+  ProductVersion: string
+outputs:
+  ProductName: string
+  ProductId: string
+  AdminServerInfos: iterator
+  SFSVersionInfo: any
+  CopyrightOwner: string
+  CopyrightFrom: string
+  CopyrightTo: string
+  ProjectVersion: string
+  ProjectName: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.common.DetermineVersionInformation

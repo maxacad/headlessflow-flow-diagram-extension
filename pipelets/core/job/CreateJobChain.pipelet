@@ -1,0 +1,24 @@
+name: CreateJobChain
+version: 1
+trigger: manual
+handler: ./CreateJobChain.ts
+ai:
+  skill: core-createjobchain
+  title: CreateJobChain
+  description: Intershop core pipelet – CreateJobChain.
+  tags: [job, scheduler, background]
+  capabilities:
+    - execute-job-operation
+inputs:
+  JobConfigurations: any
+  ExecutionMode: string
+  ExecutionDomain: any
+  Name: string
+  Description: string
+  Locale: any
+outputs:
+  JobChain: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.job.CreateJobChain

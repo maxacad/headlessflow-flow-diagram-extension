@@ -1,0 +1,106 @@
+flow: "ProcessCacheClear"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "ProcessBatchCacheClear"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CacheClearProcessID"
+        type: "java.lang.String"
+        required: true
+  - id: "StartNode2"
+    name: "BatchCacheClear"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Objects"
+        type: "java.util.Iterator"
+        required: true
+      - key: "CacheClearProcessID"
+        type: "java.lang.String"
+        required: true
+  - id: "StartNode3"
+    name: "BatchCacheClearForDesiredCacheClearDate"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DesiredCacheClearDate"
+        type: "java.util.Date"
+        required: true
+      - key: "Objects"
+        type: "java.util.Iterator"
+        required: true
+  - id: "StartNode4"
+    name: "ProcessCacheClearForCacheClearProcessingDate"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CacheClearProcessingDate"
+        type: "java.util.Date"
+        required: false
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessBatchCacheClear-ClearCachesByProcessID"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessBatchCacheClear-BatchForObjectsAndProcessID"
+    bindings:
+      Object: "null"
+  - id: "CallNode3"
+    type: "call"
+    ref: "ProcessBatchCacheClear-BatchForObjectsAndDate"
+    bindings:
+      Object: "null"
+  - id: "CallNode4"
+    type: "call"
+    ref: "ProcessBatchCacheClear-ClearCachesByDate"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "CallNode3"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "CallNode4"
+    into: "in"
+  - from: "CallNode4"
+    via: "next"
+    to: "EndNode4"
+    into: "in"

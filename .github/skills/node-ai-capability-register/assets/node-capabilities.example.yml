@@ -1,0 +1,518 @@
+version: 1
+registry: reactdnd-node-ai-capabilities
+scope:
+  nodesRoot: webview-src/nodes
+  reactFlowRegistry: webview-src/App.tsx
+  nodeExports: webview-src/nodes/index.ts
+  exportedComponents:
+    - FunctionNode
+    - ProcessNode
+    - DecisionNode
+    - ScriptNode
+    - StopNode
+    - EndNode
+    - ViewNode
+    - LoopNode
+    - CallNode
+    - JoinNode
+    - StartNode
+    - MethodCallNode
+    - JumpNode
+    - ApprovalNode
+
+defaults:
+  grid:
+    width: 150
+    height: 200
+  visual:
+    innerSize: 64
+  rotation:
+    supported: true
+    values: [0, 90, 180, 270]
+  commonContext:
+    - currentFlow
+    - selectedNode
+    - upstreamContext
+
+nodes:
+  - nodeType: fn
+    component: FunctionNode
+    file: webview-src/nodes/FunctionNode.tsx
+    category: transform
+    label: Function
+    purpose: Executes reusable function logic in the flow.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+        - id: error
+          position: right
+          semantic: error
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+    capabilities:
+      - id: generate-function-logic
+        kind: generate
+        title: Generate Function Logic
+        prompt: Generate function behavior, input assumptions, and output mapping for this FunctionNode.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [functionBody, outputMapping, errorCases]
+      - id: explain-function-node
+        kind: explain
+        title: Explain Function Node
+        prompt: Explain what this FunctionNode does and which downstream data it produces.
+        inputs: [currentFlow, selectedNode]
+        outputs: [summary, inputs, outputs]
+
+  - nodeType: process
+    component: ProcessNode
+    file: webview-src/nodes/ProcessNode.tsx
+    category: transform
+    label: Process
+    purpose: Runs a selected pipelet or processing step.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+        - id: error
+          position: right
+          semantic: error
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+    capabilities:
+      - id: select-pipelet
+        kind: suggest
+        title: Select Pipelet
+        prompt: Suggest the best pipelet file for this ProcessNode based on the flow goal.
+        inputs: [currentFlow, selectedNode, availablePipelets]
+        outputs: [pipeletFile, reason]
+      - id: map-process-io
+        kind: transform
+        title: Map Process IO
+        prompt: Create input and output mappings for the selected pipelet.
+        inputs: [currentFlow, selectedNode, pipeletMetadata]
+        outputs: [inputMapping, outputMapping, missingInputs]
+
+  - nodeType: decision
+    component: DecisionNode
+    file: webview-src/nodes/DecisionNode.tsx
+    category: control-flow
+    label: Decision
+    purpose: Branches execution based on a condition.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs:
+        - id: yes
+          position: bottom
+          semantic: yes
+        - id: no
+          position: right
+          semantic: no
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+    capabilities:
+      - id: generate-condition
+        kind: generate
+        title: Generate Condition
+        prompt: Generate a boolean condition for this DecisionNode using upstream node data.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [condition, explanation]
+      - id: suggest-branches
+        kind: suggest
+        title: Suggest Branches
+        prompt: Suggest yes/no branch labels and target node types.
+        inputs: [currentFlow, selectedNode]
+        outputs: [yesPath, noPath]
+
+  - nodeType: script
+    component: ScriptNode
+    file: webview-src/nodes/ScriptNode.tsx
+    category: transform
+    label: Script
+    purpose: Runs custom script code inside the flow.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+        - id: error
+          position: right
+          semantic: error
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+    capabilities:
+      - id: generate-script
+        kind: generate
+        title: Generate Script
+        prompt: Generate script code for this ScriptNode from the flow context.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [script, dependencies, errorHandling]
+      - id: validate-script
+        kind: validate
+        title: Validate Script
+        prompt: Review the ScriptNode code for missing inputs, unsafe assumptions, and output contract issues.
+        inputs: [selectedNode, upstreamContext]
+        outputs: [issues, fixes]
+
+  - nodeType: stop
+    component: StopNode
+    file: webview-src/nodes/StopNode.tsx
+    category: control-flow
+    label: Stop
+    purpose: Stops execution before normal completion.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs: []
+    runtime:
+      canStartFlow: false
+      terminal: true
+    capabilities:
+      - id: explain-stop-reason
+        kind: explain
+        title: Explain Stop Reason
+        prompt: Explain why this StopNode exists and what condition should lead here.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [reason, triggeringConditions]
+
+  - nodeType: end
+    component: EndNode
+    file: webview-src/nodes/EndNode.tsx
+    category: control-flow
+    label: End
+    purpose: Completes a flow path and returns final values.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs: []
+    runtime:
+      canStartFlow: false
+      terminal: true
+    capabilities:
+      - id: generate-return-values
+        kind: generate
+        title: Generate Return Values
+        prompt: Generate return values and completion summary for this EndNode.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [returnValues, completionSummary]
+
+  - nodeType: view
+    component: ViewNode
+    file: webview-src/nodes/ViewNode.tsx
+    category: ui
+    label: View
+    purpose: Renders or returns a view-oriented response.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+    capabilities:
+      - id: generate-view-model
+        kind: generate
+        title: Generate View Model
+        prompt: Generate view model fields from upstream flow data.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [viewModel, requiredFields]
+      - id: suggest-view-template
+        kind: suggest
+        title: Suggest View Template
+        prompt: Suggest a view/template name and expected rendering data.
+        inputs: [currentFlow, selectedNode]
+        outputs: [templateName, dataContract]
+
+  - nodeType: loop
+    component: LoopNode
+    file: webview-src/nodes/LoopNode.tsx
+    category: control-flow
+    label: Loop
+    purpose: Iterates over items and continues or errors.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+        - id: error
+          position: right
+          semantic: error
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+    capabilities:
+      - id: generate-loop-config
+        kind: generate
+        title: Generate Loop Config
+        prompt: Generate collection source, item variable, and loop exit behavior.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [collectionExpression, itemName, exitCondition]
+      - id: detect-loop-risks
+        kind: validate
+        title: Detect Loop Risks
+        prompt: Check this LoopNode for missing collection data or non-terminating behavior.
+        inputs: [currentFlow, selectedNode]
+        outputs: [risks, fixes]
+
+  - nodeType: call
+    component: CallNode
+    file: webview-src/nodes/CallNode.tsx
+    category: integration
+    label: Call
+    purpose: Calls another pipeline or start node.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+        - id: error
+          position: right
+          semantic: error
+    runtime:
+      canStartFlow: false
+      debugStartSupported: false
+      postsMessages:
+        - request-flow-start-nodes
+        - open-flow-and-goto-node
+    capabilities:
+      - id: map-call-inputs
+        kind: transform
+        title: Map Call Inputs
+        prompt: Create key bindings for calling the selected target flow start node.
+        inputs: [currentFlow, selectedNode, targetStartNode]
+        outputs: [keyBindings, missingInputs]
+      - id: suggest-error-handling
+        kind: suggest
+        title: Suggest Error Handling
+        prompt: Suggest an error branch for this CallNode.
+        inputs: [currentFlow, selectedNode]
+        outputs: [errorNodeType, recoveryStrategy]
+
+  - nodeType: join
+    component: JoinNode
+    file: webview-src/nodes/JoinNode.tsx
+    category: control-flow
+    label: Join
+    purpose: Merges multiple incoming branches into one output path.
+    handles:
+      inputs:
+        - id: centerInput
+          position: center
+          semantic: merge
+          maxConnections: 4
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+          maxConnections: 1
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+    capabilities:
+      - id: explain-merge-contract
+        kind: explain
+        title: Explain Merge Contract
+        prompt: Explain how incoming branches should merge at this JoinNode.
+        inputs: [currentFlow, selectedNode, incomingBranches]
+        outputs: [mergeContract, conflicts]
+      - id: validate-join-inputs
+        kind: validate
+        title: Validate Join Inputs
+        prompt: Check whether all incoming branches provide compatible data.
+        inputs: [currentFlow, selectedNode]
+        outputs: [compatible, issues]
+
+  - nodeType: start
+    component: StartNode
+    file: webview-src/nodes/StartNode.tsx
+    category: control-flow
+    label: Start
+    purpose: Starts a flow from a selected start node.
+    handles:
+      inputs: []
+      outputs:
+        - id: output
+          position: bottom
+          semantic: next
+          rotatesWithConnection: true
+    runtime:
+      canStartFlow: true
+      debugStartSupported: true
+      postsMessages:
+        - start-flow
+    capabilities:
+      - id: generate-start-contract
+        kind: generate
+        title: Generate Start Contract
+        prompt: Create start parameters, validation notes, and expected flow entry data for this StartNode.
+        inputs: [currentFlow, selectedNode]
+        outputs: [startParameters, validationRules]
+      - id: suggest-first-step
+        kind: suggest
+        title: Suggest First Step
+        prompt: Suggest the next node after this StartNode based on the flow goal.
+        inputs: [currentFlow, availableNodeTypes]
+        outputs: [nodeType, reason]
+
+  - nodeType: methodCall
+    aliases:
+      - httpCall
+    component: MethodCallNode
+    file: webview-src/nodes/MethodCallNode.tsx
+    category: integration
+    label: MethodCall
+    purpose: Executes an HTTP or object method call.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+      outputs:
+        - id: output
+          position: bottom
+          semantic: success
+        - id: error
+          position: right
+          semantic: error
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+      postsMessages:
+        - http-call-execute
+        - request-api-token
+        - store-api-token
+    capabilities:
+      - id: generate-request-config
+        kind: generate
+        title: Generate Request Config
+        prompt: Generate method, URL, headers, body, and response mapping for this MethodCallNode.
+        inputs: [currentFlow, selectedNode, apiContext]
+        outputs: [method, url, headers, body, responseMapping]
+      - id: validate-api-contract
+        kind: validate
+        title: Validate API Contract
+        prompt: Validate request and response assumptions for this MethodCallNode.
+        inputs: [selectedNode, apiContext]
+        outputs: [issues, fixes]
+
+  - nodeType: jump
+    component: JumpNode
+    file: webview-src/nodes/JumpNode.tsx
+    category: control-flow
+    label: Jump
+    purpose: Jumps to a selected StartNode or alternate flow entry.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+          rotatesWithConnection: true
+      outputs: []
+    runtime:
+      canStartFlow: false
+      debugStartSupported: false
+      navigationSupported: true
+    capabilities:
+      - id: select-jump-target
+        kind: suggest
+        title: Select Jump Target
+        prompt: Suggest the best StartNode target for this JumpNode.
+        inputs: [currentFlow, selectedNode, availableStartNodes]
+        outputs: [jumpTargetId, reason]
+      - id: validate-jump-target
+        kind: validate
+        title: Validate Jump Target
+        prompt: Validate that the JumpNode target exists and preserves the expected data contract.
+        inputs: [currentFlow, selectedNode]
+        outputs: [valid, issues]
+
+  - nodeType: approval
+    component: ApprovalNode
+    file: webview-src/nodes/ApprovalNode.tsx
+    category: human-task
+    label: Approval
+    purpose: Routes execution based on a human approval decision.
+    handles:
+      inputs:
+        - id: input
+          position: top
+          semantic: in
+      outputs:
+        - id: approved
+          position: bottom
+          semantic: approved
+        - id: rejected
+          position: right
+          semantic: rejected
+        - id: rejected_with_feedback
+          position: right
+          semantic: rejected_with_feedback
+        - id: info_requested
+          position: left
+          semantic: info_requested
+        - id: escalated
+          position: left
+          semantic: escalated
+    runtime:
+      canStartFlow: false
+      debugStartSupported: true
+      humanTask: true
+    capabilities:
+      - id: generate-approval-form
+        kind: generate
+        title: Generate Approval Form
+        prompt: Generate approval prompt text, assignee hints, and required form fields.
+        inputs: [currentFlow, selectedNode, upstreamContext]
+        outputs: [assigneeType, assigneeName, formFields]
+      - id: suggest-approval-routes
+        kind: suggest
+        title: Suggest Approval Routes
+        prompt: Suggest downstream actions for approved, rejected, feedback, info-requested, and escalated outcomes.
+        inputs: [currentFlow, selectedNode]
+        outputs: [routes, missingBranches]

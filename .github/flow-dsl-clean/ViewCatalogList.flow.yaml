@@ -1,0 +1,100 @@
+flow: "ViewCatalogList"
+kind: "view"
+
+entries:
+  - id: "Start7"
+    name: "Dispatch"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode1"
+    name: "ListAll"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DispatchFormAction2"
+    type: "pipelet"
+    ref: "DispatchFormAction"
+    config:
+      OutValue_0: "ViewCatalogList-ListAll"
+    bindings:
+      Key_0: "backToList"
+      SelectionKey: "JumpTarget"
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "Jump6"
+    type: "jump"
+    ref: "SecureJump-Start"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "Catalogs"
+      WorkingTemplate: "catalog/CatalogList.isml"
+  - id: "Pipelet2"
+    type: "pipelet"
+    ref: "GetCatalogs"
+    config:
+      CatalogType: "Classification Catalog"
+      OnlineOnly: "False"
+      ProxyFilter: "OFF - All Catalogs"
+    bindings:
+      Catalogs: "ClassificationCatalogs"
+  - id: "Pipelet4"
+    type: "pipelet"
+    ref: "SortIteratorByComparator"
+    bindings:
+      Iterator: "ClassificationCatalogs"
+      SortedIterator: "ClassificationCatalogs"
+      SortingAttribute: "classificationSortAttribute"
+      SortingOrder: "classificationSortOrder"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "JumpTarget"
+      Value: "ViewCatalogList-ListAll"
+
+links:
+  - from: "Pipelet1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "DispatchFormAction2"
+    via: "error"
+    to: "SetDictionaryValue1"
+    into: "in"
+  - from: "Pipelet2"
+    via: "next"
+    to: "Pipelet4"
+    into: "in"
+  - from: "Pipelet4"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "DispatchFormAction2"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "Start7"
+    via: "next"
+    to: "DispatchFormAction2"
+    into: "in"
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "StartNode1"
+    via: "next"
+    to: "Pipelet2"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "Jump6"
+    into: "in"

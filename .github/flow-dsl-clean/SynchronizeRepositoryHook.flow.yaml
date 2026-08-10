@@ -1,0 +1,61 @@
+flow: "SynchronizeRepositoryHook"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "Decision1"
+    type: "decision"
+    condition: "Repository:TypeCode"
+  - id: "End1"
+    type: "end"
+  - id: "End2"
+    type: "end"
+  - id: "ExecutePipeline1"
+    type: "pipelet"
+    ref: "ExecutePipeline"
+    config:
+      Asynchronous: false
+      PipelineName: "ProcessProductSynchronization"
+      PipelineStartNode: "SynchronizeRepository"
+    bindings:
+      CurrentDomain: "null"
+      PipelineDomain: "Repository:OwningDomain:Site"
+      PipelineDomainID: "null"
+      PipelineDomainName: "null"
+      PipelineName: "null"
+      PipelineStartNode: "null"
+  - id: "Join1"
+    type: "join"
+
+links:
+  - from: "Start1"
+    via: "next"
+    to: "Decision1"
+    into: "in"
+  - from: "Decision1"
+    via: "no"
+    to: "End2"
+    into: "in"
+  - from: "ExecutePipeline1"
+    via: "next"
+    to: "Join1"
+    into: "in1"
+  - from: "ExecutePipeline1"
+    via: "error"
+    to: "Join1"
+    into: "in3"
+  - from: "Decision1"
+    via: "yes"
+    to: "ExecutePipeline1"
+    into: "in"
+  - from: "Join1"
+    via: "next"
+    to: "End1"
+    into: "in"

@@ -1,0 +1,98 @@
+flow: "UpdateStatusSellerOrder"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Order"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start2"
+    name: "Delivery"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start3"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "Call1"
+    type: "call"
+    ref: "UpdateStatusSellerOrder-Order"
+  - id: "Call2"
+    type: "call"
+    ref: "UpdateStatusSellerOrder-Delivery"
+  - id: "End1"
+    type: "end"
+  - id: "End2"
+    type: "end"
+  - id: "End3"
+    type: "end"
+  - id: "PrepareOrderSubStatus1"
+    type: "pipelet"
+    ref: "PrepareOrderSubStatus"
+    config:
+      StateGroup: "OrderDeliveryStatus"
+      StatusType: "Status"
+  - id: "PrepareOrderSubStatus2"
+    type: "pipelet"
+    ref: "PrepareOrderSubStatus"
+    config:
+      StateGroup: "OrderStatus"
+      StatusType: "Status"
+  - id: "UpdateOrderStatus1"
+    type: "pipelet"
+    ref: "UpdateOrderStatus"
+    bindings:
+      InputStateGroup: "InStateGroup"
+      InputStateName: "InStateName"
+  - id: "UpdateOrderStatus2"
+    type: "pipelet"
+    ref: "UpdateOrderStatus"
+    bindings:
+      InputStateGroup: "InStateGroup"
+      InputStateName: "InStateName"
+
+links:
+  - from: "Start3"
+    via: "next"
+    to: "Call2"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "PrepareOrderSubStatus1"
+    into: "in"
+  - from: "PrepareOrderSubStatus1"
+    via: "next"
+    to: "UpdateOrderStatus2"
+    into: "in"
+  - from: "UpdateOrderStatus2"
+    via: "next"
+    to: "End2"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "PrepareOrderSubStatus2"
+    into: "in"
+  - from: "PrepareOrderSubStatus2"
+    via: "next"
+    to: "UpdateOrderStatus1"
+    into: "in"
+  - from: "UpdateOrderStatus1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Call2"
+    via: "next"
+    to: "Call1"
+    into: "in"
+  - from: "Call1"
+    via: "next"
+    to: "End3"
+    into: "in"

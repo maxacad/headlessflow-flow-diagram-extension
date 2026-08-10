@@ -1,0 +1,70 @@
+flow: "ProcessOrganization"
+kind: "process"
+
+entries:
+  - id: "StartNode2"
+    name: "GetConsumerOrg"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "CurrentChannel"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "CurrentChannel"
+  - id: "End4"
+    type: "end"
+    strict: false
+  - id: "GetOrganizations2"
+    type: "pipelet"
+    ref: "GetOrganizations"
+    bindings:
+      Owner: "CurrentChannel:RepositoryDomain"
+      OrganizationType: "null"
+  - id: "GetOrganizations3"
+    type: "pipelet"
+    ref: "GetOrganizations"
+    bindings:
+      Owner: "ChannelDomain"
+      OrganizationType: "null"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "GetFirstElementOfIterator"
+    bindings:
+      Iterator: "Organizations"
+      FirstElement: "Organization"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "GetOrganizations3"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "GetOrganizations2"
+    into: "in"
+  - from: "GetOrganizations3"
+    via: "next"
+    to: "JoinNode2"
+    into: "in3"
+  - from: "GetOrganizations2"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "JoinNode2"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "End4"
+    into: "in"

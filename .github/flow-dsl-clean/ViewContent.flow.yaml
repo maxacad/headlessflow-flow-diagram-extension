@@ -1,0 +1,82 @@
+flow: "ViewContent"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "PageletEntryPointUUID"
+        type: "java.lang.String"
+        required: false
+      - key: "PageletEntryPointID"
+        type: "java.lang.String"
+        required: false
+      - key: "PageletEntryPoint"
+        type: "com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"
+        required: false
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessPageletACL-CheckPageletEntryPointIsPublic"
+  - id: "CallNode2"
+    type: "call"
+    ref: "FireTrackingEvents-View"
+    bindings:
+      PageName: "\"content\""
+      PageType: "\"general\""
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "Error-Page"
+  - id: "RemoveDictionaryValue1"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      Key: "PageletEntryPoint"
+      RemoveFormValues: false
+  - id: "RemoveDictionaryValue2"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      Key: "PageletEntryPoint"
+      RemoveFormValues: true
+  - id: "SetDictionaryValue5"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ErrorCode"
+      Value: "UserHasNotPermission"
+
+links:
+  - from: "CallNode1"
+    via: "NOT_PUBLIC"
+    to: "RemoveDictionaryValue1"
+    into: "in"
+  - from: "SetDictionaryValue5"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "PUBLIC"
+    to: "CallNode2"
+    into: "in"
+  - from: "RemoveDictionaryValue1"
+    via: "next"
+    to: "RemoveDictionaryValue2"
+    into: "in"
+  - from: "RemoveDictionaryValue2"
+    via: "next"
+    to: "SetDictionaryValue5"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"

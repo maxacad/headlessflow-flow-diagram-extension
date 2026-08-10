@@ -1,0 +1,19 @@
+name: GetOrganizationsByTypeCode
+version: 1
+trigger: manual
+handler: ./GetOrganizationsByTypeCode.ts
+ai:
+  skill: organization-getorganizationsbytypecode
+  title: GetOrganizationsByTypeCode
+  description: Intershop organization pipelet – GetOrganizationsByTypeCode.
+  tags: [integration, data]
+  capabilities:
+    - execute-organization-operation
+inputs:
+  TypeCode: string
+outputs:
+  Organizations: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.organization.GetOrganizationsByTypeCode

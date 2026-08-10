@@ -1,0 +1,31 @@
+flow: "ViewPagelet_comp_account_profile"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "ViewLocale"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "GetLocale1"
+    type: "pipelet"
+    ref: "GetLocale"
+    bindings:
+      LocaleId: "CurrentUser:Profile:DataSheet:PreferredLocale"
+      Locale: "UserPreferredLocale"
+
+links:
+  - from: "GetLocale1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "GetLocale1"
+    into: "in"

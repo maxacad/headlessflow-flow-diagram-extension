@@ -1,0 +1,249 @@
+flow: "ProcessClipboard"
+kind: "process"
+
+entries:
+  - id: "Start13"
+    name: "Update"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "ProductUUID"
+        type: "java.lang.String"
+        required: false
+      - key: "ProductRefIDs"
+        type: "java.lang.String"
+        required: false
+  - id: "Start2"
+    name: "Delete"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "ProductUUID"
+        type: "java.lang.String"
+        required: false
+      - key: "ProductRefIDs"
+        type: "java.lang.String"
+        required: false
+  - id: "Start4"
+    name: "Get"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start5"
+    name: "DeleteEntry"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start6"
+    name: "DeleteAllEntries"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start7"
+    name: "GetWithFormValues"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start8"
+    name: "UpdateWithFormValues"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "ProductUUID"
+        type: "java.lang.String"
+        required: false
+      - key: "ProductRefIDs"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "End13"
+    type: "end"
+    strict: false
+  - id: "End2"
+    type: "end"
+    strict: false
+  - id: "End4"
+    type: "end"
+    strict: false
+  - id: "End5"
+    type: "end"
+    strict: false
+  - id: "End6"
+    type: "end"
+    strict: false
+  - id: "End7"
+    type: "end"
+    strict: false
+  - id: "End8"
+    type: "end"
+    strict: false
+  - id: "GetClipboard2"
+    type: "pipelet"
+    ref: "GetClipboard"
+    config:
+      SessionRegistrationID: "Clipboard"
+      SetFormValues: "No"
+  - id: "GetClipboard3"
+    type: "pipelet"
+    ref: "GetClipboard"
+    config:
+      SessionRegistrationID: "Clipboard"
+      SetFormValues: "Yes"
+  - id: "GetFormSelection3"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "ObjectUUID"
+    bindings:
+      Selection: "AllObjectUUIDs"
+  - id: "GetFormSelection4"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "SelectedObjectUUID"
+    bindings:
+      Selection: "SelectedObjectUUIDs"
+  - id: "GetFormSelection5"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "SelectedObjectUUID"
+    bindings:
+      Selection: "SelectedObjectUUIDs"
+  - id: "GetFormSelection6"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "ObjectUUID"
+    bindings:
+      Selection: "AllObjectUUIDs"
+  - id: "RemoveClipboard1"
+    type: "pipelet"
+    ref: "RemoveClipboard"
+    config:
+      SessionRegistrationID: "Clipboard"
+  - id: "RemoveClipboard2"
+    type: "pipelet"
+    ref: "RemoveClipboard"
+    config:
+      SessionRegistrationID: "Clipboard"
+  - id: "RemoveClipboardEntry1"
+    type: "pipelet"
+    ref: "RemoveClipboardEntry"
+    config:
+      SessionRegistrationID: "Clipboard"
+  - id: "RemoveDictionaryValue1"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      Key: "Clipboard"
+  - id: "Text1"
+    type: "text"
+  - id: "UpdateClipboard2"
+    type: "pipelet"
+    ref: "UpdateClipboard"
+    config:
+      SessionRegistrationID: "Clipboard"
+      StoreFormValues: "No"
+    bindings:
+      AllObjectUUIDs: "NULL"
+      SelectedObjectUUIDs: "NULL"
+  - id: "UpdateClipboard3"
+    type: "pipelet"
+    ref: "UpdateClipboard"
+    config:
+      SessionRegistrationID: "Clipboard"
+      StoreFormValues: "Yes"
+  - id: "UpdateClipboard5"
+    type: "pipelet"
+    ref: "UpdateClipboard"
+    config:
+      SessionRegistrationID: "Clipboard"
+      StoreFormValues: "No"
+
+links:
+  - from: "Start5"
+    via: "next"
+    to: "RemoveClipboardEntry1"
+    into: "in"
+  - from: "RemoveClipboardEntry1"
+    via: "next"
+    to: "End5"
+    into: "in"
+  - from: "Start6"
+    via: "next"
+    to: "RemoveClipboard2"
+    into: "in"
+  - from: "RemoveClipboard2"
+    via: "next"
+    to: "UpdateClipboard2"
+    into: "in"
+  - from: "UpdateClipboard2"
+    via: "next"
+    to: "End6"
+    into: "in"
+  - from: "UpdateClipboard5"
+    via: "next"
+    to: "End13"
+    into: "in"
+  - from: "Start13"
+    via: "next"
+    to: "GetFormSelection6"
+    into: "in"
+  - from: "GetFormSelection6"
+    via: "next"
+    to: "GetFormSelection5"
+    into: "in"
+  - from: "GetFormSelection5"
+    via: "next"
+    to: "UpdateClipboard5"
+    into: "in"
+  - from: "UpdateClipboard3"
+    via: "next"
+    to: "End8"
+    into: "in"
+  - from: "Start8"
+    via: "next"
+    to: "GetFormSelection3"
+    into: "in"
+  - from: "GetFormSelection3"
+    via: "next"
+    to: "GetFormSelection4"
+    into: "in"
+  - from: "GetFormSelection4"
+    via: "next"
+    to: "UpdateClipboard3"
+    into: "in"
+  - from: "Start7"
+    via: "next"
+    to: "GetClipboard3"
+    into: "in"
+  - from: "GetClipboard3"
+    via: "next"
+    to: "End7"
+    into: "in"
+  - from: "RemoveClipboard1"
+    via: "next"
+    to: "RemoveDictionaryValue1"
+    into: "in"
+  - from: "RemoveDictionaryValue1"
+    via: "next"
+    to: "End2"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "RemoveClipboard1"
+    into: "in"
+  - from: "Start4"
+    via: "next"
+    to: "GetClipboard2"
+    into: "in"
+  - from: "GetClipboard2"
+    via: "next"
+    to: "End4"
+    into: "in"

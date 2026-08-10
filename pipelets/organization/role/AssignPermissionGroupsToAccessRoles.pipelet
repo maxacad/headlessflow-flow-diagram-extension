@@ -1,0 +1,19 @@
+name: AssignPermissionGroupsToAccessRoles
+version: 1
+trigger: manual
+handler: ./AssignPermissionGroupsToAccessRoles.ts
+ai:
+  skill: organization-assignpermissiongroupstoaccessroles
+  title: AssignPermissionGroupsToAccessRoles
+  description: Intershop organization pipelet – AssignPermissionGroupsToAccessRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  PermissionGroups: iterator
+  AccessRoles: iterator
+  Organization: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.AssignPermissionGroupsToAccessRoles

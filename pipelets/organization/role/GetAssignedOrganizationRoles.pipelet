@@ -1,0 +1,23 @@
+name: GetAssignedOrganizationRoles
+version: 1
+trigger: manual
+handler: ./GetAssignedOrganizationRoles.ts
+ai:
+  skill: organization-getassignedorganizationroles
+  title: GetAssignedOrganizationRoles
+  description: Intershop organization pipelet – GetAssignedOrganizationRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Roles: iterator
+  User: any
+  Membership: string
+outputs:
+  UserRoles: iterator
+  UserRolesSize: number
+  UserRolesHash: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetAssignedOrganizationRoles

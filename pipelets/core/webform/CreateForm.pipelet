@@ -1,0 +1,23 @@
+name: CreateForm
+version: 1
+trigger: manual
+handler: ./CreateForm.ts
+ai:
+  skill: core-createform
+  title: CreateForm
+  description: Intershop core pipelet – CreateForm.
+  tags: [form, validation, ui]
+  capabilities:
+    - execute-webform-operation
+inputs:
+  CurrentDomain: any
+  Locale: any
+  FormName: string
+  FormResource: string
+  FormAlias: string
+outputs:
+  Form: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.webform.CreateForm

@@ -1,0 +1,28 @@
+name: ExecuteCountQuery
+version: 1
+trigger: manual
+handler: ./ExecuteCountQuery.ts
+ai:
+  skill: core-executecountquery
+  title: ExecuteCountQuery
+  description: Intershop core pipelet – ExecuteCountQuery.
+  tags: [integration, data]
+  capabilities:
+    - execute-query-operation
+inputs:
+  ParameterValue_01: string
+  ParameterValue_02: string
+  ParameterValue_03: string
+  ParameterValue_04: string
+  ParameterValue_05: string
+  Parameters: map
+  Connection: any
+  CurrentDomain: any
+  Query: any
+outputs:
+  Count: number
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.query.ExecuteCountQuery

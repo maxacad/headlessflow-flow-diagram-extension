@@ -1,0 +1,22 @@
+name: GetApplicationCurrencies
+version: 1
+trigger: manual
+handler: ./GetApplicationCurrencies.ts
+ai:
+  skill: core-getapplicationcurrencies
+  title: GetApplicationCurrencies
+  description: Intershop core pipelet – GetApplicationCurrencies.
+  tags: [currency, finance]
+  capabilities:
+    - execute-currency-operation
+inputs:
+  Application: any
+outputs:
+  ApplicationCurrencies: any
+  ApplicationDefaultCurrency: any
+  ApplicationCurrencyMnemonics: any
+  ApplicationDefaultCurrencyMnemonic: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.currency.GetApplicationCurrencies

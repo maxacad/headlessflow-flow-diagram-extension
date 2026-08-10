@@ -1,0 +1,19 @@
+name: GetStagingProcess
+version: 1
+trigger: manual
+handler: ./GetStagingProcess.ts
+ai:
+  skill: core-getstagingprocess
+  title: GetStagingProcess
+  description: Intershop core pipelet – GetStagingProcess.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcessID: string
+outputs:
+  StagingProcess: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.GetStagingProcess

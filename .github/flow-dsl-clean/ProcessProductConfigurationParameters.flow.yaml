@@ -1,0 +1,44 @@
+flow: "ProcessProductConfigurationParameters"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "GetProductConfigurationParameterNames"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "AddObjectToVector1"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      OutVector: "ProductConfigurationParameterNames"
+      Object: "\"types.pagelet2-ProductBO\""
+      Objects: "null"
+      InVector: "ProductConfigurationParameterNames"
+  - id: "CallNode2"
+    type: "call"
+    ref: "Super:GetProductConfigurationParameterNames"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationParameterNames"
+        type: "java.util.Collection"
+        guaranteed: true
+
+links:
+  - from: "AddObjectToVector1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "AddObjectToVector1"
+    into: "in"

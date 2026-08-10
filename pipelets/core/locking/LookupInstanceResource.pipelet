@@ -1,0 +1,24 @@
+name: LookupInstanceResource
+version: 1
+trigger: manual
+handler: ./LookupInstanceResource.ts
+ai:
+  skill: core-lookupinstanceresource
+  title: LookupInstanceResource
+  description: Intershop core pipelet – LookupInstanceResource.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  PersistentObject: any
+  LockingDomain: any
+outputs:
+  Lifetime: number
+  Owner: any
+  CreationDate: any
+  ExpirationDate: any
+  Resource: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.LookupInstanceResource

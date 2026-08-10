@@ -1,0 +1,79 @@
+flow: "ProcessFullSitePreviewContextBO"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Create"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ApplicationBO"
+        type: "com.intershop.component.application.capi.ApplicationBO"
+        required: true
+      - key: "PreviewContextBO"
+        type: "com.intershop.component.preview.capi.context.PreviewContextBO"
+        required: true
+  - id: "StartNode2"
+    name: "Get"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ApplicationBO"
+        type: "com.intershop.component.application.capi.ApplicationBO"
+        required: true
+      - key: "FullSitePreviewContextBOID"
+        type: "java.lang.String"
+        required: true
+
+steps:
+  - id: "CreateFullSitePreviewContextBO1"
+    type: "pipelet"
+    ref: "CreateFullSitePreviewContextBO"
+    bindings:
+      FullSitePreviewContextBORepository: "ApplicationBO:Repository(\"PreviewContextBORepository\")"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "FullSitePreviewContextBO"
+        type: "com.intershop.component.preview.capi.context.PreviewContextBO"
+        guaranteed: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "FullSitePreviewContextBO"
+        type: "com.intershop.component.preview.capi.context.PreviewContextBO"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+  - id: "GetPreviewContextByID1"
+    type: "pipelet"
+    ref: "GetPreviewContextByID"
+    bindings:
+      PreviewContextBORepository: "ApplicationBO:Repository(\"PreviewContextBORepository\")"
+      ID: "FullSitePreviewContextBOID"
+      PreviewContextBO: "FullSitePreviewContextBO"
+
+links:
+  - from: "CreateFullSitePreviewContextBO1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "GetPreviewContextByID1"
+    via: "error"
+    to: "EndNode4"
+    into: "in"
+  - from: "GetPreviewContextByID1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CreateFullSitePreviewContextBO1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "GetPreviewContextByID1"
+    into: "in"

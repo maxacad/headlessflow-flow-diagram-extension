@@ -1,0 +1,21 @@
+name: ListCostCenterRoles
+version: 1
+trigger: manual
+handler: ./ListCostCenterRoles.ts
+ai:
+  skill: organization-listcostcenterroles
+  title: ListCostCenterRoles
+  description: Intershop organization pipelet – ListCostCenterRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  Pagesize: number
+  CostCenter: any
+outputs:
+  Roles: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.ListCostCenterRoles

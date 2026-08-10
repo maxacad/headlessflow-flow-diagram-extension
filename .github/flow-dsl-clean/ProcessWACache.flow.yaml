@@ -1,0 +1,55 @@
+flow: "ProcessWACache"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "StagingProcessMode"
+  - id: "EndNode1"
+    type: "end"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "RefreshWACache1"
+    type: "pipelet"
+    ref: "RefreshWACache"
+    config:
+      PageCacheInvalidationPolicy: "All"
+  - id: "RollbackWACache1"
+    type: "pipelet"
+    ref: "RollbackWACache"
+    config:
+      PageCacheInvalidationPolicy: "All"
+
+links:
+  - from: "RefreshWACache1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "RollbackWACache1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "RefreshWACache1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "RollbackWACache1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

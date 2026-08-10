@@ -1,0 +1,111 @@
+flow: "InitializeStagingContext"
+kind: "com.intershop.beehive.core.capi.staging.process.StagingContext"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "StagingProcessMode"
+        type: "java.lang.String"
+        required: true
+      - key: "TargetCluster"
+        type: "com.intershop.beehive.core.capi.staging.TargetCluster"
+        required: true
+      - key: "StagingContentProvider"
+        type: "com.intershop.beehive.core.capi.staging.process.StagingContentProvider"
+        required: true
+  - id: "StartNode2"
+    name: "Error"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "CreateStagingProcess1"
+    type: "pipelet"
+    ref: "CreateStagingProcess"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "StagingContext"
+        type: "com.intershop.beehive.core.capi.staging.process.StagingContext"
+        guaranteed: true
+      - key: "StagingServices"
+        type: "java.util.Collection"
+        guaranteed: true
+      - key: "StagingProcessID"
+        type: "java.lang.String"
+        guaranteed: true
+      - key: "StagingProcess"
+        type: "com.intershop.beehive.core.capi.staging.StagingProcess"
+        guaranteed: true
+      - key: "StagingService"
+        type: "com.intershop.beehive.core.rapi.staging.StagingService"
+        guaranteed: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "StagingContext"
+        type: "com.intershop.beehive.core.capi.staging.process.StagingContext"
+        guaranteed: true
+      - key: "ErrorStatus"
+        type: "java.lang.String"
+        guaranteed: true
+      - key: "Exception"
+        type: "java.lang.Throwable"
+        guaranteed: true
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "CreateStagingContext"
+  - id: "Pipelet2"
+    type: "pipelet"
+    ref: "GetStagingService"
+    config:
+      StagingServiceFactory: "com.intershop.beehive.core.capi.staging.DefaultStagingServiceFactory"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "Pipelet2"
+    into: "in"
+  - from: "Pipelet2"
+    via: "next"
+    to: "CreateStagingProcess1"
+    into: "in"
+  - from: "CreateStagingProcess1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "CreateStagingProcess1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "JoinNode2"
+    into: "in2"
+  - from: "JoinNode2"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "Pipelet2"
+    via: "error"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"

@@ -1,0 +1,21 @@
+name: GetAccessRolesForDR
+version: 1
+trigger: manual
+handler: ./GetAccessRolesForDR.ts
+ai:
+  skill: organization-getaccessrolesfordr
+  title: GetAccessRolesForDR
+  description: Intershop organization pipelet – GetAccessRolesForDR.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  DepartmentRoleID: string
+  DomainID: string
+  RoleType: string
+outputs:
+  Roles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetAccessRolesForDR

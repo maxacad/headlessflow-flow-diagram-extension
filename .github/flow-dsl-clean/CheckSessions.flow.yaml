@@ -1,0 +1,53 @@
+flow: "CheckSessions"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "AccessControl1"
+    type: "pipelet"
+    ref: "AccessControl"
+    config:
+      PerformAccessControl: false
+      PerformIPRangeCheck: false
+      RequireHTTPS: false
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "End2"
+    type: "end"
+    strict: false
+  - id: "End3"
+    type: "end"
+    strict: false
+  - id: "PerformSessionStorageCleanUpBySP1"
+    type: "pipelet"
+    ref: "PerformSessionStorageCleanUpBySP"
+
+links:
+  - from: "PerformSessionStorageCleanUpBySP1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "AccessControl1"
+    into: "in"
+  - from: "AccessControl1"
+    via: "next"
+    to: "PerformSessionStorageCleanUpBySP1"
+    into: "in"
+  - from: "AccessControl1"
+    via: "error"
+    to: "End2"
+    into: "in"
+  - from: "PerformSessionStorageCleanUpBySP1"
+    via: "error"
+    to: "End3"
+    into: "in"

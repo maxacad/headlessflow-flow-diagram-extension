@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <!-- Main gradient: light top-left → dark bottom-right (3D bevel illusion) -->
+    <linearGradient id="frameGrad" x1="0.15" y1="0.1" x2="0.85" y2="0.9">
+      <stop offset="0%"   stop-color="#FFE090"/>
+      <stop offset="35%"  stop-color="#F5A520"/>
+      <stop offset="100%" stop-color="#BF6C08"/>
+    </linearGradient>
+  </defs>
+
+  <!--
+    Shape overview:
+    ┌── chamfered square outer ring ──┐
+    │  2 outward arrow bumps per side  │
+    │  inner square opening (hole)     │
+    └──────────────────────────────────┘
+
+    Outer body square  : 18 → 142  (124 px)
+    Chamfer at corners : 18 px diagonal cut
+    Arrow protrusion   : 13 px beyond body (tips reach ~5 px from viewBox edge)
+    Inner opening      : 46 → 114  (68 px, chamfer 10 px)
+    Frame thickness    : ~28 px each side
+  -->
+
+  <!-- ── Drop shadow (slightly offset filled copy) ─────────────────────────── -->
+  <path fill-rule="evenodd" fill="rgba(70,25,0,0.28)" transform="translate(4,5)"
+    d="M 36,18
+       L 55,18 L 65,5 L 75,18
+       L 85,18 L 95,5 L 105,18
+       L 124,18 L 142,36
+       L 142,55 L 155,65 L 142,75
+       L 142,85 L 155,95 L 142,105
+       L 142,124 L 124,142
+       L 105,142 L 95,155 L 85,142
+       L 75,142 L 65,155 L 55,142
+       L 36,142 L 18,124
+       L 18,105 L 5,95 L 18,85
+       L 18,75 L 5,65 L 18,55
+       L 18,36 Z
+       M 56,46 L 104,46 L 114,56 L 114,104 L 104,114 L 56,114 L 46,104 L 46,56 Z"/>
+
+  <!-- ── Main frame body (outer ring + inner hole via even-odd) ─────────────── -->
+  <path fill-rule="evenodd" fill="url(#frameGrad)"
+    d="M 36,18
+       L 55,18 L 65,5 L 75,18
+       L 85,18 L 95,5 L 105,18
+       L 124,18 L 142,36
+       L 142,55 L 155,65 L 142,75
+       L 142,85 L 155,95 L 142,105
+       L 142,124 L 124,142
+       L 105,142 L 95,155 L 85,142
+       L 75,142 L 65,155 L 55,142
+       L 36,142 L 18,124
+       L 18,105 L 5,95 L 18,85
+       L 18,75 L 5,65 L 18,55
+       L 18,36 Z
+       M 56,46 L 104,46 L 114,56 L 114,104 L 104,114 L 56,114 L 46,104 L 46,56 Z"/>
+
+  <!-- ── Arrow-tip shading ─────────────────────────────────────────────────── -->
+  <!-- TOP arrows — face upward, brightest (toward light source) -->
+  <polygon fill="#FFF4C8" opacity="0.90" points="65,5  55,18 75,18"/>
+  <polygon fill="#FFF4C8" opacity="0.90" points="95,5  85,18 105,18"/>
+
+  <!-- LEFT arrows — edge-lit -->
+  <polygon fill="#FFE898" opacity="0.65" points="5,65  18,55 18,75"/>
+  <polygon fill="#FFE898" opacity="0.65" points="5,95  18,85 18,105"/>
+
+  <!-- RIGHT arrows — shadow side -->
+  <polygon fill="#70280A" opacity="0.38" points="155,65  142,55 142,75"/>
+  <polygon fill="#70280A" opacity="0.38" points="155,95  142,85 142,105"/>
+
+  <!-- BOTTOM arrows — darkest, facing away from light -->
+  <polygon fill="#602008" opacity="0.42" points="65,155  55,142 75,142"/>
+  <polygon fill="#602008" opacity="0.42" points="95,155  85,142 105,142"/>
+
+  <!-- ── Inner bevel ────────────────────────────────────────────────────────── -->
+  <!-- Light edge: top-left of inner hole (faces inward & upward) -->
+  <path fill="none" stroke="rgba(255,240,160,0.80)" stroke-width="2.5" stroke-linecap="round"
+    d="M 46,104 L 46,56 L 56,46 L 104,46"/>
+  <!-- Shadow edge: bottom-right of inner hole -->
+  <path fill="none" stroke="rgba(70,25,0,0.35)" stroke-width="2.5" stroke-linecap="round"
+    d="M 104,46 L 114,56 L 114,104 L 104,114 L 56,114 L 46,104"/>
+
+  <!-- ── Outer bevel highlight ──────────────────────────────────────────────── -->
+  <!-- Top outer edge (top chamfer + top arrows) -->
+  <path fill="none" stroke="rgba(255,248,190,0.55)" stroke-width="1.5" stroke-linejoin="round"
+    d="M 18,36 L 36,18 L 55,18 L 65,5 L 75,18 L 85,18 L 95,5 L 105,18 L 124,18 L 142,36"/>
+  <!-- Left outer edge (left arrows) -->
+  <path fill="none" stroke="rgba(255,248,190,0.55)" stroke-width="1.5" stroke-linejoin="round"
+    d="M 18,36 L 18,55 L 5,65 L 18,75 L 18,85 L 5,95 L 18,105 L 18,124"/>
+</svg>

@@ -1,0 +1,28 @@
+name: CreateDepartment
+version: 1
+trigger: manual
+handler: ./CreateDepartment.ts
+ai:
+  skill: organization-createdepartment
+  title: CreateDepartment
+  description: Intershop organization pipelet – CreateDepartment.
+  tags: [integration, data]
+  capabilities:
+    - execute-department-operation
+inputs:
+  DepartmentID: string
+  DepartmentName: string
+  DepartmentDesc: string
+  ParentDepartmentID: string
+  CostCenterID: string
+  DepartmentProfileID: string
+  DepartmentAdminGroup: any
+  Organization: any
+  LocaleInformation: any
+outputs:
+  Department: any
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.department.CreateDepartment

@@ -1,0 +1,21 @@
+name: GetResourceByName
+version: 1
+trigger: manual
+handler: ./GetResourceByName.ts
+ai:
+  skill: core-getresourcebyname
+  title: GetResourceByName
+  description: Intershop core pipelet – GetResourceByName.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  ResourceName: string
+  Domain: any
+  ParentResource: any
+outputs:
+  Resource: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.GetResourceByName

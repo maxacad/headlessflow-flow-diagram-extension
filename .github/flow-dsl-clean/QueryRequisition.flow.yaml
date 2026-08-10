@@ -1,0 +1,42 @@
+flow: "QueryRequisition"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Search"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "End3"
+    type: "end"
+    strict: false
+  - id: "End4"
+    type: "end"
+    strict: false
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "requisition/GetRequisitionsByState"
+      Datasource: "current ORM connection"
+      ParameterName_01: "DomainUUID"
+    bindings:
+      ParameterValue_01: "RequisitionDomain:UUID"
+      SearchResult: "Requisitions"
+
+links:
+  - from: "ExecuteObjectsQuery1"
+    via: "error"
+    to: "End3"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "End4"
+    into: "in"

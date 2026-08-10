@@ -1,0 +1,24 @@
+name: UpdateOrganization
+version: 1
+trigger: manual
+handler: ./UpdateOrganization.ts
+ai:
+  skill: organization-updateorganization
+  title: UpdateOrganization
+  description: Intershop organization pipelet – UpdateOrganization.
+  tags: [integration, data]
+  capabilities:
+    - execute-organization-operation
+inputs:
+  DefaultOrganizationState: number
+  Organization: any
+  DisplayName: string
+  ShortDescription: string
+  OrganizationState: number
+  OrganizationPreferredLocale: string
+  OrganizationPreferredCurrency: string
+  Locale: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.organization.UpdateOrganization

@@ -1,0 +1,20 @@
+name: CreateStagingContext
+version: 1
+trigger: manual
+handler: ./CreateStagingContext.ts
+ai:
+  skill: core-createstagingcontext
+  title: CreateStagingContext
+  description: Intershop core pipelet – CreateStagingContext.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcessMode: string
+  TargetCluster: any
+outputs:
+  StagingContext: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.CreateStagingContext

@@ -1,0 +1,116 @@
+flow: "IncludeGlobalNavigationBar"
+kind: "include"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "ShowMenu"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode3"
+    name: "ShowChannelBar"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode4"
+    name: "GetChannelBar"
+    mode: "public"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessGlobalNavigationBar-Start"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessGlobalNavigationBar-Start"
+  - id: "DetermineVersionInformation1"
+    type: "pipelet"
+    ref: "DetermineVersionInformation"
+    bindings:
+      AdminServerInfos: "null"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "InteractionNode2"
+    type: "interaction"
+  - id: "InteractionNode3"
+    type: "interaction"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "GetOrganizationByUser"
+    bindings:
+      User: "CurrentUser"
+      Organization: "CurrentOrganization"
+      OrganizationDomain: "null"
+  - id: "Pipelet2"
+    type: "pipelet"
+    ref: "GetOrganizationByUser"
+    bindings:
+      User: "CurrentUser"
+      Organization: "CurrentOrganization"
+      OrganizationDomain: "null"
+
+links:
+  - from: "StartNode3"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "Pipelet2"
+    via: "error"
+    to: "EndNode1"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "DetermineVersionInformation1"
+    into: "in"
+  - from: "DetermineVersionInformation1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "InteractionNode2"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "InteractionNode3"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "Pipelet2"
+    into: "in"
+  - from: "Pipelet1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "Pipelet2"
+    via: "next"
+    to: "CallNode2"
+    into: "in"

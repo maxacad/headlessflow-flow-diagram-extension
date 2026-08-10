@@ -1,0 +1,268 @@
+flow: "CreateOrderStatesCondition"
+kind: "view"
+
+entries:
+  - id: "Start1"
+    name: "New"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start10"
+    name: "AllShipped"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start11"
+    name: "AllConfirmed"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start12"
+    name: "Open"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start2"
+    name: "AllOpen"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start5"
+    name: "AllPaid"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start6"
+    name: "Completed"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start7"
+    name: "Cancelled"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start8"
+    name: "Rejected"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start9"
+    name: "All"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "End12"
+    type: "end"
+    strict: false
+  - id: "End13"
+    type: "end"
+    strict: false
+  - id: "End15"
+    type: "end"
+    strict: false
+  - id: "End17"
+    type: "end"
+    strict: false
+  - id: "End20"
+    type: "end"
+    strict: false
+  - id: "End22"
+    type: "end"
+    strict: false
+  - id: "End24"
+    type: "end"
+    strict: false
+  - id: "End4"
+    type: "end"
+    strict: false
+  - id: "End9"
+    type: "end"
+    strict: false
+  - id: "UpdateDictionary1"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"open\""
+  - id: "UpdateDictionary10"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"allcompleted\""
+  - id: "UpdateDictionary2"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"new\""
+  - id: "UpdateDictionary3"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"allopen\""
+  - id: "UpdateDictionary4"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"open\""
+  - id: "UpdateDictionary5"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"shipped\""
+  - id: "UpdateDictionary6"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"paid\""
+  - id: "UpdateDictionary7"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"cancelled\""
+  - id: "UpdateDictionary8"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"rejected\""
+  - id: "UpdateDictionary9"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OrderStateLiteral"
+    bindings:
+      OutDictionary: "OrderSearchParameters"
+      InDictionary: "OrderSearchParameters"
+      Value_01: "\"completed\""
+
+links:
+  - from: "Start1"
+    via: "next"
+    to: "UpdateDictionary2"
+    into: "in"
+  - from: "Start5"
+    via: "next"
+    to: "UpdateDictionary6"
+    into: "in"
+  - from: "UpdateDictionary6"
+    via: "next"
+    to: "End9"
+    into: "in"
+  - from: "Start7"
+    via: "next"
+    to: "UpdateDictionary7"
+    into: "in"
+  - from: "UpdateDictionary7"
+    via: "next"
+    to: "End13"
+    into: "in"
+  - from: "Start8"
+    via: "next"
+    to: "UpdateDictionary8"
+    into: "in"
+  - from: "UpdateDictionary8"
+    via: "next"
+    to: "End15"
+    into: "in"
+  - from: "Start6"
+    via: "next"
+    to: "UpdateDictionary9"
+    into: "in"
+  - from: "UpdateDictionary9"
+    via: "next"
+    to: "End12"
+    into: "in"
+  - from: "Start9"
+    via: "next"
+    to: "UpdateDictionary10"
+    into: "in"
+  - from: "UpdateDictionary10"
+    via: "next"
+    to: "End17"
+    into: "in"
+  - from: "UpdateDictionary2"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "UpdateDictionary3"
+    into: "in"
+  - from: "UpdateDictionary3"
+    via: "next"
+    to: "End4"
+    into: "in"
+  - from: "Start11"
+    via: "next"
+    to: "UpdateDictionary4"
+    into: "in"
+  - from: "Start12"
+    via: "next"
+    to: "UpdateDictionary1"
+    into: "in"
+  - from: "UpdateDictionary1"
+    via: "next"
+    to: "End24"
+    into: "in"
+  - from: "UpdateDictionary4"
+    via: "next"
+    to: "End22"
+    into: "in"
+  - from: "Start10"
+    via: "next"
+    to: "UpdateDictionary5"
+    into: "in"
+  - from: "UpdateDictionary5"
+    via: "next"
+    to: "End20"
+    into: "in"

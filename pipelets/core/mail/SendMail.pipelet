@@ -1,0 +1,29 @@
+name: SendMail
+version: 1
+trigger: manual
+handler: ./SendMail.ts
+ai:
+  skill: core-sendmail
+  title: SendMail
+  description: Intershop core pipelet – SendMail.
+  tags: [integration, data]
+  capabilities:
+    - execute-mail-operation
+inputs:
+  MailFrom: string
+  MailTemplate: string
+  MailTo: string
+  MailCC: string
+  MailBCC: string
+  MailSubject: string
+  LocaleID: string
+  MailAttachments: iterator
+  CurrencyCode: string
+outputs:
+  MailResult: string
+  MailResults: any
+  AggregatedResult: number
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.mail.SendMail

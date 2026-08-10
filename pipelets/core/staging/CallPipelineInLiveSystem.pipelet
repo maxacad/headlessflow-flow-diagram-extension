@@ -1,0 +1,20 @@
+name: CallPipelineInLiveSystem
+version: 1
+trigger: manual
+handler: ./CallPipelineInLiveSystem.ts
+ai:
+  skill: core-callpipelineinlivesystem
+  title: CallPipelineInLiveSystem
+  description: Intershop core pipelet – CallPipelineInLiveSystem.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingService: object
+  CurrentDomain: any
+  PipelineName: string
+  StartNode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.CallPipelineInLiveSystem

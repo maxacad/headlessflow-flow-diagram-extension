@@ -1,0 +1,23 @@
+name: CreateShippingSurcharge
+version: 1
+trigger: manual
+handler: ./CreateShippingSurcharge.ts
+ai:
+  skill: shipping-createshippingsurcharge
+  title: CreateShippingSurcharge
+  description: Intershop shipping pipelet – CreateShippingSurcharge.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Product: any
+  ShippingChargePrice: any
+  Region: any
+  ShippingMethod: any
+outputs:
+  ShippingSurcharge: any
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.CreateShippingSurcharge

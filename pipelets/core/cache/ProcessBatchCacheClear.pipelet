@@ -1,0 +1,19 @@
+name: ProcessBatchCacheClear
+version: 1
+trigger: manual
+handler: ./ProcessBatchCacheClear.ts
+ai:
+  skill: core-processbatchcacheclear
+  title: ProcessBatchCacheClear
+  description: Intershop core pipelet – ProcessBatchCacheClear.
+  tags: [cache, performance]
+  capabilities:
+    - execute-cache-operation
+inputs:
+  CacheClearProcessID: string
+  CacheClearProcessingDate: any
+  CacheClearProcessorID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.cache.ProcessBatchCacheClear

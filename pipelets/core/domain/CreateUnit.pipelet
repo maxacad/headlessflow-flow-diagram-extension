@@ -1,0 +1,22 @@
+name: CreateUnit
+version: 1
+trigger: manual
+handler: ./CreateUnit.ts
+ai:
+  skill: core-createunit
+  title: CreateUnit
+  description: Intershop core pipelet – CreateUnit.
+  tags: [integration, data]
+  capabilities:
+    - execute-domain-operation
+inputs:
+  LocaleInformation: any
+  DomainName: string
+  ParentDomain: any
+  DomainAdmin: any
+outputs:
+  Domain: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.domain.CreateUnit

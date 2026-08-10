@@ -1,0 +1,30 @@
+flow: "ViewChannelLinkManagement"
+kind: "view"
+
+entries:
+  - id: "Start1"
+    name: "Overview"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "InteractionEnd1"
+    type: "interaction"
+  - id: "PrepareApplicationView1"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "OnlineMarketing"
+      WorkingTemplate: "link/ChannelLinkManagementOverview"
+
+links:
+  - from: "PrepareApplicationView1"
+    via: "next"
+    to: "InteractionEnd1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "PrepareApplicationView1"
+    into: "in"

@@ -1,0 +1,19 @@
+name: CreateDatabaseTableResources
+version: 1
+trigger: manual
+handler: ./CreateDatabaseTableResources.ts
+ai:
+  skill: core-createdatabasetableresources
+  title: CreateDatabaseTableResources
+  description: Intershop core pipelet – CreateDatabaseTableResources.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  TableNames: iterator
+outputs:
+  Resources: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.CreateDatabaseTableResources

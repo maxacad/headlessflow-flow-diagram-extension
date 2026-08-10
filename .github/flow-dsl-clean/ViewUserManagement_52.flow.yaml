@@ -1,0 +1,30 @@
+flow: "ViewUserManagement_52"
+kind: "view"
+
+entries:
+  - id: "Start1"
+    name: "Overview"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "InteractionEnd2"
+    type: "interaction"
+  - id: "PrepareApplicationView2"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "ChannelUserMgmt"
+      WorkingTemplate: "user/UserManagementOverview_52"
+
+links:
+  - from: "PrepareApplicationView2"
+    via: "next"
+    to: "InteractionEnd2"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "PrepareApplicationView2"
+    into: "in"

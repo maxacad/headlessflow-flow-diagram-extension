@@ -1,0 +1,28 @@
+name: UpdateApplication
+version: 1
+trigger: manual
+handler: ./UpdateApplication.ts
+ai:
+  skill: core-updateapplication
+  title: UpdateApplication
+  description: Intershop core pipelet – UpdateApplication.
+  tags: [integration, data]
+  capabilities:
+    - execute-domain-operation
+inputs:
+  Application: any
+  UrlIdentifier: string
+  Enabled: boolean
+  Default: boolean
+  DisplayName: string
+  Description: string
+  Locale: any
+  DefaultCurrencyMnemonic: string
+  CurrencyMnemonics: any
+  DefaultLocaleID: string
+  LocaleIDs: any
+  TimeZoneID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.domain.UpdateApplication

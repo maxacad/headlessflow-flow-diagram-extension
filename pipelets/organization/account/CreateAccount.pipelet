@@ -1,0 +1,21 @@
+name: CreateAccount
+version: 1
+trigger: manual
+handler: ./CreateAccount.ts
+ai:
+  skill: organization-createaccount
+  title: CreateAccount
+  description: Intershop organization pipelet – CreateAccount.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  Owner: any
+  TypeCode: string
+  DefaultTypeCode: number
+outputs:
+  Account: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.CreateAccount

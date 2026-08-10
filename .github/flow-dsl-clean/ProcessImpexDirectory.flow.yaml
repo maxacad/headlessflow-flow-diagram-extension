@@ -1,0 +1,35 @@
+flow: "ProcessImpexDirectory"
+kind: "process"
+
+entries:
+  - id: "Start3"
+    name: "Browse"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "BrowseDirectory1"
+    type: "pipelet"
+    ref: "BrowseDirectory"
+    config:
+      UnitDirectory: "IMPEX_DIR"
+  - id: "End8"
+    type: "end"
+  - id: "End9"
+    type: "end"
+
+links:
+  - from: "BrowseDirectory1"
+    via: "next"
+    to: "End9"
+    into: "in"
+  - from: "Start3"
+    via: "next"
+    to: "BrowseDirectory1"
+    into: "in"
+  - from: "BrowseDirectory1"
+    via: "error"
+    to: "End8"
+    into: "in"

@@ -1,0 +1,20 @@
+name: GetShippingSurchargeAndOverrideByRegion
+version: 1
+trigger: manual
+handler: ./GetShippingSurchargeAndOverrideByRegion.ts
+ai:
+  skill: shipping-getshippingsurchargeandoverridebyregion
+  title: GetShippingSurchargeAndOverrideByRegion
+  description: Intershop shipping pipelet – GetShippingSurchargeAndOverrideByRegion.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Region: any
+outputs:
+  ShippingSurcharges: iterator
+  ShippingOverrides: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.GetShippingSurchargeAndOverrideByRegion

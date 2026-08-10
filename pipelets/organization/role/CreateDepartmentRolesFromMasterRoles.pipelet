@@ -1,0 +1,21 @@
+name: CreateDepartmentRolesFromMasterRoles
+version: 1
+trigger: manual
+handler: ./CreateDepartmentRolesFromMasterRoles.ts
+ai:
+  skill: organization-createdepartmentrolesfrommasterroles
+  title: CreateDepartmentRolesFromMasterRoles
+  description: Intershop organization pipelet – CreateDepartmentRolesFromMasterRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  MasterRoles: iterator
+  Organization: any
+  Department: any
+outputs:
+  Roles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CreateDepartmentRolesFromMasterRoles

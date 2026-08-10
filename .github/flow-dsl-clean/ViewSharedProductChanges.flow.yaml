@@ -1,0 +1,67 @@
+flow: "ViewSharedProductChanges"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessProductLock-Lookup"
+    bindings:
+      User: "CurrentUser"
+  - id: "GetCustomAttributes1"
+    type: "pipelet"
+    ref: "GetCustomAttributes"
+    config:
+      FilteredAttributes: "name;SKU;shortDescription;longDescription;BaseUnit;RatioBasePackingUnit;DeliveryDays;EANCode;AvailabilityStatus;orderRequiredAttributes;PID_*;manufacturerName;manufacturerSKU;eclass;unspsc;RunningAuctions"
+    bindings:
+      ExtensibleObject: "Product"
+  - id: "GetProductByUUID7"
+    type: "pipelet"
+    ref: "GetProductByUUID"
+    bindings:
+      ProductUUID: "ProductID"
+      ProductDomain: "CurrentMasterRepository:RepositoryDomain"
+  - id: "InteractionEnd2"
+    type: "interaction"
+  - id: "JumpNode3"
+    type: "jump"
+    ref: "ViewProduct-ErrorProductNotAvailable"
+  - id: "PrepareApplicationView2"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "Products"
+      WorkingTemplate: "product/SharedProductChanges.isml"
+
+links:
+  - from: "GetProductByUUID7"
+    via: "error"
+    to: "JumpNode3"
+    into: "in"
+  - from: "GetProductByUUID7"
+    via: "next"
+    to: "GetCustomAttributes1"
+    into: "in"
+  - from: "PrepareApplicationView2"
+    via: "next"
+    to: "InteractionEnd2"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "PrepareApplicationView2"
+    into: "in"
+  - from: "GetCustomAttributes1"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "GetProductByUUID7"
+    into: "in"

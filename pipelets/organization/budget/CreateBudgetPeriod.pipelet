@@ -1,0 +1,23 @@
+name: CreateBudgetPeriod
+version: 1
+trigger: manual
+handler: ./CreateBudgetPeriod.ts
+ai:
+  skill: organization-createbudgetperiod
+  title: CreateBudgetPeriod
+  description: Intershop organization pipelet – CreateBudgetPeriod.
+  tags: [budget, finance]
+  capabilities:
+    - execute-budget-operation
+inputs:
+  Budget: any
+  FromDate: any
+  ToDate: any
+  DefaultDateTimes: string
+outputs:
+  BudgetPeriod: any
+  ErrorMessage: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.budget.CreateBudgetPeriod

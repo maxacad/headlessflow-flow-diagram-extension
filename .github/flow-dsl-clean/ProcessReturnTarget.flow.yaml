@@ -1,0 +1,79 @@
+flow: "ProcessReturnTarget"
+kind: "process"
+
+entries:
+  - id: "StartNode8"
+    name: "PutPreviewContextPipeline"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode9"
+    name: "GetPreviewContextPipeline"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "EndNode14"
+    type: "end"
+    strict: true
+  - id: "EndNode15"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ContextPipeline"
+        type: "java.lang.String"
+        guaranteed: true
+      - key: "ContextPipelineMap"
+        type: "java.util.Map<String,String>"
+        guaranteed: true
+  - id: "EndNode16"
+    type: "end"
+    strict: true
+  - id: "GetContextPipelineFromSession1"
+    type: "pipelet"
+    ref: "GetContextPipelineFromSession"
+    bindings:
+      ContextID: "\"PreviewContextPipeline\""
+  - id: "GetFormRecord2"
+    type: "pipelet"
+    ref: "GetFormRecord"
+    config:
+      DefaultRecordID: "contextParameter"
+    bindings:
+      AllFormValues: "null"
+      RecordID: "null"
+      FormRecord: "ContextParameterMap"
+  - id: "PutContextPipelineIntoSession1"
+    type: "pipelet"
+    ref: "PutContextPipelineIntoSession"
+    bindings:
+      ContextID: "\"PreviewContextPipeline\""
+
+links:
+  - from: "PutContextPipelineIntoSession1"
+    via: "next"
+    to: "EndNode14"
+    into: "in"
+  - from: "GetContextPipelineFromSession1"
+    via: "next"
+    to: "EndNode15"
+    into: "in"
+  - from: "GetFormRecord2"
+    via: "next"
+    to: "PutContextPipelineIntoSession1"
+    into: "in"
+  - from: "StartNode9"
+    via: "next"
+    to: "GetContextPipelineFromSession1"
+    into: "in"
+  - from: "GetContextPipelineFromSession1"
+    via: "error"
+    to: "EndNode16"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "GetFormRecord2"
+    into: "in"

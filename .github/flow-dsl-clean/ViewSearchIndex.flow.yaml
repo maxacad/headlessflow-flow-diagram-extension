@@ -1,0 +1,49 @@
+flow: "ViewSearchIndex"
+kind: "view"
+
+entries:
+  - id: "StartNode15"
+    name: "Preview"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DecisionNode27"
+    type: "decision"
+    condition: "RedirectType"
+  - id: "DecisionNode28"
+    type: "decision"
+    condition: "RedirectType"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "Super:Preview"
+  - id: "JumpNode3"
+    type: "jump"
+    ref: "ViewChannelCatalog_52-PreviewCategory"
+  - id: "JumpNode7"
+    type: "jump"
+    ref: "ViewProductList_52-PreviewProduct"
+
+links:
+  - from: "DecisionNode28"
+    via: "no"
+    to: "DecisionNode27"
+    into: "in"
+  - from: "DecisionNode27"
+    via: "yes"
+    to: "JumpNode3"
+    into: "in"
+  - from: "StartNode15"
+    via: "next"
+    to: "DecisionNode28"
+    into: "in"
+  - from: "DecisionNode28"
+    via: "yes"
+    to: "JumpNode7"
+    into: "in"
+  - from: "DecisionNode27"
+    via: "no"
+    to: "JumpNode1"
+    into: "in"

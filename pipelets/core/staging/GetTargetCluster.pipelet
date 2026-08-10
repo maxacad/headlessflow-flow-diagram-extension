@@ -1,0 +1,19 @@
+name: GetTargetCluster
+version: 1
+trigger: manual
+handler: ./GetTargetCluster.ts
+ai:
+  skill: core-gettargetcluster
+  title: GetTargetCluster
+  description: Intershop core pipelet – GetTargetCluster.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  TargetClusterID: string
+outputs:
+  TargetCluster: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.GetTargetCluster

@@ -1,0 +1,22 @@
+name: CreateProcessTemplateBasedLogAppender
+version: 1
+trigger: manual
+handler: ./CreateProcessTemplateBasedLogAppender.ts
+ai:
+  skill: core-createprocesstemplatebasedlogappender
+  title: CreateProcessTemplateBasedLogAppender
+  description: Intershop core pipelet – CreateProcessTemplateBasedLogAppender.
+  tags: [logging, monitoring]
+  capabilities:
+    - execute-log-operation
+inputs:
+  ProcessID: string
+  ProcessType: string
+  AppenderDefinition: string
+  Properties: map
+outputs:
+  ProcessTemplateBasedAppender: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.log.CreateProcessTemplateBasedLogAppender

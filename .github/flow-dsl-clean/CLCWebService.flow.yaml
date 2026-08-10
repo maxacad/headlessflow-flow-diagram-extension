@@ -1,0 +1,110 @@
+flow: "CLCWebService"
+kind: "webservice"
+
+entries:
+  - id: "StartNode1"
+    name: "RunJob"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "GetJobStatus"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode3"
+    name: "RunImport"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode4"
+    name: "Cleanup"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode5"
+    name: "PrepareImport"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CleanupJobConfig1"
+    type: "pipelet"
+    ref: "CleanupJobConfig"
+  - id: "EndNode1"
+    type: "end"
+  - id: "EndNode2"
+    type: "end"
+  - id: "EndNode3"
+    type: "end"
+  - id: "EndNode4"
+    type: "end"
+  - id: "EndNode5"
+    type: "end"
+  - id: "ExecuteImport1"
+    type: "pipelet"
+    ref: "ExecuteImport"
+  - id: "ExecuteJob1"
+    type: "pipelet"
+    ref: "ExecuteJob"
+  - id: "GetJobStatus1"
+    type: "pipelet"
+    ref: "GetJobStatus"
+  - id: "PrepareImport1"
+    type: "pipelet"
+    ref: "PrepareImport"
+  - id: "PrepareJob1"
+    type: "pipelet"
+    ref: "PrepareJob"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "PrepareJob1"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "PrepareImport1"
+    into: "in"
+  - from: "PrepareImport1"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "ExecuteJob1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "CleanupJobConfig1"
+    into: "in"
+  - from: "PrepareJob1"
+    via: "next"
+    to: "ExecuteJob1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "GetJobStatus1"
+    into: "in"
+  - from: "GetJobStatus1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "ExecuteImport1"
+    into: "in"
+  - from: "ExecuteImport1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "CleanupJobConfig1"
+    via: "next"
+    to: "EndNode4"
+    into: "in"

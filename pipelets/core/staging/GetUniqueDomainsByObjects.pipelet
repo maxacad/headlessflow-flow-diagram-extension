@@ -1,0 +1,19 @@
+name: GetUniqueDomainsByObjects
+version: 1
+trigger: manual
+handler: ./GetUniqueDomainsByObjects.ts
+ai:
+  skill: core-getuniquedomainsbyobjects
+  title: GetUniqueDomainsByObjects
+  description: Intershop core pipelet – GetUniqueDomainsByObjects.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  ORMObjects: iterator
+outputs:
+  Domains: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.GetUniqueDomainsByObjects

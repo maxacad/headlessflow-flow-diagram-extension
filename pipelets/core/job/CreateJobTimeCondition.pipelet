@@ -1,0 +1,24 @@
+name: CreateJobTimeCondition
+version: 1
+trigger: manual
+handler: ./CreateJobTimeCondition.ts
+ai:
+  skill: core-createjobtimecondition
+  title: CreateJobTimeCondition
+  description: Intershop core pipelet – CreateJobTimeCondition.
+  tags: [job, scheduler, background]
+  capabilities:
+    - execute-job-operation
+inputs:
+  JobConfiguration: any
+  RunOnceDate: any
+  RecurringIntervalStartDate: any
+  RecurringIntervalEndDate: any
+  RecurringIntervalRunTime: any
+  RecurringIntervalFactor: number
+  RecurringIntervalUnit: string
+  RecurringIntervalDays: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.job.CreateJobTimeCondition

@@ -1,0 +1,21 @@
+name: DetermineRelatableDomains
+version: 1
+trigger: manual
+handler: ./DetermineRelatableDomains.ts
+ai:
+  skill: organization-determinerelatabledomains
+  title: DetermineRelatableDomains
+  description: Intershop organization pipelet – DetermineRelatableDomains.
+  tags: [relation, hierarchy]
+  capabilities:
+    - execute-relation-operation
+inputs:
+  Pagesize: number
+  OrganizationType: string
+  RelatedDomains: iterator
+outputs:
+  RelatableOrganizations: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.relation.DetermineRelatableDomains

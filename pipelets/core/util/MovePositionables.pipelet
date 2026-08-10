@@ -1,0 +1,20 @@
+name: MovePositionables
+version: 1
+trigger: manual
+handler: ./MovePositionables.ts
+ai:
+  skill: core-movepositionables
+  title: MovePositionables
+  description: Intershop core pipelet – MovePositionables.
+  tags: [integration, data]
+  capabilities:
+    - execute-util-operation
+inputs:
+  MoveDirection: string
+  SelectedObjectUUIDs: iterator
+  SortedPositionables: iterator
+  ObjectIDFieldName: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.util.MovePositionables

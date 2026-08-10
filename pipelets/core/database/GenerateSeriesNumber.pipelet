@@ -1,0 +1,24 @@
+name: GenerateSeriesNumber
+version: 1
+trigger: manual
+handler: ./GenerateSeriesNumber.ts
+ai:
+  skill: core-generateseriesnumber
+  title: GenerateSeriesNumber
+  description: Intershop core pipelet – GenerateSeriesNumber.
+  tags: [integration, data]
+  capabilities:
+    - execute-database-operation
+inputs:
+  SeriesIdentifier: string
+  DomainSpecific: string
+  CurrentDomain: any
+outputs:
+  SeriesNumber: string
+  NumberPattern: string
+  StartWith: string
+  BlockSize: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.database.GenerateSeriesNumber

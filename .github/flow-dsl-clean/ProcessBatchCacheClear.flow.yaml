@@ -1,0 +1,253 @@
+flow: "ProcessBatchCacheClear"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "ClearCachesByDate"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CacheClearProcessingDate"
+        type: "java.util.Date"
+        required: false
+      - key: "CacheClearProcessorID"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode2"
+    name: "ClearCachesByProcessID"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CacheClearProcessID"
+        type: "java.lang.String"
+        required: true
+      - key: "CacheClearProcessorID"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode3"
+    name: "BatchForObjectsAndDate"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DesiredCacheClearDate"
+        type: "java.util.Date"
+        required: true
+      - key: "Object"
+        type: "java.lang.Object"
+        required: false
+      - key: "Objects"
+        type: "java.util.Iterator<Object>"
+        required: false
+      - key: "CacheClearProcessorID"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode4"
+    name: "BatchForObjectsAndProcessID"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CacheClearProcessID"
+        type: "java.lang.String"
+        required: true
+      - key: "Object"
+        type: "java.lang.Object"
+        required: false
+      - key: "Objects"
+        type: "java.util.Iterator<Object>"
+        required: false
+      - key: "CacheClearProcessorID"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode5"
+    name: "BatchForClassesAndDate"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DesiredCacheClearDate"
+        type: "java.util.Date"
+        required: true
+      - key: "ClassNames"
+        type: "java.lang.String"
+        required: false
+      - key: "CacheClearProcessorID"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode6"
+    name: "BatchForClassesAndProcessID"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CacheClearProcessID"
+        type: "java.lang.String"
+        required: true
+      - key: "ClassNames"
+        type: "java.lang.String"
+        required: false
+      - key: "CacheClearProcessorID"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode8"
+    name: "ClearCachesByProcessChainProcess"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Process"
+        type: "com.intershop.beehive.core.capi.locking.Process"
+        required: true
+      - key: "CacheClearProcessorID"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "BatchCacheClear1"
+    type: "pipelet"
+    ref: "BatchCacheClear"
+    config:
+      ObjectNature: "ObjectInstances"
+    bindings:
+      CacheClearProcessID: "null"
+      ClassNames: "null"
+  - id: "BatchCacheClear2"
+    type: "pipelet"
+    ref: "BatchCacheClear"
+    config:
+      ObjectNature: "ObjectInstances"
+    bindings:
+      DesiredCacheClearDate: "null"
+      ClassNames: "null"
+  - id: "BatchCacheClear3"
+    type: "pipelet"
+    ref: "BatchCacheClear"
+    config:
+      ObjectNature: "ClassNames"
+    bindings:
+      CacheClearProcessID: "null"
+      Object: "null"
+      Objects: "null"
+  - id: "BatchCacheClear4"
+    type: "pipelet"
+    ref: "BatchCacheClear"
+    config:
+      ObjectNature: "ClassNames"
+    bindings:
+      DesiredCacheClearDate: "null"
+      Object: "null"
+      Objects: "null"
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessBatchCacheClear-ClearCachesByProcessID"
+    bindings:
+      CacheClearProcessID: "ProcessChainProcess:UUID"
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "ProcessChainProcess"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+  - id: "EndNode7"
+    type: "end"
+    strict: true
+  - id: "GetProcessChainProcess1"
+    type: "pipelet"
+    ref: "GetProcessChainProcess"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "ProcessBatchCacheClear1"
+    type: "pipelet"
+    ref: "ProcessBatchCacheClear"
+    bindings:
+      CacheClearProcessID: "null"
+  - id: "ProcessBatchCacheClear2"
+    type: "pipelet"
+    ref: "ProcessBatchCacheClear"
+    bindings:
+      CacheClearProcessingDate: "null"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "ProcessBatchCacheClear2"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "BatchCacheClear3"
+    into: "in"
+  - from: "StartNode6"
+    via: "next"
+    to: "BatchCacheClear4"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "GetProcessChainProcess1"
+    into: "in"
+  - from: "BatchCacheClear3"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "GetProcessChainProcess1"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "CallNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode7"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "BatchCacheClear1"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "BatchCacheClear2"
+    into: "in"
+  - from: "BatchCacheClear4"
+    via: "next"
+    to: "EndNode6"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "ProcessBatchCacheClear1"
+    into: "in"
+  - from: "ProcessBatchCacheClear1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "ProcessBatchCacheClear2"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "BatchCacheClear1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "BatchCacheClear2"
+    via: "next"
+    to: "EndNode4"
+    into: "in"

@@ -1,0 +1,22 @@
+name: GetAccessibleCostCenters
+version: 1
+trigger: manual
+handler: ./GetAccessibleCostCenters.ts
+ai:
+  skill: organization-getaccessiblecostcenters
+  title: GetAccessibleCostCenters
+  description: Intershop organization pipelet – GetAccessibleCostCenters.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  User: any
+  Organization: any
+  MasterRoleID: string
+outputs:
+  CostCenters: iterator
+  CostCenterMap: map
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetAccessibleCostCenters

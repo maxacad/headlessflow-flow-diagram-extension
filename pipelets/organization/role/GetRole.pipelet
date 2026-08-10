@@ -1,0 +1,20 @@
+name: GetRole
+version: 1
+trigger: manual
+handler: ./GetRole.ts
+ai:
+  skill: organization-getrole
+  title: GetRole
+  description: Intershop organization pipelet – GetRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  RoleID: string
+outputs:
+  Role: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetRole

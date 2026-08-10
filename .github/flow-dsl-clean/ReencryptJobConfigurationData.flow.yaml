@@ -1,0 +1,92 @@
+flow: "ReencryptJobConfigurationData"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProcessedRowsPerTransaction"
+        type: "java.lang.Integer"
+        required: false
+  - id: "Start2"
+    name: "ReencryptJobConfigurationPasswords"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProcessedRowsPerTransaction"
+        type: "java.lang.Integer"
+        required: false
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ReencryptJobConfigurationData-ReencryptJobConfigurationPasswords"
+  - id: "End1"
+    type: "end"
+    strict: true
+  - id: "End2"
+    type: "end"
+    strict: true
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "ExecuteObjectsQuery4"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "job/GetAllJobConfigurations"
+    bindings:
+      SearchResult: "JobConfigurations"
+  - id: "JoinNode4"
+    type: "join"
+  - id: "ReencryptObjectsData2"
+    type: "pipelet"
+    ref: "ReencryptObjectsData"
+    config:
+      Handler: "com.intershop.beehive.core.internal.encryption.PersistentObjectPasswordEncryptionHandler"
+      ProcessedRowsPerTransaction: 10
+    bindings:
+      Objects: "JobConfigurations"
+
+links:
+  - from: "Start1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "ExecuteObjectsQuery4"
+    via: "error"
+    to: "JoinNode4"
+    into: "in1"
+  - from: "JoinNode4"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "CallNode1"
+    via: "error"
+    to: "EndNode1"
+    into: "in"
+  - from: "ExecuteObjectsQuery4"
+    via: "next"
+    to: "ReencryptObjectsData2"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "ExecuteObjectsQuery4"
+    into: "in"
+  - from: "ReencryptObjectsData2"
+    via: "error"
+    to: "JoinNode4"
+    into: "in1"
+  - from: "ReencryptObjectsData2"
+    via: "next"
+    to: "End2"
+    into: "in"

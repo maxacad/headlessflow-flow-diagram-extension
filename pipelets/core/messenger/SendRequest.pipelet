@@ -1,0 +1,20 @@
+name: SendRequest
+version: 1
+trigger: manual
+handler: ./SendRequest.ts
+ai:
+  skill: core-sendrequest
+  title: SendRequest
+  description: Intershop core pipelet – SendRequest.
+  tags: [messaging, async, event]
+  capabilities:
+    - execute-messenger-operation
+inputs:
+  Request: string
+  MessengerPoolID: string
+outputs:
+  Response: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.messenger.SendRequest

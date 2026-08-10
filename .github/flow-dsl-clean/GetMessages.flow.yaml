@@ -1,0 +1,88 @@
+flow: "GetMessages"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "BySimpleSearch"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode3"
+    type: "end"
+    strict: false
+  - id: "ExecutePageableQuery3"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      Datasource: "default"
+      DefaultPageSize: 15
+      QueryName: "message/GetMessagesBySimpleSearch"
+    bindings:
+      SearchResult: "Messages"
+      Parameters: "MessageSearchParameters"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "UpdateDictionary1"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "MessageSubjectExp"
+      Name_02: "MessageTypeCode"
+      Name_03: "MessageEnvelopeStates"
+      Name_04: "MessageRecipient"
+      Name_05: "LocaleInformation"
+      Name_06: "MessageAuthor"
+    bindings:
+      OutDictionary: "MessageSearchParameters"
+      Value_01: "MessageSubjectExp"
+      Value_02: "MessageTypeCode"
+      Value_03: "MessageEnvelopeStates"
+      Value_04: "MessageRecipient"
+      Value_05: "CurrentRequest:Locale"
+      Value_06: "MessageAuthor"
+  - id: "VerifySearchTerm8"
+    type: "pipelet"
+    ref: "VerifySearchTerm"
+    config:
+      AllowFuzzySearch: false
+      DefaultOperator: "AND"
+    bindings:
+      UserSearchTerm: "MessageSubject"
+      SearchExpression: "MessageSubjectExp"
+      ErrorCode: "MessageSubjectError"
+
+links:
+  - from: "VerifySearchTerm8"
+    via: "error"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "ExecutePageableQuery3"
+    via: "error"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "ExecutePageableQuery3"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "VerifySearchTerm8"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "VerifySearchTerm8"
+    via: "next"
+    to: "UpdateDictionary1"
+    into: "in"
+  - from: "UpdateDictionary1"
+    via: "next"
+    to: "ExecutePageableQuery3"
+    into: "in"

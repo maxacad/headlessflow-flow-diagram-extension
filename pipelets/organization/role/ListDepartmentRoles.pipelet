@@ -1,0 +1,21 @@
+name: ListDepartmentRoles
+version: 1
+trigger: manual
+handler: ./ListDepartmentRoles.ts
+ai:
+  skill: organization-listdepartmentroles
+  title: ListDepartmentRoles
+  description: Intershop organization pipelet – ListDepartmentRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  Department: any
+  Pagesize: number
+outputs:
+  Roles: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.ListDepartmentRoles

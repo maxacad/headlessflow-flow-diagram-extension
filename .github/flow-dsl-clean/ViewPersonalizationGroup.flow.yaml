@@ -1,0 +1,27 @@
+flow: "ViewPersonalizationGroup"
+kind: "include"
+
+entries:
+  - id: "StartNode2"
+    name: "DeterminePGIDForNewSession"
+    mode: "include"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessPersonalizationGroup-DeterminePGIDForNewSession"
+  - id: "InteractionNode1"
+    type: "interaction"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"

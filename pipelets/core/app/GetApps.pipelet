@@ -1,0 +1,19 @@
+name: GetApps
+version: 1
+trigger: manual
+handler: ./GetApps.ts
+ai:
+  skill: core-getapps
+  title: GetApps
+  description: Intershop core pipelet – GetApps.
+  tags: [integration, data]
+  capabilities:
+    - execute-app-operation
+inputs:
+  AppRegistryName: string
+outputs:
+  Apps: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.app.GetApps

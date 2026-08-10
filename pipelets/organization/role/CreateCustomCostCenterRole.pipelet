@@ -1,0 +1,23 @@
+name: CreateCustomCostCenterRole
+version: 1
+trigger: manual
+handler: ./CreateCustomCostCenterRole.ts
+ai:
+  skill: organization-createcustomcostcenterrole
+  title: CreateCustomCostCenterRole
+  description: Intershop organization pipelet – CreateCustomCostCenterRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  RoleID: string
+  Name: string
+  Description: string
+  CostCenter: any
+  LocaleInformation: any
+outputs:
+  Role: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CreateCustomCostCenterRole

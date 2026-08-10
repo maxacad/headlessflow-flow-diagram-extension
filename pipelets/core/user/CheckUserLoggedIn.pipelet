@@ -1,0 +1,20 @@
+name: CheckUserLoggedIn
+version: 1
+trigger: manual
+handler: ./CheckUserLoggedIn.ts
+ai:
+  skill: core-checkuserloggedin
+  title: CheckUserLoggedIn
+  description: Intershop core pipelet – CheckUserLoggedIn.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  Request: any
+  Session: any
+outputs:
+  ERROR_User: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.CheckUserLoggedIn

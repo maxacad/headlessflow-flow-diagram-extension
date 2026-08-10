@@ -1,0 +1,24 @@
+name: CreateDepartmentOwnerRole
+version: 1
+trigger: manual
+handler: ./CreateDepartmentOwnerRole.ts
+ai:
+  skill: organization-createdepartmentownerrole
+  title: CreateDepartmentOwnerRole
+  description: Intershop organization pipelet – CreateDepartmentOwnerRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  Department: any
+  RoleName: string
+  RoleDesc: string
+  PermissionGroupID: string
+outputs:
+  Role: any
+  PermissionGroup: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CreateDepartmentOwnerRole

@@ -1,0 +1,31 @@
+flow: "ViewContentImage"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "GenerateThumbnail"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessImage-GenerateThumbnail"
+  - id: "InteractionNode1"
+    type: "interaction"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "ERROR"
+    to: "InteractionNode1"
+    into: "in"

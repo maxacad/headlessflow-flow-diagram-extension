@@ -1,0 +1,19 @@
+name: DetermineAddresses
+version: 1
+trigger: manual
+handler: ./DetermineAddresses.ts
+ai:
+  skill: core-determineaddresses
+  title: DetermineAddresses
+  description: Intershop core pipelet – DetermineAddresses.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  Profile: any
+outputs:
+  Addresses: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.DetermineAddresses

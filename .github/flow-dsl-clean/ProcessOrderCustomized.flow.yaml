@@ -1,0 +1,66 @@
+flow: "ProcessOrderCustomized"
+kind: "process"
+
+entries:
+  - id: "StartNode2"
+    name: "CreateConsolidateOrders"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start1"
+    name: "CreateOrders"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "End1"
+    type: "end"
+  - id: "End2"
+    type: "end"
+  - id: "EndNode1"
+    type: "end"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "ConsolidateBasketsIntoNewOrders2"
+    config:
+      OrderType: "SupplierOrder"
+      SelectionMode: "OnlySelected"
+      SplitMode: "Supplier"
+    bindings:
+      Baskets: "Requisitions"
+      ConsolidatedOrders: "SupplierOrders"
+  - id: "CreateOrdersFromBasket1"
+    type: "pipelet"
+    ref: "CreateOrdersFromBasket2"
+    config:
+      OrderType: "SupplierOrder"
+      SelectionMode: "OnlySelected"
+      SplitMode: "Supplier"
+    bindings:
+      Basket: "Requisition"
+      Orders: "SupplierOrders"
+
+links:
+  - from: "Pipelet1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "CreateOrdersFromBasket1"
+    via: "error"
+    to: "End2"
+    into: "in"
+  - from: "CreateOrdersFromBasket1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "CreateOrdersFromBasket1"
+    into: "in"

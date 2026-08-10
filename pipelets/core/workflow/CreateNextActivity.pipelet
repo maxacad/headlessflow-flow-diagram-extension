@@ -1,0 +1,22 @@
+name: CreateNextActivity
+version: 1
+trigger: manual
+handler: ./CreateNextActivity.ts
+ai:
+  skill: core-createnextactivity
+  title: CreateNextActivity
+  description: Intershop core pipelet – CreateNextActivity.
+  tags: [workflow, approval, process]
+  capabilities:
+    - execute-workflow-operation
+inputs:
+  WorkflowThread: any
+  CurrentUser: any
+  CurrentDomain: any
+  NotificationTemplate: string
+outputs:
+  WorkflowActivity: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.workflow.CreateNextActivity

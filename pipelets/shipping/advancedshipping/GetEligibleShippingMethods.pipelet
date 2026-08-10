@@ -1,0 +1,21 @@
+name: GetEligibleShippingMethods
+version: 1
+trigger: manual
+handler: ./GetEligibleShippingMethods.ts
+ai:
+  skill: shipping-geteligibleshippingmethods
+  title: GetEligibleShippingMethods
+  description: Intershop shipping pipelet – GetEligibleShippingMethods.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Product: any
+  Address: any
+  ApplicationBO: object
+outputs:
+  List: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.GetEligibleShippingMethods

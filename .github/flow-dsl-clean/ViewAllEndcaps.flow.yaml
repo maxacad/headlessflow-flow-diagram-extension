@@ -1,0 +1,79 @@
+flow: "ViewAllEndcaps"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "Browse"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "ProductPaging"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "GetPageletEntryPointByID4"
+    type: "pipelet"
+    ref: "GetPageletEntryPointByID"
+    bindings:
+      ID: "\"systempage.endcaps.viewAll.pagelet2-systempage.endcaps.viewAll\""
+      Domain: "CurrentOrganization:OwningDomain"
+  - id: "GetValuesFromRequest4"
+    type: "pipelet"
+    ref: "GetValuesFromRequest"
+    config:
+      Namespace: "Application"
+    bindings:
+      Key: "\"CurrentOrganization\""
+      Namespace: "null"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "JoinNode3"
+    type: "join"
+  - id: "JumpNode2"
+    type: "jump"
+    ref: "ViewPage-Start"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "StartNode1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "GetValuesFromRequest4"
+    into: "in"
+  - from: "GetPageletEntryPointByID4"
+    via: "error"
+    to: "JoinNode2"
+    into: "in2"
+  - from: "GetPageletEntryPointByID4"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "JoinNode2"
+    via: "next"
+    to: "JumpNode2"
+    into: "in"
+  - from: "GetValuesFromRequest4"
+    via: "error"
+    to: "JoinNode3"
+    into: "in2"
+  - from: "GetValuesFromRequest4"
+    via: "next"
+    to: "JoinNode3"
+    into: "in1"
+  - from: "JoinNode3"
+    via: "next"
+    to: "GetPageletEntryPointByID4"
+    into: "in"

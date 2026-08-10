@@ -1,0 +1,20 @@
+name: GetResourcesOfStagingProcess
+version: 1
+trigger: manual
+handler: ./GetResourcesOfStagingProcess.ts
+ai:
+  skill: core-getresourcesofstagingprocess
+  title: GetResourcesOfStagingProcess
+  description: Intershop core pipelet – GetResourcesOfStagingProcess.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcess: any
+outputs:
+  Resources: iterator
+  Process: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.GetResourcesOfStagingProcess

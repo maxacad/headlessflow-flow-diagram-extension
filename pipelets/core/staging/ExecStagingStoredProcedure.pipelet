@@ -1,0 +1,21 @@
+name: ExecStagingStoredProcedure
+version: 1
+trigger: manual
+handler: ./ExecStagingStoredProcedure.ts
+ai:
+  skill: core-execstagingstoredprocedure
+  title: ExecStagingStoredProcedure
+  description: Intershop core pipelet – ExecStagingStoredProcedure.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StoredProcedure: string
+  Parameters: string
+  ParameterDefinition: string
+  AllowNullParameter: string
+  CurrentDomain: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.ExecStagingStoredProcedure

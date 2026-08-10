@@ -1,0 +1,22 @@
+name: AddUsersToUserRelation
+version: 1
+trigger: manual
+handler: ./AddUsersToUserRelation.ts
+ai:
+  skill: organization-adduserstouserrelation
+  title: AddUsersToUserRelation
+  description: Intershop organization pipelet – AddUsersToUserRelation.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  User: any
+  RelatedUser: any
+  RelatedUsers: iterator
+  RelationID: string
+  DefaultRelationID: string
+  RemoveExistingUsers: boolean
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.AddUsersToUserRelation

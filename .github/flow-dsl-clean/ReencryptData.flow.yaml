@@ -1,0 +1,39 @@
+flow: "ReencryptData"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "End2"
+    type: "end"
+    strict: false
+  - id: "ExecuteCartridgePipelines1"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      PipelinePropertyName: "ReencryptDataHook"
+      ProcessReversely: false
+
+links:
+  - from: "ExecuteCartridgePipelines1"
+    via: "error"
+    to: "End2"
+    into: "in"
+  - from: "ExecuteCartridgePipelines1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "ExecuteCartridgePipelines1"
+    into: "in"

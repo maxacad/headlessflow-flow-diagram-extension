@@ -1,0 +1,29 @@
+flow: "ViewOverview"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "DataReplication"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      WorkingTemplate: "replication/ReplicationOverview"
+  - id: "InteractionNode1"
+    type: "interaction"
+
+links:
+  - from: "Pipelet1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"

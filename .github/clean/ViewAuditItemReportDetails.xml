@@ -1,0 +1,170 @@
+<DPipeline dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeline" id="Pipeline1" >
+	<name>ViewAuditItemReportDetails</name>
+	<type>view</type>
+	<nodes>
+		<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletNode" id="GetAuditItemBO1" >
+			<display>
+				<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+					<center>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>2</x>
+							<y>3</y>
+						</DPoint>
+					</center>
+				</DNodeDisplay>
+			</display>
+			<pipeletName>GetAuditItemBO</pipeletName>
+			<keyBindings>
+				<DDictionaryKeyBinding dbo.type="com.intershop.beehive.core.rapi.pipeline.DDictionaryKeyBinding">
+					<key>ID</key>
+					<alias>AuditItemID</alias>
+				</DDictionaryKeyBinding>
+				<DDictionaryKeyBinding dbo.type="com.intershop.beehive.core.rapi.pipeline.DDictionaryKeyBinding">
+					<key>CreationDate</key>
+					<alias>AuditItemCreationDateObject</alias>
+				</DDictionaryKeyBinding>
+				<DDictionaryKeyBinding dbo.type="com.intershop.beehive.core.rapi.pipeline.DDictionaryKeyBinding">
+					<key>AuditItemBO</key>
+					<alias>AuditItemBO</alias>
+				</DDictionaryKeyBinding>
+			</keyBindings>
+			<pipeletSetIdentifier>
+				<DPipeletSetIdentifier dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletSetIdentifier">
+					<id>bc_auditing</id>
+				</DPipeletSetIdentifier>
+			</pipeletSetIdentifier>
+		</DNode>
+		<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DInteractionNode" id="InteractionNode1" >
+			<display>
+				<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+					<center>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>2</x>
+							<y>6</y>
+						</DPoint>
+					</center>
+				</DNodeDisplay>
+			</display>
+			<transactionRequired>false</transactionRequired>
+			<template>
+				<DTemplate dbo.type="com.intershop.beehive.core.rapi.pipeline.DTemplate">
+					<templateName>application/ApplicationFrame</templateName>
+					<dynamic>false</dynamic>
+					<buffered>true</buffered>
+				</DTemplate>
+			</template>
+		</DNode>
+		<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DJoinNode" id="JoinNode1" >
+			<display>
+				<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+					<center>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>2</x>
+							<y>4</y>
+						</DPoint>
+					</center>
+				</DNodeDisplay>
+			</display>
+		</DNode>
+		<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletNode" id="Pipelet1" >
+			<display>
+				<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+					<center>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>2</x>
+							<y>5</y>
+						</DPoint>
+					</center>
+				</DNodeDisplay>
+			</display>
+			<pipeletName>PrepareApplicationView</pipeletName>
+			<configProperties>
+				<DPipeletConfigProperty dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletConfigProperty">
+					<key>SelectedMenuItem</key>
+					<value>MassDataTasks</value>
+				</DPipeletConfigProperty>
+				<DPipeletConfigProperty dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletConfigProperty">
+					<key>WorkingTemplate</key>
+					<value>auditing/AuditItemReportDetails</value>
+				</DPipeletConfigProperty>
+			</configProperties>
+			<pipeletSetIdentifier>
+				<DPipeletSetIdentifier dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletSetIdentifier">
+					<id>bc_foundation</id>
+				</DPipeletSetIdentifier>
+			</pipeletSetIdentifier>
+		</DNode>
+		<DNode dbo.type="com.intershop.beehive.core.rapi.pipeline.DStartNode" id="StartNode2" >
+			<display>
+				<DNodeDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DNodeDisplay">
+					<center>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>2</x>
+							<y>1</y>
+						</DPoint>
+					</center>
+				</DNodeDisplay>
+			</display>
+			<name>Start</name>
+			<strict>false</strict>
+		</DNode>
+	</nodes>
+	<transitions>
+		<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="transition_GetAuditItemBO1_error_JoinNode1_in1" >
+			<fromId>GetAuditItemBO1</fromId>
+			<fromConnector>error</fromConnector>
+			<toId>JoinNode1</toId>
+			<toConnector>in1</toConnector>
+			<display>
+				<DTransitionDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransitionDisplay">
+					<markerIndex>0</markerIndex>
+					<displayPoints>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>6</x>
+							<y>7</y>
+						</DPoint>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>6</x>
+							<y>9</y>
+						</DPoint>
+					</displayPoints>
+				</DTransitionDisplay>
+			</display>
+		</DTransition>
+		<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="transition_GetAuditItemBO1_next_JoinNode1_in1" >
+			<fromId>GetAuditItemBO1</fromId>
+			<fromConnector>next</fromConnector>
+			<toId>JoinNode1</toId>
+			<toConnector>in1</toConnector>
+		</DTransition>
+		<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="transition_JoinNode1_next_Pipelet1_in" >
+			<fromId>JoinNode1</fromId>
+			<fromConnector>next</fromConnector>
+			<toId>Pipelet1</toId>
+			<toConnector>in</toConnector>
+			<display>
+				<DTransitionDisplay dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransitionDisplay">
+					<markerIndex>0</markerIndex>
+					<displayPoints>
+						<DPoint dbo.type="com.intershop.beehive.core.rapi.common.DPoint">
+							<x>5</x>
+							<y>10</y>
+						</DPoint>
+					</displayPoints>
+				</DTransitionDisplay>
+			</display>
+		</DTransition>
+		<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="transition_Pipelet1_next_InteractionNode1_in" >
+			<fromId>Pipelet1</fromId>
+			<fromConnector>next</fromConnector>
+			<toId>InteractionNode1</toId>
+			<toConnector>in</toConnector>
+		</DTransition>
+		<DTransition dbo.type="com.intershop.beehive.core.rapi.pipeline.DTransition" id="transition_StartNode2_next_GetAuditItemBO1_in" >
+			<fromId>StartNode2</fromId>
+			<fromConnector>next</fromConnector>
+			<toId>GetAuditItemBO1</toId>
+			<toConnector>in</toConnector>
+		</DTransition>
+	</transitions>
+</DPipeline>

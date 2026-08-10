@@ -1,0 +1,50 @@
+flow: "UpdateRuleBasedProductSetsJob"
+kind: "job"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessProductSet-UpdateRuleBasedAssignments"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      Datasource: "current ORM connection"
+      QueryName: "productset/GetAllRuleBasedProductSets"
+    bindings:
+      SearchResult: "ProductSets"
+  - id: "LoopNode1"
+    type: "loop"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "LoopNode1"
+    into: "in"
+  - from: "LoopNode1"
+    via: "do"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "LoopNode1"
+    into: "loop"
+  - from: "LoopNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

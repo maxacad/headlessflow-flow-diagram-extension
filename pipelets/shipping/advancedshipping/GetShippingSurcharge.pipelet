@@ -1,0 +1,22 @@
+name: GetShippingSurcharge
+version: 1
+trigger: manual
+handler: ./GetShippingSurcharge.ts
+ai:
+  skill: shipping-getshippingsurcharge
+  title: GetShippingSurcharge
+  description: Intershop shipping pipelet – GetShippingSurcharge.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Product: any
+  ShippingMethod: any
+  Region: any
+  Currency: string
+outputs:
+  ShippingSurcharge: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.GetShippingSurcharge

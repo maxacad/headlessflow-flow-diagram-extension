@@ -1,0 +1,38 @@
+flow: "ProcessChannelList"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "ListAll"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "ExecutePageableQuery1"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      Datasource: "default"
+      DefaultPageSize: 100000000
+      QueryName: "channel/GetAllChannels"
+      ParameterName_01: "Domain"
+      ParameterName_02: "LocaleInformation"
+    bindings:
+      SearchResult: "Repositories"
+      ParameterValue_01: "CurrentOrganization:OrganizationDomain"
+      ParameterValue_02: "CurrentRequest:Locale"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "ExecutePageableQuery1"
+    into: "in"
+  - from: "ExecutePageableQuery1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

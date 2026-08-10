@@ -1,0 +1,445 @@
+/* ── Reset ──────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: #333333;
+  font-family: var(--vscode-font-family, -apple-system, sans-serif);
+}
+
+/* ── Layout (Sidebar + Canvas) ─────────────────────────────── */
+.flow-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.flow-sidebar {
+  width: 180px;
+  min-width: 180px;
+  flex-shrink: 0;
+  border-right: 1px solid #dbe2ea;
+  background: linear-gradient(180deg, #f8fafc 0%, #f2f6fb 100%);
+  padding: 14px 12px;
+  overflow-y: auto;
+}
+
+.flow-sidebar-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #223347;
+}
+
+.flow-sidebar-subtitle {
+  font-size: 11px;
+  color: #60758a;
+  margin-top: 2px;
+}
+
+.flow-sidebar-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8899aa;
+  margin: 14px 0 6px;
+}
+
+.flow-sidebar-list {
+  display: grid;
+  gap: 6px;
+}
+
+.sidebar-item {
+  border: 1px solid #cfd8e3;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 9px 10px;
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.sidebar-item:active {
+  cursor: grabbing;
+}
+
+.sidebar-item:hover {
+  border-color: #90caf9;
+  box-shadow: 0 8px 16px rgba(33, 150, 243, 0.12);
+  transform: translateY(-1px);
+}
+
+.sidebar-item-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #243447;
+}
+
+.sidebar-item-subtitle {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #60758a;
+}
+
+.flow-canvas {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  isolation: isolate;
+}
+
+.flow-canvas .react-flow {
+  position: relative;
+  z-index: 10;
+}
+
+.flow-canvas .react-flow__renderer,
+.flow-canvas .react-flow__viewport,
+.flow-canvas .react-flow__pane {
+  position: relative;
+  z-index: 10;
+}
+
+.react-flow__edge {
+  z-index: 12 !important;
+}
+
+/* ── Node wrapper (140×140 interactive zone) ────────────────── */
+.node-wrapper {
+  --inner-size: 64px;
+  --inner-half: 32px;
+  --handle-gap: 10px;
+  width: var(--node-width, 140px);
+  height: var(--node-height, 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: default;
+  overflow: visible;
+}
+
+/* React Flow sets grab on nodes by default — override */
+/* The RF node container is made pointer-events:none so the transparent outer  */
+/* area (150x140 cell) does not block edge clicks. The inner box and handles   */
+/* keep pointer-events so they work normally. RF drag is initiated on the      */
+/* node-inner-box element which has pointer-events:all.                        */
+.react-flow__node {
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+.react-flow__node.dragging {
+  pointer-events: all !important;
+  cursor: grabbing !important;
+}
+
+.react-flow__node.dragging .node-wrapper {
+  cursor: grabbing !important;
+}
+
+/* Inner visual box and handles must always receive events */
+.react-flow__node .node-inner-box,
+.react-flow__node .react-flow__handle {
+  pointer-events: all !important;
+}
+
+
+.node-wrapper:hover .node-inner {
+  outline: 4px solid #4283f4;
+  outline-offset: 3px;
+  box-shadow: none;
+  transform: none;
+}
+
+.node-inner--selected {
+  outline: 4px solid #ff7105 !important;
+  outline-offset: 3px;
+}
+
+/* Suppress React Flow's default selected outline */
+.react-flow__node.selected {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Node inner (64×64 visual component) ───────────────────── */
+.node-inner {
+  position: relative;
+  width: var(--inner-size);
+  height: var(--inner-size);
+  padding: 4px;
+   background: linear-gradient(180deg, #ffffff 100%, #f7f9fc 100%);
+   border: 1.5px solid #cfd8e3;
+   background-color: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, border-width 0.15s ease;
+}
+
+.node-badge {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #0d47a1;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.node-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #243447;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  user-select: none;
+}
+
+.node-subtitle {
+  font-size: 9px;
+  color: #60758a;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  user-select: none;
+}
+
+.node-kind-input .node-inner {
+  border-left: 4px solid #2e7d32;
+}
+
+.node-kind-process .node-inner {
+  border-left: 4px solid #1565c0;
+}
+
+.node-kind-output .node-inner {
+  border-left: 4px solid #ef6c00;
+}
+
+/* ── React Flow overrides ───────────────────────────────────── */
+.react-flow__node {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  z-index: 13 !important;
+}
+
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  background: #1d5ff8;
+  border: 2px solid #ffffff;
+  box-shadow: none;
+}
+
+.node-handle-input {
+  top: calc(50% - var(--inner-half) - var(--handle-gap)) !important;
+}
+
+.node-handle-output {
+  bottom: calc(50% - var(--inner-half) - var(--handle-gap)) !important;
+}
+
+.node-handle-error {
+  right: calc(50% - var(--inner-half) - var(--handle-gap)) !important;
+}
+
+.react-flow__edge-path {
+  stroke: #799cf0;
+  stroke-width: 1px;
+}
+
+.react-flow__background {
+  z-index: 0 !important;
+}
+
+/* Only the first (bottom) Background layer gets the canvas colour.
+   Additional layers must stay transparent so patterns stack visibly. */
+.react-flow__background:first-of-type {
+  background: linear-gradient(180deg, #e8ecef 80%, #e8ecef 100%);
+/*     background: linear-gradient(180deg, #e4e9f3 80%, #e4e9f3 100%);
+ */
+}
+
+.hoverable-bg-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.flow-hover-cell-overlay {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  cursor: default !important;
+  background: rgba(33, 150, 243, 0.10);
+  border: 0px solid rgba(33, 150, 243, 0.35);
+}
+
+.flow-hover-cell-overlay--occupied {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(229, 57, 53, 0.18) 0px,
+    rgba(229, 57, 53, 0.18) 4px,
+    transparent 4px,
+    transparent 10px
+  );
+  background-color: rgba(229, 57, 53, 0.06);
+  outline: 2px solid rgba(229, 57, 53, 0.6);
+  outline-offset: 0px;
+  z-index: 1 !important;
+}
+
+.flow-canvas .react-flow__pane {
+  cursor: default;
+}
+
+.flow-status-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dag-debug-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 260px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.6);
+  font-size: 11px;
+  font-weight: 600;
+  color: #757575;
+  user-select: none;
+  pointer-events: none;
+}
+
+.dag-debug-badge--active {
+  background: #1976d2;
+  color: #fff;
+}
+
+.dag-debug-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #555;
+  flex-shrink: 0;
+}
+
+.dag-debug-badge--active .dag-debug-badge-dot {
+  background: rgba(255,255,255,0.75);
+}
+
+.dag-debug-badge-detail {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: Consolas, 'Courier New', monospace;
+  opacity: 0.8;
+}
+
+/* ── Handle: left side (Join node input2) ───────────────────── */
+.node-handle-left {
+  left: calc(50% - var(--inner-half) - var(--handle-gap)) !important;
+}
+
+/* ── Node icon container ─────────────────────────────────────── */
+.node-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  margin-bottom: 1px;
+}
+
+/* ── New node type accent borders & icon colours ─────────────── */
+.node-fn       .node-inner { border-left: 4px solid #1565c0; }
+.node-decision .node-inner { border-left: 4px solid #e65100; }
+.node-script   .node-inner { border-left: 4px solid #6a1b9a; }
+.node-stop     .node-inner { border-left: 4px solid #c62828; }
+.node-end      .node-inner { border-left: 4px solid #4a148c; }
+.node-view     .node-inner { border-left: 4px solid #00695c; }
+.node-loop     .node-inner { border-left: 4px solid #283593; }
+.node-call     .node-inner { border-left: 4px solid #006064; }
+.node-join     .node-inner { border-left: 4px solid #37474f; }
+.node-start    .node-inner { border-left: 4px solid #1b5e20; }
+
+.node-fn       .node-icon { color: #1565c0; }
+.node-decision .node-icon { color: #e65100; }
+.node-script   .node-icon { color: #6a1b9a; }
+.node-stop     .node-icon { color: #c62828; }
+.node-end      .node-icon { color: #4a148c; }
+.node-view     .node-icon { color: #00695c; }
+.node-loop     .node-icon { color: #283593; }
+.node-call     .node-icon { color: #006064; }
+.node-join     .node-icon { color: #37474f; }
+.node-start    .node-icon { color: #1b5e20; }
+
+/* ── Start Node Popover ─────────────────────────────────────── */
+.start-popover {
+  position: absolute;
+  bottom: calc(100% - 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: all;
+  animation: popover-in 0.12s ease;
+  padding-bottom: 4px;
+}
+
+@keyframes popover-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(3px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.start-popover-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  transition: background 0.12s ease;
+}
+
+.start-popover-btn:hover {
+  background: #2a2a2a;
+}
+
+.start-popover-btn:active {
+  background: #111;
+}
+

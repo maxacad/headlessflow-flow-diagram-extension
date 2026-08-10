@@ -1,0 +1,20 @@
+name: GetLatestWishlistItems
+version: 1
+trigger: manual
+handler: ./GetLatestWishlistItems.ts
+ai:
+  skill: wishlist-getlatestwishlistitems
+  title: GetLatestWishlistItems
+  description: Intershop wishlist pipelet – GetLatestWishlistItems.
+  tags: [integration, data]
+  capabilities:
+    - execute-GetLatestWishlistItems-operation
+inputs:
+  WishlistBORepository: object
+  Limit: number
+outputs:
+  WishlistItems: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.wishlist.pipelet.GetLatestWishlistItems

@@ -1,0 +1,90 @@
+flow: "GetOrganizations"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "AddObjectToVector1"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      Object: "OrganizationType"
+      Iterator: "TypeCodes"
+  - id: "Decision6"
+    type: "decision"
+    condition: "OrganizationType"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode2"
+    type: "end"
+    strict: false
+  - id: "ExecutePageableQuery2"
+    type: "pipelet"
+    ref: "ExecutePageableQuery"
+    config:
+      Datasource: "default"
+      DefaultPageSize: 10
+      QueryName: "organization/GetOrganizationsByOwningDomain"
+    bindings:
+      SearchResult: "Organizations"
+      Parameters: "OrganizationSearchParameters"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "UpdateDictionary2"
+    type: "pipelet"
+    ref: "UpdateDictionary"
+    config:
+      Name_01: "OwningDomain"
+      Name_02: "Locale"
+      Name_03: "SortBy"
+      Name_04: "SortDirection"
+      Name_05: "TypeCodes"
+    bindings:
+      OutDictionary: "OrganizationSearchParameters"
+      InDictionary: "null"
+      Value_01: "OwningDomain"
+      Value_02: "CurrentRequest:Locale"
+      Value_03: "SortingAttribute"
+      Value_04: "SortDirection"
+      Value_05: "TypeCodes"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "Decision6"
+    into: "in"
+  - from: "ExecutePageableQuery2"
+    via: "error"
+    to: "EndNode1"
+    into: "in"
+  - from: "UpdateDictionary2"
+    via: "next"
+    to: "ExecutePageableQuery2"
+    into: "in"
+  - from: "ExecutePageableQuery2"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "Decision6"
+    via: "yes"
+    to: "AddObjectToVector1"
+    into: "in"
+  - from: "AddObjectToVector1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "Decision6"
+    via: "no"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "JoinNode1"
+    via: "next"
+    to: "UpdateDictionary2"
+    into: "in"

@@ -1,0 +1,80 @@
+flow: "ViewPageletPropertiesAssignPromotion"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "ViewPromotion"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "GetPageletPromotionAssignment"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode4"
+    name: "Dispatch"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode9"
+    name: "ViewPromotionContent"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "EndNode10"
+    type: "end"
+    strict: false
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "Error-Start"
+  - id: "JumpNode2"
+    type: "jump"
+    ref: "Error-Start"
+  - id: "JumpNode4"
+    type: "jump"
+    ref: "Error-Start"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "PublishedDuringPromotion"
+      Value: true
+  - id: "SetDictionaryValue2"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "DisablePromotion"
+      Value: true
+
+links:
+  - from: "StartNode4"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "JumpNode2"
+    into: "in"
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "SetDictionaryValue2"
+    into: "in"
+  - from: "SetDictionaryValue2"
+    via: "next"
+    to: "EndNode10"
+    into: "in"
+  - from: "StartNode9"
+    via: "next"
+    to: "JumpNode4"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "SetDictionaryValue1"
+    into: "in"

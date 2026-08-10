@@ -1,0 +1,111 @@
+flow: "ProcessUserAddresses"
+kind: "process"
+
+entries:
+  - id: "StartNode4"
+    name: "UpdateDataSheet"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "User"
+        type: "com.intershop.beehive.core.capi.user.User"
+        required: true
+      - key: "City"
+        type: "java.lang.String"
+        required: false
+      - key: "Country"
+        type: "java.lang.String"
+        required: false
+      - key: "CountryCode"
+        type: "java.lang.String"
+        required: false
+      - key: "State"
+        type: "java.lang.String"
+        required: false
+      - key: "Street"
+        type: "java.lang.String"
+        required: false
+      - key: "Street2"
+        type: "java.lang.String"
+        required: false
+      - key: "FirstName"
+        type: "java.lang.String"
+        required: false
+      - key: "LastName"
+        type: "java.lang.String"
+        required: false
+      - key: "PhoneHome"
+        type: "java.lang.String"
+        required: false
+      - key: "PostalCode"
+        type: "java.lang.String"
+        required: false
+      - key: "Title"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+  - id: "EndNode7"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ERROR_User"
+        type: "java.lang.String"
+        guaranteed: false
+  - id: "UpdateUserProfile1"
+    type: "pipelet"
+    ref: "UpdateUserProfile"
+    bindings:
+      CurrentUser: "User"
+      Email: "User:Profile:Credentials:Login"
+      UpdateDefaultAddress: "\"true\""
+      Suffix: "null"
+      StreetTranscription: "null"
+      SecondName: "null"
+      SecondLastName: "null"
+      Region: "null"
+      Province: "null"
+      Prefecture: "null"
+      PostBox: "null"
+      PhoneBusinessDirect: "null"
+      PhoneBusiness: "null"
+      PasswordReminder: "null"
+      PasswordConfirmation: "null"
+      Password: "null"
+      OldPassword: "null"
+      NickName: "null"
+      Mobile: "null"
+      LocaleID: "null"
+      LastNameTranscription: "null"
+      JobTitle: "null"
+      Honorific: "null"
+      Homepage: "null"
+      Gender: "null"
+      FirstNameTranscription: "null"
+      Fax: "null"
+      Description: "null"
+      County: "null"
+      ConfirmMail: "null"
+      ConfirmFax: "null"
+      CompanyTranscription: "null"
+      Company: "null"
+      BirthdayDate: "null"
+      Birthday: "null"
+      AddressNr: "null"
+
+links:
+  - from: "UpdateUserProfile1"
+    via: "error"
+    to: "EndNode7"
+    into: "in"
+  - from: "UpdateUserProfile1"
+    via: "next"
+    to: "EndNode6"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "UpdateUserProfile1"
+    into: "in"

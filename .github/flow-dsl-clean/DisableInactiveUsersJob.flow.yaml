@@ -1,0 +1,80 @@
+flow: "DisableInactiveUsersJob"
+kind: "job"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "organization/GetAllOrganizations"
+      Datasource: "current ORM connection"
+    bindings:
+      SearchResult: "Organizations"
+  - id: "ExecutePipeline1"
+    type: "pipelet"
+    ref: "ExecutePipeline"
+    config:
+      PipelineName: "DisableInactiveUsers"
+      PipelineStartNode: "Start"
+    bindings:
+      PipelineName: "null"
+      PipelineStartNode: "null"
+      CurrentDomain: "null"
+      PipelineDomain: "Organization:OrganizationDomain:Site"
+      PipelineDomainID: "null"
+      PipelineDomainName: "null"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "KeyMapper2"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "Organization:OrganizationDomain:DomainName"
+      OutValue_1: "UnitName"
+  - id: "Loop1"
+    type: "loop"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"
+  - from: "Loop1"
+    via: "do"
+    to: "KeyMapper2"
+    into: "in"
+  - from: "Loop1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "Loop1"
+    into: "in"
+  - from: "ExecutePipeline1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "KeyMapper2"
+    via: "next"
+    to: "ExecutePipeline1"
+    into: "in"
+  - from: "ExecutePipeline1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "JoinNode1"
+    via: "next"
+    to: "Loop1"
+    into: "loop"

@@ -1,0 +1,32 @@
+flow: "ViewOnlineMarketing"
+kind: "view"
+
+entries:
+  - id: "Start5"
+    name: "Overview"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "InteractionEnd2"
+    type: "interaction"
+  - id: "PrepareApplicationView1"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "OnlineMarketing"
+      WorkingTemplate: "marketing/OnlineMarketingOverview_52"
+    bindings:
+      WorkingTemplateSuffix: "CurrentChannel:TypeCode"
+
+links:
+  - from: "PrepareApplicationView1"
+    via: "next"
+    to: "InteractionEnd2"
+    into: "in"
+  - from: "Start5"
+    via: "next"
+    to: "PrepareApplicationView1"
+    into: "in"

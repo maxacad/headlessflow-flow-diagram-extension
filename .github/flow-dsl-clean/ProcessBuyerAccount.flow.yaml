@@ -1,0 +1,165 @@
+flow: "ProcessBuyerAccount"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Get"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "FirstName"
+        type: "java.lang.String"
+        required: false
+      - key: "LastName"
+        type: "java.lang.String"
+        required: false
+      - key: "Title"
+        type: "java.lang.String"
+        required: false
+      - key: "Company"
+        type: "java.lang.String"
+        required: false
+      - key: "ConfirmMail"
+        type: "java.lang.String"
+        required: false
+      - key: "ConfirmFax"
+        type: "java.lang.String"
+        required: false
+      - key: "City"
+        type: "java.lang.String"
+        required: false
+      - key: "State"
+        type: "java.lang.String"
+        required: false
+      - key: "Street"
+        type: "java.lang.String"
+        required: false
+      - key: "ZipCode"
+        type: "java.lang.String"
+        required: false
+      - key: "Country"
+        type: "java.lang.String"
+        required: false
+      - key: "PhoneBusiness"
+        type: "java.lang.String"
+        required: false
+      - key: "PhoneBusinessDirect"
+        type: "java.lang.String"
+        required: false
+      - key: "PhoneHome"
+        type: "java.lang.String"
+        required: false
+      - key: "Fax"
+        type: "java.lang.String"
+        required: false
+      - key: "Email"
+        type: "java.lang.String"
+        required: false
+  - id: "Start2"
+    name: "Update"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CheckUserLoggedIn1"
+    type: "pipelet"
+    ref: "CheckUserLoggedIn"
+  - id: "CheckUserLoggedIn3"
+    type: "pipelet"
+    ref: "CheckUserLoggedIn"
+  - id: "DetermineUserProfile1"
+    type: "pipelet"
+    ref: "DetermineUserProfile"
+  - id: "DetermineUserProfile2"
+    type: "pipelet"
+    ref: "DetermineUserProfile"
+  - id: "End2"
+    type: "end"
+    strict: false
+  - id: "End3"
+    type: "end"
+    strict: false
+  - id: "End4"
+    type: "end"
+    strict: false
+  - id: "End5"
+    type: "end"
+    strict: false
+  - id: "End6"
+    type: "end"
+    strict: false
+  - id: "End9"
+    type: "end"
+    strict: false
+  - id: "UpdateUserProfile1"
+    type: "pipelet"
+    ref: "UpdateUserProfile"
+    bindings:
+      City: "AccountDataForm:City:Value"
+      Company: "AccountDataForm:Company:Value"
+      ConfirmFax: "AccountDataForm:ConfirmFax:Value"
+      ConfirmMail: "AccountDataForm:ConfirmMail:Value"
+      Country: "AccountDataForm:Country:Value"
+      Email: "AccountDataForm:Email:Value"
+      Fax: "AccountDataForm:Fax:Value"
+      FirstName: "AccountDataForm:FirstName:Value"
+      LastName: "AccountDataForm:LastName:Value"
+      OldPassword: "AccountPasswordForm:OldPassword:Value"
+      Password: "AccountPasswordForm:Password:Value"
+      PasswordConfirmation: "AccountPasswordForm:PasswordConfirmation:Value"
+      PasswordReminder: "AccountPasswordForm:PasswordReminder:Value"
+      PhoneBusiness: "AccountDataForm:PhoneBusiness:Value"
+      PhoneBusinessDirect: "AccountDataForm:PhoneBusinessDirect:Value"
+      PhoneHome: "AccountDataForm:PhoneHome:Value"
+      PostalCode: "AccountDataForm:PostalCode:Value"
+      State: "AccountDataForm:State:Value"
+      Street: "AccountDataForm:Street:Value"
+      Title: "AccountDataForm:Title:Value"
+
+links:
+  - from: "CheckUserLoggedIn3"
+    via: "error"
+    to: "End2"
+    into: "in"
+  - from: "UpdateUserProfile1"
+    via: "next"
+    to: "End3"
+    into: "in"
+  - from: "DetermineUserProfile2"
+    via: "next"
+    to: "UpdateUserProfile1"
+    into: "in"
+  - from: "CheckUserLoggedIn3"
+    via: "next"
+    to: "DetermineUserProfile1"
+    into: "in"
+  - from: "DetermineUserProfile1"
+    via: "error"
+    to: "End9"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "CheckUserLoggedIn3"
+    into: "in"
+  - from: "DetermineUserProfile1"
+    via: "next"
+    to: "End4"
+    into: "in"
+  - from: "CheckUserLoggedIn1"
+    via: "error"
+    to: "End5"
+    into: "in"
+  - from: "CheckUserLoggedIn1"
+    via: "next"
+    to: "DetermineUserProfile2"
+    into: "in"
+  - from: "DetermineUserProfile2"
+    via: "error"
+    to: "End6"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "CheckUserLoggedIn1"
+    into: "in"

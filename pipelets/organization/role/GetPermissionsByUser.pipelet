@@ -1,0 +1,23 @@
+name: GetPermissionsByUser
+version: 1
+trigger: manual
+handler: ./GetPermissionsByUser.ts
+ai:
+  skill: organization-getpermissionsbyuser
+  title: GetPermissionsByUser
+  description: Intershop organization pipelet – GetPermissionsByUser.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  AuthorizationObject: any
+  Organization: any
+  User: any
+  Permission_Prefix: string
+outputs:
+  PermissionList: iterator
+  PermissionMap: map
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetPermissionsByUser

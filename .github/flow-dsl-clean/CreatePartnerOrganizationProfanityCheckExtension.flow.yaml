@@ -1,0 +1,61 @@
+flow: "CreatePartnerOrganizationProfanityCheckExtension"
+kind: "extension"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Organization"
+        type: "com.intershop.component.organization.capi.Organization"
+        required: true
+
+steps:
+  - id: "DecisionNode5"
+    type: "decision"
+    condition: "Organization:TypeCode"
+  - id: "DetermineLocales1"
+    type: "pipelet"
+    ref: "DetermineLocales"
+    bindings:
+      Locales: "LocalesIterator"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "InitializeNewOrganizationWithBadWords1"
+    type: "pipelet"
+    ref: "InitializeNewOrganizationWithBadWords"
+    bindings:
+      DirectoryName: "\"profanitycheck\""
+      Domain: "Organization:Domain"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "TextNode1"
+    type: "text"
+
+links:
+  - from: "DecisionNode5"
+    via: "no"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "DecisionNode5"
+    via: "yes"
+    to: "DetermineLocales1"
+    into: "in"
+  - from: "DetermineLocales1"
+    via: "next"
+    to: "InitializeNewOrganizationWithBadWords1"
+    into: "in"
+  - from: "InitializeNewOrganizationWithBadWords1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "DecisionNode5"
+    into: "in"

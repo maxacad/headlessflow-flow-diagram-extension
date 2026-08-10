@@ -1,0 +1,25 @@
+name: LookupNamedResource
+version: 1
+trigger: manual
+handler: ./LookupNamedResource.ts
+ai:
+  skill: core-lookupnamedresource
+  title: LookupNamedResource
+  description: Intershop core pipelet – LookupNamedResource.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  ResourceName: string
+  LockingDomain: any
+  InstanceClassName: string
+outputs:
+  Resource: any
+  Owner: any
+  Lifetime: number
+  ExpirationDate: any
+  CreationDate: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.LookupNamedResource

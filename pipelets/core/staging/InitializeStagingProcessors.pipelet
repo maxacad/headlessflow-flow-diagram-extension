@@ -1,0 +1,21 @@
+name: InitializeStagingProcessors
+version: 1
+trigger: manual
+handler: ./InitializeStagingProcessors.ts
+ai:
+  skill: core-initializestagingprocessors
+  title: InitializeStagingProcessors
+  description: Intershop core pipelet – InitializeStagingProcessors.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingContext: any
+  StagingProcess: any
+outputs:
+  ErrorStatus: string
+  Exception: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.InitializeStagingProcessors

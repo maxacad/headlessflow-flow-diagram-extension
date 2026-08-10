@@ -1,0 +1,24 @@
+name: ExecuteCartridgePipelines
+version: 1
+trigger: manual
+handler: ./ExecuteCartridgePipelines.ts
+ai:
+  skill: core-executecartridgepipelines
+  title: ExecuteCartridgePipelines
+  description: Intershop core pipelet – ExecuteCartridgePipelines.
+  tags: [integration, data]
+  capabilities:
+    - execute-pipeline-operation
+inputs:
+  CurrentDomain: any
+  PipelinePropertyName: string
+  Asynchronous: string
+  CurrentUser: any
+  ProcessReversely: string
+outputs:
+  Exception: any
+  PipelineResult: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.pipeline.ExecuteCartridgePipelines

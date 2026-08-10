@@ -1,0 +1,21 @@
+name: GetWebService
+version: 1
+trigger: manual
+handler: ./GetWebService.ts
+ai:
+  skill: core-getwebservice
+  title: GetWebService
+  description: Intershop core pipelet – GetWebService.
+  tags: [integration, data]
+  capabilities:
+    - execute-webservice-operation
+inputs:
+  DomainName: string
+  CartridgeName: string
+  WebServiceName: string
+outputs:
+  WebService: object
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.webservice.GetWebService

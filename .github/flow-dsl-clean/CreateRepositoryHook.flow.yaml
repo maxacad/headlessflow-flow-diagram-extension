@@ -1,0 +1,57 @@
+flow: "CreateRepositoryHook"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessInitializeImages-CopyDefinitionDomainPreference"
+    bindings:
+      SourceDomain: "Repository:OwningDomain"
+      TargetDomain: "Repository:RepositoryDomain"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessPageletEntryPointSynchronization-SynchronizeRepositoryDomain"
+    bindings:
+      RepositoryDomain: "Repository:RepositoryDomain"
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "Repository:TypeCode"
+  - id: "End4"
+    type: "end"
+    strict: false
+  - id: "JoinNode1"
+    type: "join"
+
+links:
+  - from: "JoinNode1"
+    via: "next"
+    to: "End4"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "CallNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "CallNode1"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"

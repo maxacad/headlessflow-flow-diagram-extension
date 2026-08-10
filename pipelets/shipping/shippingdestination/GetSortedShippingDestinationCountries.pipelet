@@ -1,0 +1,19 @@
+name: GetSortedShippingDestinationCountries
+version: 1
+trigger: manual
+handler: ./GetSortedShippingDestinationCountries.ts
+ai:
+  skill: shipping-getsortedshippingdestinationcountries
+  title: GetSortedShippingDestinationCountries
+  description: Intershop shipping pipelet – GetSortedShippingDestinationCountries.
+  tags: [shipping, geography]
+  capabilities:
+    - execute-shippingdestination-operation
+inputs:
+  ShippingDestinationCountriesProvider: object
+outputs:
+  Countries: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.shippingdestination.GetSortedShippingDestinationCountries

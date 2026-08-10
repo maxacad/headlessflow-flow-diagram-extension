@@ -1,0 +1,19 @@
+name: GetResourceBundle
+version: 1
+trigger: manual
+handler: ./GetResourceBundle.ts
+ai:
+  skill: core-getresourcebundle
+  title: GetResourceBundle
+  description: Intershop core pipelet – GetResourceBundle.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  ResourceBundleLocation: string
+outputs:
+  ResourceBundle: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.GetResourceBundle

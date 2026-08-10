@@ -1,0 +1,80 @@
+flow: "ProcessSorting"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "MovePositions"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "SortedPositionables"
+        type: "java.util.Iterator"
+        required: true
+      - key: "SelectedObjectUUIDs"
+        type: "java.util.Iterator"
+        required: true
+      - key: "moveDirection"
+        type: "java.lang.String"
+        required: true
+      - key: "ObjectIDFieldName"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "moveDirection"
+  - id: "EndNode18"
+    type: "end"
+    strict: true
+  - id: "InitPositionables1"
+    type: "pipelet"
+    ref: "InitPositionables"
+  - id: "JoinNode11"
+    type: "join"
+  - id: "JoinNode9"
+    type: "join"
+  - id: "MovePositionables1"
+    type: "pipelet"
+    ref: "MovePositionables"
+    config:
+      MoveDirection: "Up"
+  - id: "MovePositionables2"
+    type: "pipelet"
+    ref: "MovePositionables"
+    config:
+      MoveDirection: "Down"
+
+links:
+  - from: "InitPositionables1"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "MovePositionables1"
+    via: "next"
+    to: "JoinNode11"
+    into: "in1"
+  - from: "MovePositionables2"
+    via: "next"
+    to: "JoinNode9"
+    into: "in2"
+  - from: "StartNode1"
+    via: "next"
+    to: "InitPositionables1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "MovePositionables2"
+    into: "in"
+  - from: "JoinNode9"
+    via: "next"
+    to: "JoinNode11"
+    into: "in3"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "MovePositionables1"
+    into: "in"
+  - from: "JoinNode11"
+    via: "next"
+    to: "EndNode18"
+    into: "in"

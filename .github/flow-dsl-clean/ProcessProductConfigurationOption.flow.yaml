@@ -1,0 +1,282 @@
+flow: "ProcessProductConfigurationOption"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Create"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ID"
+        type: "java.lang.String"
+        required: true
+      - key: "ProductConfigurationSectionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSectionBO"
+        required: true
+      - key: "Type"
+        type: "java.lang.String"
+        required: true
+      - key: "MessageType"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode12"
+    name: "MultipleRemove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValueIDs"
+        type: "java.util.Iterator"
+        required: true
+      - key: "ProductConfigurationSection"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationSectionBO"
+        required: true
+  - id: "StartNode2"
+    name: "Update"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationOptionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationOptionBO"
+        required: true
+      - key: "ConsumerExposedAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "DefaultValue"
+        type: "java.lang.Object"
+        required: false
+      - key: "DisplayName"
+        type: "java.lang.String"
+        required: false
+      - key: "Description"
+        type: "java.lang.String"
+        required: false
+      - key: "Position"
+        type: "java.lang.Double"
+        required: false
+      - key: "Hidden"
+        type: "java.lang.Boolean"
+        required: false
+      - key: "Image"
+        type: "java.lang.String"
+        required: false
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+      - key: "OrderRequiredAttributes"
+        type: "java.util.Collection"
+        required: false
+      - key: "Prices"
+        type: "java.util.Iterator"
+        required: false
+      - key: "ServiceProduct"
+        type: "com.intershop.beehive.xcs.capi.product.Product"
+        required: false
+      - key: "OrderCode"
+        type: "java.lang.String"
+        required: false
+      - key: "OptionUnit"
+        type: "java.math.BigDecimal"
+        required: false
+      - key: "Value"
+        type: "java.lang.Object"
+        required: false
+      - key: "DisplayTypeConfiguration"
+        type: "java.lang.String"
+        required: false
+      - key: "DisplayType"
+        type: "java.lang.String"
+        required: false
+      - key: "TemplateDescription"
+        type: "java.lang.String"
+        required: false
+      - key: "ID"
+        type: "java.lang.String"
+        required: false
+      - key: "ListValues"
+        type: "java.lang.Boolean"
+        required: false
+      - key: "LegalChars"
+        type: "java.lang.String"
+        required: false
+      - key: "MinimumChars"
+        type: "java.lang.Integer"
+        required: false
+      - key: "MaximumChars"
+        type: "java.lang.Integer"
+        required: false
+      - key: "MinimumValue"
+        type: "java.math.BigDecimal"
+        required: false
+      - key: "MaximumValue"
+        type: "java.math.BigDecimal"
+        required: false
+      - key: "StepValue"
+        type: "java.math.BigDecimal"
+        required: false
+      - key: "MessageType"
+        type: "java.lang.String"
+        required: false
+      - key: "isLocalized"
+        type: "java.lang.Boolean"
+        required: false
+  - id: "StartNode3"
+    name: "Remove"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductConfigurationOptionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationOptionBO"
+        required: true
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessProductConfigurationOption-Remove"
+    bindings:
+      ProductConfigurationOptionBO: "ProductConfigurationOption"
+  - id: "CreateProductConfigurationOptionBO1"
+    type: "pipelet"
+    ref: "CreateProductConfigurationOptionBO"
+  - id: "DecisionNode30"
+    type: "decision"
+    condition: "ProductConfigurationSection:OptionByID(ValueID)"
+  - id: "DeleteProductConfigurationOptionBO1"
+    type: "pipelet"
+    ref: "DeleteProductConfigurationOptionBO"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationOptionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationOptionBO"
+        guaranteed: true
+  - id: "EndNode18"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductConfigurationOptionBO"
+        type: "com.intershop.component.productconfiguration.capi.set.ProductConfigurationOptionBO"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+  - id: "JoinNode5"
+    type: "join"
+  - id: "LoopNode2"
+    type: "loop"
+  - id: "Pipelet2"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "ProductConfigurationSection:OptionByID(ValueID)"
+      OutValue_1: "ProductConfigurationOption"
+  - id: "UpdateCustomAttribute1"
+    type: "pipelet"
+    ref: "UpdateCustomAttribute"
+    config:
+      DefaultAttributeName: "MessageType"
+      DefaultAttributeType: "String"
+    bindings:
+      AttributeName: "null"
+      AttributeType: "null"
+      ExtensibleObject: "ProductConfigurationOptionBO:CustomAttributes"
+      AttributeValue: "MessageType"
+      LocaleInformation: "null"
+  - id: "UpdateCustomAttribute2"
+    type: "pipelet"
+    ref: "UpdateCustomAttribute"
+    config:
+      DefaultAttributeName: "MessageType"
+      DefaultAttributeType: "String"
+    bindings:
+      AttributeName: "null"
+      AttributeType: "null"
+      ExtensibleObject: "ProductConfigurationOptionBO:CustomAttributes"
+      AttributeValue: "MessageType"
+      LocaleInformation: "null"
+  - id: "UpdateProductConfigurationOptionBO1"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationOptionBO"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "CreateProductConfigurationOptionBO1"
+    into: "in"
+  - from: "JoinNode5"
+    via: "next"
+    to: "LoopNode2"
+    into: "loop"
+  - from: "StartNode12"
+    via: "next"
+    to: "LoopNode2"
+    into: "in"
+  - from: "LoopNode2"
+    via: "do"
+    to: "DecisionNode30"
+    into: "in"
+  - from: "Pipelet2"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JoinNode5"
+    into: "in1"
+  - from: "DecisionNode30"
+    via: "no"
+    to: "JoinNode5"
+    into: "in1"
+  - from: "DecisionNode30"
+    via: "yes"
+    to: "Pipelet2"
+    into: "in"
+  - from: "UpdateProductConfigurationOptionBO1"
+    via: "next"
+    to: "UpdateCustomAttribute2"
+    into: "in"
+  - from: "UpdateCustomAttribute2"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "UpdateCustomAttribute1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "DeleteProductConfigurationOptionBO1"
+    via: "error"
+    to: "EndNode5"
+    into: "in"
+  - from: "DeleteProductConfigurationOptionBO1"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "CreateProductConfigurationOptionBO1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "UpdateProductConfigurationOptionBO1"
+    into: "in"
+  - from: "CreateProductConfigurationOptionBO1"
+    via: "next"
+    to: "UpdateCustomAttribute1"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "DeleteProductConfigurationOptionBO1"
+    into: "in"
+  - from: "LoopNode2"
+    via: "next"
+    to: "EndNode18"
+    into: "in"

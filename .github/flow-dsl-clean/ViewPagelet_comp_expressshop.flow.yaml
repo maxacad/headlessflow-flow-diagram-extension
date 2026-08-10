@@ -1,0 +1,62 @@
+flow: "ViewPagelet_comp_expressshop"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "GetProduct"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+      - key: "ConfigurationPageletUUID"
+        type: "java.lang.String"
+        required: true
+
+steps:
+  - id: "CallNode0"
+    type: "call"
+    ref: "ProcessPagelet-GetPageletConfiguration"
+    bindings:
+      PageletUUID: "ConfigurationPageletUUID"
+      ConfigurationParameterMap: "ConfigurationMap"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Product"
+        type: "com.intershop.beehive.xcs.capi.product.Product"
+        guaranteed: false
+      - key: "ConfigurationMap"
+        type: "java.util.Map"
+        guaranteed: true
+  - id: "GetProductByProductRef1"
+    type: "pipelet"
+    ref: "GetProductByProductRef"
+    bindings:
+      ProductRef: "ProductBO:ProductRef"
+  - id: "JoinNode1"
+    type: "join"
+
+links:
+  - from: "CallNode0"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "GetProductByProductRef1"
+    into: "in"
+  - from: "GetProductByProductRef1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "GetProductByProductRef1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "CallNode0"
+    into: "in"

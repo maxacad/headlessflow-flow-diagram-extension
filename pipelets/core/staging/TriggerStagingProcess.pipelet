@@ -1,0 +1,23 @@
+name: TriggerStagingProcess
+version: 1
+trigger: manual
+handler: ./TriggerStagingProcess.ts
+ai:
+  skill: core-triggerstagingprocess
+  title: TriggerStagingProcess
+  description: Intershop core pipelet – TriggerStagingProcess.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  DownloadURL: string
+  CurrentDomain: any
+  *: any
+  StagingService: object
+outputs:
+  ErrorStatus: string
+  Exception: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.TriggerStagingProcess

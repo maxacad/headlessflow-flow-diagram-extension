@@ -1,0 +1,20 @@
+name: ExecuteStoredProcedure
+version: 1
+trigger: manual
+handler: ./ExecuteStoredProcedure.ts
+ai:
+  skill: core-executestoredprocedure
+  title: ExecuteStoredProcedure
+  description: Intershop core pipelet – ExecuteStoredProcedure.
+  tags: [integration, data]
+  capabilities:
+    - execute-database-operation
+inputs:
+  StoredProcedure: string
+  Parameters: string
+  ParameterDefinition: string
+  AllowNullParameter: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.database.ExecuteStoredProcedure

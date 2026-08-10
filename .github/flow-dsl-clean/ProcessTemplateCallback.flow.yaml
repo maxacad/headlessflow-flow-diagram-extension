@@ -1,0 +1,79 @@
+flow: "ProcessTemplateCallback"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "GetUserPermissionMap"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ContentRepository"
+        type: "com.intershop.component.mvc.capi.catalog.Repository"
+        required: true
+
+steps:
+  - id: "DecisionNode8"
+    type: "decision"
+    condition: "ContentRepository:TypeCode"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "PermissionMap"
+        type: "java.util.HashMap"
+        guaranteed: true
+  - id: "GetOrganizationByDomain1"
+    type: "pipelet"
+    ref: "GetOrganizationByDomain"
+    bindings:
+      OrganizationDomain: "ContentRepository:OwningDomain"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "Pipelet15"
+    type: "pipelet"
+    ref: "GetPermissionsByUser"
+    bindings:
+      AuthorizationObject: "ContentRepository:Domain"
+      Organization: "null"
+      PermissionList: "null"
+      PermissionMap: "PermissionMap"
+      User: "CurrentUser"
+  - id: "Pipelet4"
+    type: "pipelet"
+    ref: "GetPermissionsByUser"
+    bindings:
+      PermissionList: "null"
+      PermissionMap: "PermissionMap"
+      User: "CurrentUser"
+      Organization: "Organization"
+      AuthorizationObject: "null"
+
+links:
+  - from: "Pipelet4"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "Pipelet15"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "GetOrganizationByDomain1"
+    via: "next"
+    to: "Pipelet4"
+    into: "in"
+  - from: "DecisionNode8"
+    via: "no"
+    to: "GetOrganizationByDomain1"
+    into: "in"
+  - from: "DecisionNode8"
+    via: "yes"
+    to: "Pipelet15"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "DecisionNode8"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

@@ -1,0 +1,487 @@
+flow: "ProcessReviewStatistics"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "GetReviewStatistics"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+      - key: "SortedApprovedReviewBORepository"
+        type: "com.intershop.component.rating.capi.SortedApprovedReviewBORepository"
+        required: false
+  - id: "StartNode2"
+    name: "CountReviewStatusNew"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "SortedApprovedReviewBORepository"
+        type: "com.intershop.component.rating.capi.SortedApprovedReviewBORepository"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+  - id: "StartNode3"
+    name: "CountReviewStatusApproved"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "SortedApprovedReviewBORepository"
+        type: "com.intershop.component.rating.capi.SortedApprovedReviewBORepository"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+  - id: "StartNode4"
+    name: "CountReviewStatusRejected"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "SortedApprovedReviewBORepository"
+        type: "com.intershop.component.rating.capi.SortedApprovedReviewBORepository"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+  - id: "StartNode5"
+    name: "GetAggregatedRatings"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "BusinessObject"
+        type: "com.intershop.beehive.businessobject.capi.BusinessObject"
+        required: true
+  - id: "StartNode6"
+    name: "CountProductReviewStatusNew"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "BusinessObjectSortedApprovedReviewBORepository"
+        type: "com.intershop.component.rating.capi.BusinessObjectApprovedReviewBORepository"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+  - id: "StartNode7"
+    name: "GetProductReviewStatistics"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+  - id: "StartNode8"
+    name: "CountProductReviewStatusApproved"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "BusinessObjectSortedApprovedReviewBORepository"
+        type: "com.intershop.component.rating.capi.BusinessObjectApprovedReviewBORepository"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+  - id: "StartNode9"
+    name: "CountProductReviewStatusRejected"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "BusinessObjectSortedApprovedReviewBORepository"
+        type: "com.intershop.component.rating.capi.BusinessObjectApprovedReviewBORepository"
+        required: true
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: false
+
+steps:
+  - id: "AddObjectToVector1"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      OutVector: "ReviewStatus"
+      Object: "\"APPROVED\""
+  - id: "AddObjectToVector2"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      OutVector: "ReviewStatus"
+      Object: "\"NEW\""
+  - id: "AddObjectToVector3"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      OutVector: "ReviewStatus"
+      Object: "\"REJECTED\""
+  - id: "AddObjectToVector4"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      OutVector: "ReviewStatus"
+      Object: "\"REJECTED\""
+  - id: "AddObjectToVector5"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      OutVector: "ReviewStatus"
+      Object: "\"APPROVED\""
+  - id: "AddObjectToVector6"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    bindings:
+      OutVector: "ReviewStatus"
+      Object: "\"NEW\""
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessReviewStatistics-CountReviewStatusNew"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessReviewStatistics-CountReviewStatusApproved"
+  - id: "CallNode3"
+    type: "call"
+    ref: "ProcessReviewStatistics-CountReviewStatusRejected"
+  - id: "CallNode4"
+    type: "call"
+    ref: "ProcessReviewStatistics-CountProductReviewStatusNew"
+  - id: "CallNode5"
+    type: "call"
+    ref: "ProcessReviewStatistics-CountProductReviewStatusApproved"
+  - id: "CallNode6"
+    type: "call"
+    ref: "ProcessReviewStatistics-CountProductReviewStatusRejected"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusNewCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+      - key: "ReviewStatusApprovedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+      - key: "ReviewStatusRejectedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusNewCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusApprovedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusRejectedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "AllReviewsAggregatedRating"
+        type: "com.intershop.component.rating.capi.AggregatedRatingBO"
+        guaranteed: true
+      - key: "ApprovedReviewsAggregatedRating"
+        type: "com.intershop.component.rating.capi.AggregatedRatingBO"
+        guaranteed: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusNewCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+      - key: "ReviewStatusApprovedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+      - key: "ReviewStatusRejectedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode7"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusRejectedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode8"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusNewCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "EndNode9"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ReviewStatusApprovedCount"
+        type: "java.lang.Integer"
+        guaranteed: true
+  - id: "GetAggregatedRating1"
+    type: "pipelet"
+    ref: "GetAggregatedRating"
+    config:
+      StatusNames: "NEW,APPROVED,REJECTED"
+    bindings:
+      StatusNames: "null"
+      AggregatedRating: "AllReviewsAggregatedRating"
+  - id: "GetAggregatedRating2"
+    type: "pipelet"
+    ref: "GetAggregatedRating"
+    config:
+      StatusNames: "APPROVED"
+    bindings:
+      StatusNames: "null"
+      AggregatedRating: "ApprovedReviewsAggregatedRating"
+  - id: "GetBusinessObjectReviewsByApprovalStatus1"
+    type: "pipelet"
+    ref: "GetBusinessObjectReviewsByApprovalStatus"
+    bindings:
+      StatusNames: "ReviewStatus"
+  - id: "GetBusinessObjectReviewsByApprovalStatus2"
+    type: "pipelet"
+    ref: "GetBusinessObjectReviewsByApprovalStatus"
+    bindings:
+      StatusNames: "ReviewStatus"
+  - id: "GetBusinessObjectReviewsByApprovalStatus3"
+    type: "pipelet"
+    ref: "GetBusinessObjectReviewsByApprovalStatus"
+    bindings:
+      StatusNames: "ReviewStatus"
+  - id: "GetReviewsByApprovalStatus1"
+    type: "pipelet"
+    ref: "GetReviewsByApprovalStatus"
+    bindings:
+      statusNames: "Statuses"
+      ReviewBOs: "ReviewsAsCollection"
+      Reviews: "ReviewsAsCollection"
+      StatusNames: "ReviewStatus"
+  - id: "GetReviewsByApprovalStatus2"
+    type: "pipelet"
+    ref: "GetReviewsByApprovalStatus"
+    bindings:
+      statusNames: "Statuses"
+      ReviewBOs: "ReviewsAsCollection"
+      Reviews: "ReviewsAsCollection"
+      StatusNames: "ReviewStatus"
+  - id: "GetReviewsByApprovalStatus3"
+    type: "pipelet"
+    ref: "GetReviewsByApprovalStatus"
+    bindings:
+      statusNames: "Statuses"
+      ReviewBOs: "ReviewsAsCollection"
+      Reviews: "ReviewsAsCollection"
+      StatusNames: "ReviewStatus"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "ReviewStatusNewCount"
+      InValue_1: "ReviewsAsCollection:Size"
+  - id: "KeyMapper2"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "ReviewStatusApprovedCount"
+      InValue_1: "ReviewsAsCollection:Size"
+  - id: "KeyMapper3"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "ReviewStatusRejectedCount"
+      InValue_1: "ReviewsAsCollection:Size"
+  - id: "KeyMapper4"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "BusinessObject:Extension(\"Review\")"
+      OutValue_1: "BusinessObjectApprovedReviewBORepository"
+  - id: "KeyMapper5"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "ReviewStatusApprovedCount"
+      InValue_1: "Reviews:Size"
+  - id: "KeyMapper6"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "ReviewStatusRejectedCount"
+      InValue_1: "Reviews:Size"
+  - id: "KeyMapper7"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "ReviewStatusNewCount"
+      InValue_1: "Reviews:Size"
+  - id: "KeyMapper8"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "ProductBO:Extension(\"Review\")"
+      OutValue_1: "BusinessObjectSortedApprovedReviewBORepository"
+
+links:
+  - from: "KeyMapper4"
+    via: "next"
+    to: "GetAggregatedRating1"
+    into: "in"
+  - from: "GetReviewsByApprovalStatus3"
+    via: "next"
+    to: "KeyMapper3"
+    into: "in"
+  - from: "AddObjectToVector3"
+    via: "next"
+    to: "GetReviewsByApprovalStatus3"
+    into: "in"
+  - from: "KeyMapper3"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "AddObjectToVector3"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "KeyMapper4"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "CallNode3"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "GetAggregatedRating1"
+    via: "next"
+    to: "GetAggregatedRating2"
+    into: "in"
+  - from: "AddObjectToVector2"
+    via: "next"
+    to: "GetReviewsByApprovalStatus2"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "AddObjectToVector5"
+    into: "in"
+  - from: "GetAggregatedRating2"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "AddObjectToVector4"
+    via: "next"
+    to: "GetBusinessObjectReviewsByApprovalStatus3"
+    into: "in"
+  - from: "KeyMapper7"
+    via: "next"
+    to: "EndNode8"
+    into: "in"
+  - from: "AddObjectToVector5"
+    via: "next"
+    to: "GetBusinessObjectReviewsByApprovalStatus2"
+    into: "in"
+  - from: "AddObjectToVector6"
+    via: "next"
+    to: "GetBusinessObjectReviewsByApprovalStatus1"
+    into: "in"
+  - from: "GetBusinessObjectReviewsByApprovalStatus2"
+    via: "next"
+    to: "KeyMapper5"
+    into: "in"
+  - from: "CallNode4"
+    via: "next"
+    to: "CallNode5"
+    into: "in"
+  - from: "KeyMapper6"
+    via: "next"
+    to: "EndNode7"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "AddObjectToVector2"
+    into: "in"
+  - from: "StartNode6"
+    via: "next"
+    to: "AddObjectToVector6"
+    into: "in"
+  - from: "CallNode5"
+    via: "next"
+    to: "CallNode6"
+    into: "in"
+  - from: "KeyMapper5"
+    via: "next"
+    to: "EndNode9"
+    into: "in"
+  - from: "KeyMapper8"
+    via: "next"
+    to: "CallNode4"
+    into: "in"
+  - from: "StartNode9"
+    via: "next"
+    to: "AddObjectToVector4"
+    into: "in"
+  - from: "GetBusinessObjectReviewsByApprovalStatus1"
+    via: "next"
+    to: "KeyMapper7"
+    into: "in"
+  - from: "GetBusinessObjectReviewsByApprovalStatus3"
+    via: "next"
+    to: "KeyMapper6"
+    into: "in"
+  - from: "StartNode7"
+    via: "next"
+    to: "KeyMapper8"
+    into: "in"
+  - from: "CallNode6"
+    via: "next"
+    to: "EndNode6"
+    into: "in"
+  - from: "GetReviewsByApprovalStatus2"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "AddObjectToVector1"
+    via: "next"
+    to: "GetReviewsByApprovalStatus1"
+    into: "in"
+  - from: "GetReviewsByApprovalStatus1"
+    via: "next"
+    to: "KeyMapper2"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "AddObjectToVector1"
+    into: "in"
+  - from: "KeyMapper2"
+    via: "next"
+    to: "EndNode3"
+    into: "in"

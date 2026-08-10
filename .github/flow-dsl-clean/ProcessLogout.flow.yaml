@@ -1,0 +1,27 @@
+flow: "ProcessLogout"
+kind: "process"
+
+entries:
+  - id: "Start"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "LogoutUser"
+    type: "pipelet"
+    ref: "LogoutUser"
+  - id: "End"
+    type: "end"
+
+links:
+  - from: "Start"
+    via: "next"
+    to: "LogoutUser"
+    into: "in"
+  - from: "LogoutUser"
+    via: "next"
+    to: "End"
+    into: "in"

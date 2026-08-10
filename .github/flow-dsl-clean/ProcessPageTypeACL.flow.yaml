@@ -1,0 +1,43 @@
+flow: "ProcessPageTypeACL"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "CheckPageTypeACL"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "PageletEntryPoint"
+        type: "com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"
+        required: false
+      - key: "PageletEntryPointID"
+        type: "java.lang.String"
+        required: false
+      - key: "PageletEntryPointUUID"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessPageletACL-CheckPageletEntryPointIsPublic"
+  - id: "End4"
+    type: "end"
+    strict: true
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+
+links:
+  - from: "CallNode1"
+    via: "PUBLIC"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "NOT_PUBLIC"
+    to: "End4"
+    into: "in"

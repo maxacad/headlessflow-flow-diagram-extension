@@ -1,0 +1,19 @@
+name: VerifyShippingRule
+version: 1
+trigger: manual
+handler: ./VerifyShippingRule.ts
+ai:
+  skill: shipping-verifyshippingrule
+  title: VerifyShippingRule
+  description: Intershop shipping pipelet – VerifyShippingRule.
+  tags: [shipping, rule-engine, rules]
+  capabilities:
+    - execute-ruleengineadapter-operation
+inputs:
+  ShippingRule: any
+outputs:
+  RuleEngineMessage: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.ruleengineadapter.VerifyShippingRule

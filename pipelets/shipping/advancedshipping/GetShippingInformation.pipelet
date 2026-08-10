@@ -1,0 +1,23 @@
+name: GetShippingInformation
+version: 1
+trigger: manual
+handler: ./GetShippingInformation.ts
+ai:
+  skill: shipping-getshippinginformation
+  title: GetShippingInformation
+  description: Intershop shipping pipelet – GetShippingInformation.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Product: any
+  Locale: any
+  CurrencyMnemonic: string
+  User: any
+  ApplicationBO: object
+outputs:
+  List: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.GetShippingInformation

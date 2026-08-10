@@ -1,0 +1,56 @@
+flow: "ViewChannelProcessList"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "CreateProcess"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+  - id: "ConcatenateStrings1"
+    type: "pipelet"
+    ref: "ConcatenateStrings"
+    config:
+      DefaultString0: "ViewProcessList_"
+      DefaultString2: "-CreateProcess"
+    bindings:
+      String0: "null"
+      String1: "CurrentChannel:TypeCode"
+      String2: "null"
+      Concatenated: "CreateProcess"
+  - id: "ConcatenateStrings2"
+    type: "pipelet"
+    ref: "ConcatenateStrings"
+    config:
+      DefaultString0: "ViewProcessList_"
+      DefaultString2: "-ListAll"
+    bindings:
+      String0: "null"
+      String1: "CurrentChannel:TypeCode"
+      String2: "null"
+      Concatenated: "ListAll"
+  - id: "JumpNode1"
+    type: "jump"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "ConcatenateStrings1"
+    into: "in"
+  - from: "ConcatenateStrings2"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "ConcatenateStrings1"
+    via: "next"
+    to: "ConcatenateStrings2"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"

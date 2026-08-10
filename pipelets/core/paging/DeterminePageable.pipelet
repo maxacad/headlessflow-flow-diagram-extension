@@ -1,0 +1,21 @@
+name: DeterminePageable
+version: 1
+trigger: manual
+handler: ./DeterminePageable.ts
+ai:
+  skill: core-determinepageable
+  title: DeterminePageable
+  description: Intershop core pipelet – DeterminePageable.
+  tags: [integration, data]
+  capabilities:
+    - execute-paging-operation
+inputs:
+  PageableID: string
+  PageableName: string
+  CurrentPageNumber: string
+outputs:
+  see PageableName: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.paging.DeterminePageable

@@ -1,0 +1,32 @@
+flow: "ViewApplicationPreferences"
+kind: "view"
+
+entries:
+  - id: "StartNode9"
+    name: "ApplicationPreferenceError"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "ApplicationPreferenceError"
+        type: "java.lang.String"
+        required: true
+
+steps:
+  - id: "InteractionNode5"
+    type: "interaction"
+  - id: "PrepareApplicationView5"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "Sharing"
+      WorkingTemplate: "app/ApplicationPreferenceError"
+
+links:
+  - from: "StartNode9"
+    via: "next"
+    to: "PrepareApplicationView5"
+    into: "in"
+  - from: "PrepareApplicationView5"
+    via: "next"
+    to: "InteractionNode5"
+    into: "in"

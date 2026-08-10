@@ -1,0 +1,22 @@
+name: AddPagecacheKeyword
+version: 1
+trigger: manual
+handler: ./AddPagecacheKeyword.ts
+ai:
+  skill: core-addpagecachekeyword
+  title: AddPagecacheKeyword
+  description: Intershop core pipelet – AddPagecacheKeyword.
+  tags: [integration, data]
+  capabilities:
+    - execute-pagecache-operation
+inputs:
+  PagecacheKeywords: iterator
+  CacheKeyword: string
+  CacheKeywordPrefix: string
+  StaticCacheKeyword: string
+outputs:
+  PagecacheKeywords: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.pagecache.AddPagecacheKeyword

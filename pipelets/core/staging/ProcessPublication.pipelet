@@ -1,0 +1,18 @@
+name: ProcessPublication
+version: 1
+trigger: manual
+handler: ./ProcessPublication.ts
+ai:
+  skill: core-processpublication
+  title: ProcessPublication
+  description: Intershop core pipelet – ProcessPublication.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcess: any
+  StagingContext: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.ProcessPublication

@@ -1,0 +1,76 @@
+flow: "UpdateObjectStatistics"
+kind: "process"
+
+entries:
+  - id: "StartNode2"
+    name: "ProcessMaster"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CurrentOrganization"
+        type: "com.intershop.component.organization.capi.Organization"
+        required: true
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "DetermineRepositories-Master"
+  - id: "CallNode2"
+    type: "call"
+    ref: "UpdateObjectStatisticsRealtime-Update"
+    bindings:
+      ObjectDomain: "Repository:RepositoryDomain"
+      GroupName: "\"Order\""
+  - id: "CallNode3"
+    type: "call"
+    ref: "UpdateObjectStatisticsRealtime-Update"
+    bindings:
+      ObjectDomain: "Repository:RepositoryDomain"
+      GroupName: "\"Product\""
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    config:
+      ValueType: "Dictionary Value"
+    bindings:
+      InValue_1: "CurrentOrganization"
+      OutValue_1: "Organization"
+      InValue_2: "CurrentOrganization:OrganizationDomain"
+      OutValue_2: "OrganizationDomain"
+  - id: "PutValuesIntoPipelineDictionary1"
+    type: "pipelet"
+    ref: "PutValuesIntoPipelineDictionary"
+    config:
+      key.1: "Organization"
+      value.1: "CurrentOrganization"
+      value.2: "CurrentOrganization:OrganizationDomain"
+      key.2: "OrganizationDomain"
+
+links:
+  - from: "CallNode2"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "PutValuesIntoPipelineDictionary1"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "PutValuesIntoPipelineDictionary1"
+    into: "in"
+  - from: "CallNode3"
+    via: "next"
+    to: "CallNode2"
+    into: "in"

@@ -1,0 +1,28 @@
+name: DetermineMailAddressData
+version: 1
+trigger: manual
+handler: ./DetermineMailAddressData.ts
+ai:
+  skill: core-determinemailaddressdata
+  title: DetermineMailAddressData
+  description: Intershop core pipelet – DetermineMailAddressData.
+  tags: [integration, data]
+  capabilities:
+    - execute-mail-operation
+inputs:
+  DefaultEmailFrom: string
+  DefaultEmailSubject: string
+  EmailTemplate: string
+  EmailFrom: string
+  EmailTo: string
+  MailTo: string
+  EmailSubject: string
+outputs:
+  MailFrom: string
+  MailTo: string
+  MailSubject: string
+  MailTemplate: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.mail.DetermineMailAddressData

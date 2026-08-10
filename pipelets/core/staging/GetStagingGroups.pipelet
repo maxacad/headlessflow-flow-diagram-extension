@@ -1,0 +1,20 @@
+name: GetStagingGroups
+version: 1
+trigger: manual
+handler: ./GetStagingGroups.ts
+ai:
+  skill: core-getstaginggroups
+  title: GetStagingGroups
+  description: Intershop core pipelet – GetStagingGroups.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingDomainName: string
+outputs:
+  StagingGroups: iterator
+  StagingDomain: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.GetStagingGroups

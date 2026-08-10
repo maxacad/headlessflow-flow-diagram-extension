@@ -1,0 +1,19 @@
+name: GetAcquisitionLogEntries
+version: 1
+trigger: manual
+handler: ./GetAcquisitionLogEntries.ts
+ai:
+  skill: core-getacquisitionlogentries
+  title: GetAcquisitionLogEntries
+  description: Intershop core pipelet – GetAcquisitionLogEntries.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  Process: any
+outputs:
+  AcquisitionLogEntries: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.GetAcquisitionLogEntries

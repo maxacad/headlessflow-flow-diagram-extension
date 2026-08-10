@@ -1,0 +1,22 @@
+name: ReadXMLLogFile
+version: 1
+trigger: manual
+handler: ./ReadXMLLogFile.ts
+ai:
+  skill: core-readxmllogfile
+  title: ReadXMLLogFile
+  description: Intershop core pipelet – ReadXMLLogFile.
+  tags: [logging, monitoring]
+  capabilities:
+    - execute-log-operation
+inputs:
+  LogFileUnit: any
+  LogFileDirectory: string
+  LogFileName: string
+  LevelFilter: string
+outputs:
+  LoggingEvents: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.log.ReadXMLLogFile

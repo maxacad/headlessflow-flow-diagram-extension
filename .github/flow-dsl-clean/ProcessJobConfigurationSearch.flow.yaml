@@ -1,0 +1,76 @@
+flow: "ProcessJobConfigurationSearch"
+kind: "backoffice"
+
+entries:
+  - id: "StartNode4"
+    name: "Search"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "JobDomain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: false
+      - key: "JobName"
+        type: "java.lang.String"
+        required: false
+      - key: "JobStatus"
+        type: "java.lang.Object"
+        required: false
+      - key: "Connection"
+        type: "java.sql.Connection"
+        required: false
+      - key: "Parameters"
+        type: "java.util.Map"
+        required: false
+      - key: "Query"
+        type: "com.intershop.beehive.core.capi.query.Query"
+        required: false
+      - key: "JobNameIterator"
+        type: "java.util.Iterator"
+        required: false
+
+steps:
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Jobs"
+        type: "java.util.Iterator"
+        guaranteed: false
+  - id: "EndNode8"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ErrorCode"
+        type: "java.lang.String"
+        guaranteed: false
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      ParameterName_01: "Domain"
+      Datasource: "current ORM connection"
+      ParameterName_02: "Name"
+      ParameterName_03: "Status"
+      QueryName: "batch/SearchJobConfiguration"
+      ParameterName_04: "NameIterator"
+    bindings:
+      ParameterValue_01: "JobDomain"
+      ParameterValue_02: "JobName"
+      ParameterValue_03: "JobStatus"
+      ParameterValue_04: "JobNameIterator"
+      SearchResult: "Jobs"
+
+links:
+  - from: "ExecuteObjectsQuery1"
+    via: "error"
+    to: "EndNode8"
+    into: "in"
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "EndNode6"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"

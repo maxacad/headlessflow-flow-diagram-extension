@@ -1,0 +1,62 @@
+flow: "ProcessPersonalizationGroup"
+kind: "process"
+
+entries:
+  - id: "Start6"
+    name: "Update"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CalculatePersonalizationGroup1"
+    type: "pipelet"
+    ref: "CalculatePersonalizationGroup"
+    bindings:
+      User: "CurrentUser"
+      UserGroups: "null"
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "GetBrandingInstallationBySite1"
+    type: "pipelet"
+    ref: "GetBrandingInstallationBySite"
+    bindings:
+      Locale: "CurrentSession:Locale"
+      Site: "CurrentDomain"
+      Unit: "CurrentOrganization:OrganizationDomain"
+      AppID: "CurrentAppContext:App:Id"
+  - id: "Join7"
+    type: "join"
+  - id: "UpdatePersonalizationGroup2"
+    type: "pipelet"
+    ref: "UpdatePersonalizationGroup"
+    bindings:
+      PGID: "PGID"
+
+links:
+  - from: "GetBrandingInstallationBySite1"
+    via: "error"
+    to: "Join7"
+    into: "in3"
+  - from: "Start6"
+    via: "next"
+    to: "GetBrandingInstallationBySite1"
+    into: "in"
+  - from: "GetBrandingInstallationBySite1"
+    via: "next"
+    to: "Join7"
+    into: "in1"
+  - from: "UpdatePersonalizationGroup2"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Join7"
+    via: "next"
+    to: "CalculatePersonalizationGroup1"
+    into: "in"
+  - from: "CalculatePersonalizationGroup1"
+    via: "next"
+    to: "UpdatePersonalizationGroup2"
+    into: "in"

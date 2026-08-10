@@ -1,0 +1,74 @@
+flow: "ViewPagelet_comp_product_giftOptionIndicator"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "GiftMessage"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: false
+  - id: "StartNode2"
+    name: "PackslipMessage"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: false
+  - id: "StartNode5"
+    name: "GiftWrap"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: false
+
+steps:
+  - id: "CallNode3"
+    type: "call"
+    ref: "ProcessGiftingPreferences-GetGiftingPreferences"
+    bindings:
+      PreferenceDomain: "CurrentDomain"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        guaranteed: false
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "PackSlipMessage_Switch"
+        type: "java.lang.String"
+        guaranteed: false
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        guaranteed: false
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "CallNode3"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "EndNode6"
+    into: "in"

@@ -1,0 +1,41 @@
+flow: "RunningCartTotal"
+kind: "process"
+
+entries:
+  - id: "StartNode0"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "GetPageletById0"
+    type: "pipelet"
+    ref: "GetPageletById"
+    bindings:
+      PageletId: "\"cmp_20100806_130306\""
+      Domain: "Repository:Domain"
+  - id: "JumpNode0"
+    type: "jump"
+    ref: "Render-StartExternal"
+  - id: "KeyMapper0"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "Pagelet:UUID"
+      OutValue_1: "PageletUUID"
+
+links:
+  - from: "GetPageletById0"
+    via: "next"
+    to: "KeyMapper0"
+    into: "in"
+  - from: "KeyMapper0"
+    via: "next"
+    to: "JumpNode0"
+    into: "in"
+  - from: "StartNode0"
+    via: "next"
+    to: "GetPageletById0"
+    into: "in"

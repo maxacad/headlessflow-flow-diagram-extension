@@ -1,0 +1,64 @@
+flow: "GetRebates"
+kind: "process"
+
+entries:
+  - id: "StartNode3"
+    name: "GetApplicableByCurrentUser"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode2"
+    type: "call"
+    ref: "ProcessUserGroups-GetCurrentUserUserGroups"
+  - id: "EndNode3"
+    type: "end"
+    strict: false
+  - id: "ExecuteObjectsQuery2"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "rebate/GetApplicableRebatesByUser"
+      Datasource: "current ORM connection"
+      ParameterName_01: "CurrencyCode"
+      ParameterName_02: "CurrentDate"
+      ParameterName_03: "Organization"
+      ParameterName_04: "TargetGroups"
+    bindings:
+      Connection: "null"
+      Parameters: "null"
+      ParameterValue_01: "CurrentSession:CurrencyCode"
+      ParameterValue_02: "SessionCreationTime"
+      ParameterValue_03: "CurrentOrganization"
+      ParameterValue_04: "CurrentUserUserGroups"
+      SearchResult: "ApplicableRebates"
+      ErrorCode: "null"
+      Query: "null"
+  - id: "GetDateFromLong1"
+    type: "pipelet"
+    ref: "GetDateFromLong"
+    bindings:
+      LongObject: "CurrentSession:CreationTime"
+      DateObject: "SessionCreationTime"
+  - id: "TextNode7"
+    type: "text"
+
+links:
+  - from: "CallNode2"
+    via: "next"
+    to: "GetDateFromLong1"
+    into: "in"
+  - from: "ExecuteObjectsQuery2"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "GetDateFromLong1"
+    via: "next"
+    to: "ExecuteObjectsQuery2"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "CallNode2"
+    into: "in"

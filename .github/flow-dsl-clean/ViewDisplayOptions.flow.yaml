@@ -1,0 +1,195 @@
+flow: "ViewDisplayOptions"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "SetDisplayOption"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "GetDisplayOption"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DisplayOptionContainerID"
+        type: "java.lang.String"
+        required: true
+      - key: "DisplayOptionKey"
+        type: "java.lang.String"
+        required: true
+  - id: "StartNode3"
+    name: "SaveDisplayOptionToContainer"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DisplayOptionContainerID"
+        type: "java.lang.String"
+        required: true
+      - key: "DisplayOptionKey"
+        type: "java.lang.String"
+        required: true
+      - key: "DisplayOptionValue"
+        type: "java.lang.String"
+        required: true
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ViewDisplayOptions-SaveDisplayOptionToContainer"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Value"
+        type: "java.lang.String"
+        guaranteed: false
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "GetFormRecord2"
+    type: "pipelet"
+    ref: "GetFormRecord"
+    config:
+      DefaultRecordID: "ContextPipeline"
+    bindings:
+      FormRecord: "ContextPipelineMap"
+  - id: "GetIndirectDictValue1"
+    type: "pipelet"
+    ref: "GetIndirectDictValue"
+    bindings:
+      KeyNameHolder: "DisplayOptionKey"
+      MappedEntry: "Value"
+  - id: "GetValuesFromContainer1"
+    type: "pipelet"
+    ref: "GetValuesFromContainer"
+    config:
+      OverwriteBehavior: false
+    bindings:
+      ContainerName: "DisplayOptionContainerID"
+  - id: "GetValuesFromContainer2"
+    type: "pipelet"
+    ref: "GetValuesFromContainer"
+    config:
+      OverwriteBehavior: false
+    bindings:
+      ContainerName: "DisplayOptionContainerID"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "JumpNode6"
+    type: "jump"
+    ref: "ProcessPipelineInvocation-InvokeTargetPipeline"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    config:
+      ValueType: "Dictionary Value"
+    bindings:
+      InValue_1: "DisplayOptionContainerID"
+      OutValue_1: "DisplayOptionContainerID"
+  - id: "RemoveDictionaryValue1"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      RemoveFormValues: true
+      Key: "DisplayOptionKey"
+  - id: "RemoveDictionaryValue2"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      RemoveFormValues: true
+      Key: "DisplayOptionValue"
+  - id: "RemoveDictionaryValue3"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      RemoveFormValues: true
+      Key: "DisplayOptionContainerID"
+  - id: "SetIndirectDictValue1"
+    type: "pipelet"
+    ref: "SetIndirectDictValue"
+    bindings:
+      KeyNameHolder: "DisplayOptionKey"
+      MappedEntry: "DisplayOptionValue"
+  - id: "SetValuesToContainer1"
+    type: "pipelet"
+    ref: "SetValuesToContainer"
+    bindings:
+      ContainerName: "DisplayOptionContainerID"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "GetValuesFromContainer2"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "GetFormRecord2"
+    into: "in"
+  - from: "RemoveDictionaryValue1"
+    via: "next"
+    to: "RemoveDictionaryValue2"
+    into: "in"
+  - from: "JoinNode2"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "SetIndirectDictValue1"
+    via: "next"
+    to: "RemoveDictionaryValue1"
+    into: "in"
+  - from: "GetValuesFromContainer2"
+    via: "error"
+    to: "JoinNode2"
+    into: "in2"
+  - from: "StartNode1"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "GetValuesFromContainer2"
+    via: "next"
+    to: "GetIndirectDictValue1"
+    into: "in"
+  - from: "RemoveDictionaryValue3"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "RemoveDictionaryValue2"
+    via: "next"
+    to: "GetValuesFromContainer1"
+    into: "in"
+  - from: "SetValuesToContainer1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "GetValuesFromContainer1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "GetFormRecord2"
+    via: "next"
+    to: "JumpNode6"
+    into: "in"
+  - from: "GetValuesFromContainer1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "RemoveDictionaryValue3"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "SetValuesToContainer1"
+    into: "in"
+  - from: "GetIndirectDictValue1"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "StartNode3"
+    via: "next"
+    to: "SetIndirectDictValue1"
+    into: "in"

@@ -1,0 +1,29 @@
+name: ExecutePageableQuery
+version: 1
+trigger: manual
+handler: ./ExecutePageableQuery.ts
+ai:
+  skill: core-executepageablequery
+  title: ExecutePageableQuery
+  description: Intershop core pipelet – ExecutePageableQuery.
+  tags: [integration, data]
+  capabilities:
+    - execute-query-operation
+inputs:
+  ParameterValue_03: string
+  ParameterValue_05: string
+  ParameterValue_04: string
+  Query: any
+  ParameterValue_02: string
+  CurrentDomain: any
+  ParameterValue_01: string
+  Connection: any
+  Parameters: map
+  PageSize: number
+outputs:
+  SearchResult: any
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.query.ExecutePageableQuery

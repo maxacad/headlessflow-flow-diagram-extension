@@ -1,0 +1,20 @@
+name: DetermineDeletedUsers
+version: 1
+trigger: manual
+handler: ./DetermineDeletedUsers.ts
+ai:
+  skill: core-determinedeletedusers
+  title: DetermineDeletedUsers
+  description: Intershop core pipelet – DetermineDeletedUsers.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  BlockSize: number
+outputs:
+  BlockSize: number
+  DeletedUsers: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.DetermineDeletedUsers

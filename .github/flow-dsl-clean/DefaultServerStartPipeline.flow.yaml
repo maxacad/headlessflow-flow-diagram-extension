@@ -1,0 +1,88 @@
+flow: "DefaultServerStartPipeline"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "AcquireResourcesForProcess1"
+    type: "pipelet"
+    ref: "AcquireResourcesForProcess"
+    config:
+      ResourceIDs: "ExecuteUponServerStart"
+    bindings:
+      AcquisitionTimeout: "\"(Integer)60\""
+  - id: "CreateProcess1"
+    type: "pipelet"
+    ref: "CreateProcess"
+    config:
+      InitialState: "Starting"
+      ProcessDescription: "Locks the pipeline executed at server startup."
+      ProcessName: "ExecuteUponServerStart"
+      Type: "Pipeline"
+    bindings:
+      User: "CurrentUser"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode2"
+    type: "end"
+    strict: false
+  - id: "ExecuteCartridgePipelines1"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      PipelinePropertyName: "PrepareDuringStartupPipeline"
+      ProcessReversely: false
+  - id: "FinishProcess1"
+    type: "pipelet"
+    ref: "FinishProcess"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "ReleaseResourcesForProcess1"
+    type: "pipelet"
+    ref: "ReleaseResourcesForProcess"
+
+links:
+  - from: "CreateProcess1"
+    via: "next"
+    to: "AcquireResourcesForProcess1"
+    into: "in"
+  - from: "FinishProcess1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "ReleaseResourcesForProcess1"
+    into: "in"
+  - from: "ExecuteCartridgePipelines1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "ExecuteCartridgePipelines1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "Start1"
+    via: "next"
+    to: "CreateProcess1"
+    into: "in"
+  - from: "AcquireResourcesForProcess1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "AcquireResourcesForProcess1"
+    via: "next"
+    to: "ExecuteCartridgePipelines1"
+    into: "in"
+  - from: "ReleaseResourcesForProcess1"
+    via: "next"
+    to: "FinishProcess1"
+    into: "in"

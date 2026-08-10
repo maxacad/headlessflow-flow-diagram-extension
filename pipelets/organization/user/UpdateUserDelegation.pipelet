@@ -1,0 +1,20 @@
+name: UpdateUserDelegation
+version: 1
+trigger: manual
+handler: ./UpdateUserDelegation.ts
+ai:
+  skill: organization-updateuserdelegation
+  title: UpdateUserDelegation
+  description: Intershop organization pipelet – UpdateUserDelegation.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  UserDelegation: any
+  DelegationStart: any
+  DelegationEnd: any
+  IsActiveDelegation: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.UpdateUserDelegation

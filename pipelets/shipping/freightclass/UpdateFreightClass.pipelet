@@ -1,0 +1,23 @@
+name: UpdateFreightClass
+version: 1
+trigger: manual
+handler: ./UpdateFreightClass.ts
+ai:
+  skill: shipping-updatefreightclass
+  title: UpdateFreightClass
+  description: Intershop shipping pipelet – UpdateFreightClass.
+  tags: [freight, shipping, class]
+  capabilities:
+    - execute-freightclass-operation
+inputs:
+  Name: string
+  Locale: any
+  Description: string
+  FreightClass: any
+  Digital: string
+  ShipAlone: string
+  Service: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.freightclass.UpdateFreightClass

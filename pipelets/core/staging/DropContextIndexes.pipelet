@@ -1,0 +1,20 @@
+name: DropContextIndexes
+version: 1
+trigger: manual
+handler: ./DropContextIndexes.ts
+ai:
+  skill: core-dropcontextindexes
+  title: DropContextIndexes
+  description: Intershop core pipelet – DropContextIndexes.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingTableName: string
+  Activated: boolean
+  StagingTableType: string
+  StagingProcess: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.DropContextIndexes

@@ -1,0 +1,20 @@
+name: GetDepartment
+version: 1
+trigger: manual
+handler: ./GetDepartment.ts
+ai:
+  skill: organization-getdepartment
+  title: GetDepartment
+  description: Intershop organization pipelet – GetDepartment.
+  tags: [integration, data]
+  capabilities:
+    - execute-department-operation
+inputs:
+  Source: string
+  DepartmentUUID: string
+outputs:
+  Department: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.department.GetDepartment

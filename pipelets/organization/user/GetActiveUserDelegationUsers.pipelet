@@ -1,0 +1,21 @@
+name: GetActiveUserDelegationUsers
+version: 1
+trigger: manual
+handler: ./GetActiveUserDelegationUsers.ts
+ai:
+  skill: organization-getactiveuserdelegationusers
+  title: GetActiveUserDelegationUsers
+  description: Intershop organization pipelet – GetActiveUserDelegationUsers.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  DelegationType: number
+  GetMethod: string
+  User: any
+outputs:
+  Users: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.GetActiveUserDelegationUsers

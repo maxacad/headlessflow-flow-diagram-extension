@@ -1,0 +1,28 @@
+name: ExecuteObjectsQuery
+version: 1
+trigger: manual
+handler: ./ExecuteObjectsQuery.ts
+ai:
+  skill: core-executeobjectsquery
+  title: ExecuteObjectsQuery
+  description: Intershop core pipelet – ExecuteObjectsQuery.
+  tags: [integration, data]
+  capabilities:
+    - execute-query-operation
+inputs:
+  ParameterValue_03: string
+  ParameterValue_05: string
+  ParameterValue_04: string
+  Query: any
+  ParameterValue_02: string
+  CurrentDomain: any
+  ParameterValue_01: string
+  Connection: any
+  Parameters: map
+outputs:
+  SearchResult: iterator
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.query.ExecuteObjectsQuery

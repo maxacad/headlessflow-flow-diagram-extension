@@ -1,0 +1,22 @@
+name: OpenFTPConnection
+version: 1
+trigger: manual
+handler: ./OpenFTPConnection.ts
+ai:
+  skill: core-openftpconnection
+  title: OpenFTPConnection
+  description: Intershop core pipelet – OpenFTPConnection.
+  tags: [integration, data]
+  capabilities:
+    - execute-ftp-operation
+inputs:
+  Server: string
+  User: string
+  Password: string
+  Port: number
+outputs:
+  FTPClient: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.ftp.OpenFTPConnection

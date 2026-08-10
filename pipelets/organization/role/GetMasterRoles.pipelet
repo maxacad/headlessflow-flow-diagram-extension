@@ -1,0 +1,20 @@
+name: GetMasterRoles
+version: 1
+trigger: manual
+handler: ./GetMasterRoles.ts
+ai:
+  skill: organization-getmasterroles
+  title: GetMasterRoles
+  description: Intershop organization pipelet – GetMasterRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  Type: string
+outputs:
+  Roles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetMasterRoles

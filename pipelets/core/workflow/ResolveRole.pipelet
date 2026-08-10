@@ -1,0 +1,19 @@
+name: ResolveRole
+version: 1
+trigger: manual
+handler: ./ResolveRole.ts
+ai:
+  skill: core-resolverole
+  title: ResolveRole
+  description: Intershop core pipelet – ResolveRole.
+  tags: [workflow, approval, process]
+  capabilities:
+    - execute-workflow-operation
+inputs:
+  CurrentDomain: any
+outputs:
+  UserGroups: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.workflow.ResolveRole

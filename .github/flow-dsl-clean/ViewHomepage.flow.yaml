@@ -1,0 +1,71 @@
+flow: "ViewHomepage"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "DisplayHomepage"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "DisplayCachedHomepage"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "FireTrackingEvents-View"
+    bindings:
+      PageName: "\"homepage\""
+      PageType: "\"general\""
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "ViewPage-Start"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    config:
+      ValueType: "Dictionary Value"
+    bindings:
+      InValue_1: "CurrentRequest:PipelineDictionary"
+      OutValue_1: "Dictionary"
+      InValue_3: "\"systempage.homepage.pagelet2-systempage.homepage\""
+      OutValue_3: "PageletEntryPointID"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "cacheMe"
+      Value: true
+
+links:
+  - from: "JoinNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "SetDictionaryValue1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in2"

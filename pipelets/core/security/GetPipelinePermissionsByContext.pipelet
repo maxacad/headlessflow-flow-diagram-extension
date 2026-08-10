@@ -1,0 +1,23 @@
+name: GetPipelinePermissionsByContext
+version: 1
+trigger: manual
+handler: ./GetPipelinePermissionsByContext.ts
+ai:
+  skill: core-getpipelinepermissionsbycontext
+  title: GetPipelinePermissionsByContext
+  description: Intershop core pipelet – GetPipelinePermissionsByContext.
+  tags: [security, authorization, access-control]
+  capabilities:
+    - execute-security-operation
+inputs:
+  Domain: any
+  PipelineName: string
+  StartNodeName: string
+  Context: string
+  Application: any
+outputs:
+  PermissionIDs: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.security.GetPipelinePermissionsByContext

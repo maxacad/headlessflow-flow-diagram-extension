@@ -1,0 +1,24 @@
+name: SetCookie
+version: 1
+trigger: manual
+handler: ./SetCookie.ts
+ai:
+  skill: core-setcookie
+  title: SetCookie
+  description: Intershop core pipelet – SetCookie.
+  tags: [integration, data]
+  capabilities:
+    - execute-request-operation
+inputs:
+  Name: string
+  Value: string
+  Domain: string
+  Path: string
+  Secure: boolean
+  MaxAge: number
+  Comment: string
+  IsHttpOnly: boolean
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.request.SetCookie

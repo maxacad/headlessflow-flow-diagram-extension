@@ -1,0 +1,31 @@
+flow: "ViewAjax"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "JumpNode1"
+    type: "jump"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "AjaxRequestMarker"
+      Value: true
+      ValueType: "Dictionary Value"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "SetDictionaryValue1"
+    into: "in"
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"

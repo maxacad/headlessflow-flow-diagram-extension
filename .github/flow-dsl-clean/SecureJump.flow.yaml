@@ -1,0 +1,43 @@
+flow: "SecureJump"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "JumpTarget"
+        type: "java.lang.String"
+        required: false
+      - key: "CurrentUser"
+        type: "com.intershop.beehive.core.capi.user.User"
+        required: false
+
+steps:
+  - id: "Call1"
+    type: "call"
+    ref: "Prefix-CheckUserPermissions"
+  - id: "Jump1"
+    type: "jump"
+  - id: "ResolveJumpTargetInCallingPipeline1"
+    type: "pipelet"
+    ref: "ResolveJumpTargetInCallingPipeline"
+    bindings:
+      ResolvedJumpTarget: "JumpTarget"
+      PipelineName: "CurrentPipelineName"
+      StartNodeName: "CurrentStartNodeName"
+
+links:
+  - from: "Start1"
+    via: "next"
+    to: "ResolveJumpTargetInCallingPipeline1"
+    into: "in"
+  - from: "Call1"
+    via: "next"
+    to: "Jump1"
+    into: "in"
+  - from: "ResolveJumpTargetInCallingPipeline1"
+    via: "next"
+    to: "Call1"
+    into: "in"

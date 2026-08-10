@@ -1,0 +1,109 @@
+flow: "UpdateSearchIndexesJob"
+kind: "job"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "SearchIndexProcessAction"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode2"
+    name: "GetSearchIndexChannels"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "This:GetSearchIndexChannels"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Channels"
+        type: "java.util.Iterator<com.intershop.component.mvc.internal.catalog.RepositoryPO>"
+        guaranteed: false
+  - id: "ExecuteObjectsQuery1"
+    type: "pipelet"
+    ref: "ExecuteObjectsQuery"
+    config:
+      QueryName: "channel/GetChannelsByTypeCode"
+      Datasource: "current ORM connection"
+      ParameterName_01: "TypeCodes"
+    bindings:
+      Connection: "null"
+      Parameters: "null"
+      ParameterValue_01: "\"52 42\""
+      Query: "null"
+      SearchResult: "Channels"
+  - id: "ExecutePipeline1"
+    type: "pipelet"
+    ref: "ExecutePipeline"
+    config:
+      Asynchronous: false
+      PipelineName: "ProcessSearchIndex"
+      PipelineStartNode: "UpdateAllSearchIndexesOfDomain"
+    bindings:
+      PipelineDomain: "CurrentChannel:OwningDomain:Site"
+      PipelineDomainID: "null"
+      PipelineDomainName: "null"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "CurrentChannel:Domain"
+      OutValue_1: "Domain"
+  - id: "LoopNode1"
+    type: "loop"
+
+links:
+  - from: "ExecuteObjectsQuery1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "ExecutePipeline1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "ExecutePipeline1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "LoopNode1"
+    into: "loop"
+  - from: "StartNode2"
+    via: "next"
+    to: "ExecuteObjectsQuery1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "LoopNode1"
+    into: "in"
+  - from: "LoopNode1"
+    via: "do"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "LoopNode1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "ExecutePipeline1"
+    into: "in"

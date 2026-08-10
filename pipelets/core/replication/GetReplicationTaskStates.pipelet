@@ -1,0 +1,19 @@
+name: GetReplicationTaskStates
+version: 1
+trigger: manual
+handler: ./GetReplicationTaskStates.ts
+ai:
+  skill: core-getreplicationtaskstates
+  title: GetReplicationTaskStates
+  description: Intershop core pipelet – GetReplicationTaskStates.
+  tags: [integration, data]
+  capabilities:
+    - execute-replication-operation
+inputs:
+  DomainID: string
+outputs:
+  ReplicationTaskStates: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.replication.GetReplicationTaskStates

@@ -1,0 +1,18 @@
+name: RollbackWebAdapterCaches
+version: 1
+trigger: manual
+handler: ./RollbackWebAdapterCaches.ts
+ai:
+  skill: core-rollbackwebadaptercaches
+  title: RollbackWebAdapterCaches
+  description: Intershop core pipelet – RollbackWebAdapterCaches.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingContext: any
+  PageCacheInvalidationPolicy: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.RollbackWebAdapterCaches

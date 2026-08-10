@@ -1,0 +1,20 @@
+name: VerifyShippingRestrictions
+version: 1
+trigger: manual
+handler: ./VerifyShippingRestrictions.ts
+ai:
+  skill: shipping-verifyshippingrestrictions
+  title: VerifyShippingRestrictions
+  description: Intershop shipping pipelet – VerifyShippingRestrictions.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Basket: any
+  Locale: any
+outputs:
+  Map: map
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.VerifyShippingRestrictions

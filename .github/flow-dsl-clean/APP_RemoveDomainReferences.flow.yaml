@@ -1,0 +1,41 @@
+flow: "APP_RemoveDomainReferences"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode2"
+    type: "end"
+    strict: false
+  - id: "ExecuteStoredProcedure5"
+    type: "pipelet"
+    ref: "ExecuteStoredProcedure"
+    config:
+      AllowNullParameter: false
+      ParameterDefinition: "ToBeRemovedDomainID=string"
+      StoredProcedure: "sp_deleteApprovalByDomain"
+  - id: "Text1"
+    type: "text"
+
+links:
+  - from: "ExecuteStoredProcedure5"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "ExecuteStoredProcedure5"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "ExecuteStoredProcedure5"
+    into: "in"

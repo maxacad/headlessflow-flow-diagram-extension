@@ -1,0 +1,33 @@
+name: LoginUser
+version: 1
+trigger: manual
+handler: ./LoginUser.ts
+ai:
+  skill: core-loginuser
+  title: LoginUser
+  description: Intershop core pipelet – LoginUser.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  HTTPAuthentication: string
+  WebServerAuthentication: string
+  AuthorizedAuthentication: string
+  AlwaysAcceptLocalUsers: string
+  AlwaysAcceptUnitsUsers: string
+  CurrentRequest: any
+  CurrentDomain: any
+  CurrentUser: any
+  Login: string
+  Password: string
+  RegistrationDomain: string
+outputs:
+  CurrentUser: any
+  LastUser: any
+  Profile: any
+  ERROR_User: string
+  LockedUser: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.LoginUser

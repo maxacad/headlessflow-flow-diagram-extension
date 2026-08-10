@@ -1,0 +1,20 @@
+name: MaintainSequence
+version: 1
+trigger: manual
+handler: ./MaintainSequence.ts
+ai:
+  skill: core-maintainsequence
+  title: MaintainSequence
+  description: Intershop core pipelet – MaintainSequence.
+  tags: [integration, data]
+  capabilities:
+    - execute-database-operation
+inputs:
+  SeriesID: string
+  DomainName: string
+  TableName: string
+  ColumnName: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.database.MaintainSequence

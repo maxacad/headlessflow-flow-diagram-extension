@@ -1,0 +1,20 @@
+name: WaitForStagingProcessState
+version: 1
+trigger: manual
+handler: ./WaitForStagingProcessState.ts
+ai:
+  skill: core-waitforstagingprocessstate
+  title: WaitForStagingProcessState
+  description: Intershop core pipelet – WaitForStagingProcessState.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  WaitForStagingState: string
+  StagingProcessID: string
+outputs:
+  StagingState: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.WaitForStagingProcessState

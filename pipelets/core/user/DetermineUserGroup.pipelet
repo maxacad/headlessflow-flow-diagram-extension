@@ -1,0 +1,20 @@
+name: DetermineUserGroup
+version: 1
+trigger: manual
+handler: ./DetermineUserGroup.ts
+ai:
+  skill: core-determineusergroup
+  title: DetermineUserGroup
+  description: Intershop core pipelet – DetermineUserGroup.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  Config_UserGroupID: string
+  UserGroupID: string
+  CurrentDomain: any
+  UserGroup: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.DetermineUserGroup

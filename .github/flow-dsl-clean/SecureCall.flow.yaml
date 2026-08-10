@@ -1,0 +1,50 @@
+flow: "SecureCall"
+kind: "process"
+
+entries:
+  - id: "StartNode0"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "JumpTarget"
+        type: "java.lang.String"
+        required: false
+      - key: "CurrentUser"
+        type: "com.intershop.beehive.core.capi.user.User"
+        required: false
+
+steps:
+  - id: "CallNode0"
+    type: "call"
+    ref: "Prefix-CheckUserPermissions"
+  - id: "CallNode1"
+    type: "call"
+  - id: "EndNode0"
+    type: "end"
+    strict: false
+  - id: "ResolveJumpTargetInCallingPipeline0"
+    type: "pipelet"
+    ref: "ResolveJumpTargetInCallingPipeline"
+    bindings:
+      ResolvedJumpTarget: "JumpTarget"
+      PipelineName: "CurrentPipelineName"
+      StartNodeName: "CurrentStartNodeName"
+
+links:
+  - from: "CallNode0"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "EndNode0"
+    into: "in"
+  - from: "ResolveJumpTargetInCallingPipeline0"
+    via: "next"
+    to: "CallNode0"
+    into: "in"
+  - from: "StartNode0"
+    via: "next"
+    to: "ResolveJumpTargetInCallingPipeline0"
+    into: "in"

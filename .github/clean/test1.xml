@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<replication-configuration 
+    xsi:schemaLocation="http://www.intershop.com/xml/ns/enfinity/6.5.0/core/replication replicationprocess-config.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.intershop.com/xml/ns/enfinity/6.5.0/core/replication">
+    
+    <processes>
+        <process id="nightly">
+            <type>Publication</type>
+            <description>This process is started every night.</description>
+            <task ref="PrimeTechSpecialsProducts"/>
+            <task ref="PrimeTechProducts"/>
+        </process>
+    </processes>    
+    
+    <tasks>
+        <task id="PrimeTechSpecialsProducts">
+            <organization>PrimeTech</organization>
+            <channel>PrimeTechSpecials</channel>
+            <description>Replicates all products of channel PrimeTechSpecials</description>
+            <group ref="CATALOGS"/>
+            <group ref="PRODUCTS"/>
+        </task>
+        <task id="PrimeTechProducts">
+            <organization>PrimeTech</organization>
+            <description>Replicates all products of master repository of PrimeTech</description>
+            <group ref="PRODUCTS"/>
+        </task>
+    </tasks>
+    
+    <groups>
+        <group id="PRODUCTS">
+            <business-unit-types>20 30</business-unit-types>
+            <locale id="de_DE">
+                <name>Produkte</name>
+                <description>Alle Produktdaten</description>
+            </locale>
+            <locale id="en_US">
+	            <name>Products</name>
+	            <description>All product content.</description>
+	        </locale>
+        </group>
+        <group id="CATALOGS">
+            <business-unit-types>32 42</business-unit-types>
+
+            <locale id="de_DE">
+                <name>Kataloge</name>
+                <description>Alle Katalogdaten</description>
+            </locale>
+            <locale id="en_US">
+                <name>Catalogs</name>
+                <description>All catalog content.</description>
+            </locale>
+        </group>
+    </groups>
+
+</replication-configuration>

@@ -1,0 +1,21 @@
+name: GetUserDelegations
+version: 1
+trigger: manual
+handler: ./GetUserDelegations.ts
+ai:
+  skill: organization-getuserdelegations
+  title: GetUserDelegations
+  description: Intershop organization pipelet – GetUserDelegations.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  User: any
+  DelegationType: string
+  DefaultDelegationType: string
+outputs:
+  UserDelegations: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.GetUserDelegations

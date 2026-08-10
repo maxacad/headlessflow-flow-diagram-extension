@@ -1,0 +1,20 @@
+name: DetermineTasklistActivities
+version: 1
+trigger: manual
+handler: ./DetermineTasklistActivities.ts
+ai:
+  skill: core-determinetasklistactivities
+  title: DetermineTasklistActivities
+  description: Intershop core pipelet – DetermineTasklistActivities.
+  tags: [workflow, approval, process]
+  capabilities:
+    - execute-workflow-operation
+inputs:
+  CurrentUser: any
+  CurrentDomain: any
+outputs:
+  WorkflowActivities: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.workflow.DetermineTasklistActivities

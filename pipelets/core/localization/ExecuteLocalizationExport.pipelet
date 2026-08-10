@@ -1,0 +1,24 @@
+name: ExecuteLocalizationExport
+version: 1
+trigger: manual
+handler: ./ExecuteLocalizationExport.ts
+ai:
+  skill: core-executelocalizationexport
+  title: ExecuteLocalizationExport
+  description: Intershop core pipelet – ExecuteLocalizationExport.
+  tags: [integration, data]
+  capabilities:
+    - execute-localization-operation
+inputs:
+  LocalizationContext: any
+  ModifiedLocalesIterator: iterator
+  JobConfiguration: any
+  Domain: any
+  ExportFileFormat: string
+outputs:
+  ExportedFile: any
+  Error: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.localization.ExecuteLocalizationExport

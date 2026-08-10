@@ -1,0 +1,48 @@
+flow: "ProcessUtils"
+kind: "process"
+
+entries:
+  - id: "StartNode6"
+    name: "CreateMapFromIterator"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Items"
+        type: "java.util.Iterator"
+        required: true
+
+steps:
+  - id: "AddEntryToMap3"
+    type: "pipelet"
+    ref: "AddEntryToMap"
+    bindings:
+      Key: "Item"
+      Value: "Item"
+      InMap: "OutMap"
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "OutMap"
+        type: "java.util.Map"
+        guaranteed: false
+  - id: "LoopNode3"
+    type: "loop"
+
+links:
+  - from: "LoopNode3"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "AddEntryToMap3"
+    via: "next"
+    to: "LoopNode3"
+    into: "loop"
+  - from: "LoopNode3"
+    via: "do"
+    to: "AddEntryToMap3"
+    into: "in"
+  - from: "StartNode6"
+    via: "next"
+    to: "LoopNode3"
+    into: "in"

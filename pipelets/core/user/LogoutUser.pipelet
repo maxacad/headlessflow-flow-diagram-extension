@@ -1,0 +1,21 @@
+name: LogoutUser
+version: 1
+trigger: manual
+handler: ./LogoutUser.ts
+ai:
+  skill: core-logoutuser
+  title: LogoutUser
+  description: Intershop core pipelet – LogoutUser.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  CurrentUser: any
+  CurrentDomain: any
+outputs:
+  CurrentUser: any
+  LastUser: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.LogoutUser

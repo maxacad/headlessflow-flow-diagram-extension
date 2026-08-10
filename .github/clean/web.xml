@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0" metadata-complete="true"> 
+    <display-name>Enfinity Suite</display-name>
+    <description>Enfinity Suite</description>
+
+    <!-- ==================================================================== -->
+    <!-- ================= ServletContextListener definition ================ -->
+    <!-- ==================================================================== -->
+    <listener>
+        <listener-class>com.intershop.beehive.core.internal.environment.ApplicationContextListener</listener-class>
+    </listener>
+    <!-- ==================================================================== -->
+    <!-- ====================== Filter definitions ========================= -->
+    <!-- ==================================================================== -->
+    <filter>
+        <filter-name>MDC Clearing Filter</filter-name>
+        <filter-class>com.intershop.beehive.core.internal.request.MDCClearingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>MDC Clearing Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>ORM Cleanup Filter</filter-name>
+        <filter-class>com.intershop.beehive.core.internal.request.ORMCleanupFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ORM Cleanup Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AppContext Cleanup Filter</filter-name>
+        <filter-class>com.intershop.beehive.core.internal.app.AppContextCleanupFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AppContext Cleanup Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>ISMLTemplateEngine Cleanup Filter</filter-name>
+        <filter-class>com.intershop.beehive.isml.capi.ISMLTemplateEngineCleanupFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ISMLTemplateEngine Cleanup Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- ==================================================================== -->
+    <!-- ====================== Servlet definitions ========================= -->
+    <!-- ==================================================================== -->
+    <servlet>
+        <servlet-name>ConfigurationServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.request.ConfigurationServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>    
+    <!-- ENFINITY Request Handler -->
+    <servlet>
+        <servlet-name>RequestHandlerServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.request.RequestHandlerServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>        
+    </servlet>
+    <!-- ENFINITY Web Service support -->
+    <servlet>
+        <servlet-name>WebService</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.webservice.WebServiceServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY Web Service support (Axis2) -->
+    <servlet>
+        <servlet-name>Axis2</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.axis2.Axis2Servlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY WSRP support -->
+    <servlet>
+        <servlet-name>WSRP</servlet-name>
+        <servlet-class>com.intershop.beehive.wsrp.internal.WSRPServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY SOAP adapter -->
+    <servlet>
+        <servlet-name>SOAPServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.soap.SOAPServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY Resource Servlet -->
+    <servlet>
+        <servlet-name>ResourceServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.request.ResourceServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY Dist Servlet -->
+    <servlet>
+        <servlet-name>DistServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.request.DistServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY Pagecache service -->
+    <servlet>
+        <servlet-name>PagecacheServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.pagecache.PageCacheServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY LineChart service -->
+    <servlet>
+        <servlet-name>LineChartServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.monitor.internal.chart.LineChartServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY Servlet Broker --> 
+    <servlet>
+        <servlet-name>ServletBrokerServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.request.ServletBrokerServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ENFINITY REST service --> 
+    <servlet>
+        <servlet-name>ServletAdapterServlet</servlet-name>
+        <servlet-class>com.intershop.beehive.core.internal.request.ServletAdapterServlet</servlet-class>
+        <init-param>
+            <param-name>ServiceName</param-name>
+            <param-value>REST</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- ==================================================================== -->
+    <!-- =================== Servlet Mapping definitions ==================== -->
+    <!-- ==================================================================== -->
+    <servlet-mapping>
+        <servlet-name>ConfigurationServlet</servlet-name>
+        <url-pattern>/servlet/ConfigurationServlet</url-pattern>
+    </servlet-mapping>    
+    <!-- Define the Request Handler Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>RequestHandlerServlet</servlet-name>
+        <url-pattern>/servlet/Beehive/*</url-pattern>
+    </servlet-mapping>
+    <!-- Mapping for the web service servlet -->
+    <servlet-mapping>
+        <servlet-name>WebService</servlet-name> 
+        <url-pattern>/servlet/WebService/*</url-pattern> 
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Axis2</servlet-name> 
+        <url-pattern>/servlet/Axis2/*</url-pattern> 
+    </servlet-mapping>
+    <!-- Define the WSRP Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>WSRP</servlet-name> 
+        <url-pattern>/servlet/WSRP/*</url-pattern> 
+    </servlet-mapping>
+    <!-- Define the SOAP Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>SOAPServlet</servlet-name>
+        <url-pattern>/servlet/SOAP/*</url-pattern>
+    </servlet-mapping>
+    <!-- Define the Resource Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>ResourceServlet</servlet-name>
+        <url-pattern>/servlet/Resource/*</url-pattern>
+    </servlet-mapping>
+    <!-- Define the Dist Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>DistServlet</servlet-name>
+        <url-pattern>/servlet/Dist/*</url-pattern>
+    </servlet-mapping>
+    <!-- Define the Pagecache Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>PagecacheServlet</servlet-name>
+        <url-pattern>/servlet/Pagecache</url-pattern>
+    </servlet-mapping>
+    <!-- Define the Pagecache Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>LineChartServlet</servlet-name>
+        <url-pattern>/servlet/LineChart/parameter</url-pattern>
+    </servlet-mapping>
+    <!-- Define the Servlet Broker Mapping -->
+    <servlet-mapping>
+        <servlet-name>ServletBrokerServlet</servlet-name>
+        <url-pattern>/servlet/broker/*</url-pattern>
+    </servlet-mapping>
+    <!-- Define the REST Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>ServletAdapterServlet</servlet-name>
+        <url-pattern>/servlet/REST/*</url-pattern>
+    </servlet-mapping>
+    <!-- ==================================================================== -->
+    <!-- ================== additional MIME Type Mappings =================== -->
+    <!-- ==================================================================== -->
+    <mime-mapping>
+        <extension>chm</extension>
+        <mime-type>application/mshelp</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>dll</extension>
+        <mime-type>application/octet-stream</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ex_</extension>
+        <mime-type>application/octet-stream</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>jhtml</extension>
+        <mime-type>java-internal/java-html</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>jsp</extension>
+        <mime-type>java-internal/java-html/javascript</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>shtml</extension>
+        <mime-type>java-internal/parsed-html</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>xml</extension>
+        <mime-type>application/xml</mime-type>
+    </mime-mapping>
+    <!-- ==================================================================== -->
+    <!-- ====================== error page definitions ====================== -->
+    <!-- ==================================================================== -->
+    <error-page>
+        <error-code>400</error-code>
+        <location>/ish/cartridges/core/common/errorPages/error400.jsp</location>
+    </error-page>        
+    <error-page>
+        <error-code>403</error-code>
+        <location>/ish/cartridges/core/common/errorPages/error403.jsp</location>
+    </error-page>    
+    <error-page>
+        <error-code>404</error-code>
+        <location>/ish/cartridges/core/common/errorPages/error404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>405</error-code>
+        <location>/ish/cartridges/core/common/errorPages/error405.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/ish/cartridges/core/common/errorPages/error500.jsp</location>
+    </error-page>
+</web-app>

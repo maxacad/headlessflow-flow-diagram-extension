@@ -1,0 +1,23 @@
+name: CreateSite
+version: 1
+trigger: manual
+handler: ./CreateSite.ts
+ai:
+  skill: core-createsite
+  title: CreateSite
+  description: Intershop core pipelet – CreateSite.
+  tags: [integration, data]
+  capabilities:
+    - execute-domain-operation
+inputs:
+  DomainName: string
+  LocaleInformation: any
+  ParentDomain: any
+  DomainAdmin: any
+outputs:
+  Domain: any
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.domain.CreateSite

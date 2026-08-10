@@ -1,0 +1,44 @@
+flow: "ViewPageletPropertiesAssignABTest"
+kind: "view"
+
+entries:
+  - id: "StartNode2"
+    name: "GetPageletABTestAssignments"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode4"
+    name: "Dispatch"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "EndNode10"
+    type: "end"
+    strict: false
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "Error-Start"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "DisableABTest"
+      Value: true
+
+links:
+  - from: "StartNode4"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "EndNode10"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "SetDictionaryValue1"
+    into: "in"

@@ -1,0 +1,18 @@
+name: ProcessReplication
+version: 1
+trigger: manual
+handler: ./ProcessReplication.ts
+ai:
+  skill: core-processreplication
+  title: ProcessReplication
+  description: Intershop core pipelet – ProcessReplication.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcess: any
+  StagingContext: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.ProcessReplication

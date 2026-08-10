@@ -1,0 +1,20 @@
+name: GetSubDepartments
+version: 1
+trigger: manual
+handler: ./GetSubDepartments.ts
+ai:
+  skill: organization-getsubdepartments
+  title: GetSubDepartments
+  description: Intershop organization pipelet – GetSubDepartments.
+  tags: [integration, data]
+  capabilities:
+    - execute-department-operation
+inputs:
+  Department: any
+  Depth: string
+outputs:
+  SubDepartments: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.department.GetSubDepartments

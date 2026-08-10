@@ -1,0 +1,23 @@
+name: GetStagingService
+version: 1
+trigger: manual
+handler: ./GetStagingService.ts
+ai:
+  skill: core-getstagingservice
+  title: GetStagingService
+  description: Intershop core pipelet – GetStagingService.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingServiceFactory: string
+  StagingContext: any
+outputs:
+  ErrorStatus: string
+  StagingService: object
+  StagingServices: any
+  Exception: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.GetStagingService

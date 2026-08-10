@@ -1,0 +1,20 @@
+name: CleanUpDeletionPOs
+version: 1
+trigger: manual
+handler: ./CleanUpDeletionPOs.ts
+ai:
+  skill: core-cleanupdeletionpos
+  title: CleanUpDeletionPOs
+  description: Intershop core pipelet – CleanUpDeletionPOs.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  DeletionTrackingTableName: string
+  CartridgeName: string
+  ColumnName: string
+  PDKeyOfIdentifiers: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.CleanUpDeletionPOs

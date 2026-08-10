@@ -1,0 +1,62 @@
+flow: "ViewPage"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "Error"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DecisionNode0"
+    type: "decision"
+    condition: "Pagelets"
+  - id: "GetPageletEntryPointByID0"
+    type: "pipelet"
+    ref: "GetPageletEntryPointByID"
+    bindings:
+      ID: "PageletEntryPointID"
+      Domain: "CurrentOrganization:OwningDomain"
+  - id: "GetPageletsOfPageletEntryPoint0"
+    type: "pipelet"
+    ref: "GetPageletsOfPageletEntryPoint"
+    bindings:
+      Site: "CurrentDomain"
+  - id: "InteractionNode0"
+    type: "interaction"
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "JoinNode0"
+    type: "join"
+
+links:
+  - from: "DecisionNode0"
+    via: "no"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "DecisionNode0"
+    via: "yes"
+    to: "JoinNode0"
+    into: "in1"
+  - from: "GetPageletEntryPointByID0"
+    via: "error"
+    to: "JoinNode0"
+    into: "in1"
+  - from: "GetPageletEntryPointByID0"
+    via: "next"
+    to: "GetPageletsOfPageletEntryPoint0"
+    into: "in"
+  - from: "GetPageletsOfPageletEntryPoint0"
+    via: "next"
+    to: "DecisionNode0"
+    into: "in"
+  - from: "JoinNode0"
+    via: "next"
+    to: "InteractionNode0"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "GetPageletEntryPointByID0"
+    into: "in"

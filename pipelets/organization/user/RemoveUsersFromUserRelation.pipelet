@@ -1,0 +1,22 @@
+name: RemoveUsersFromUserRelation
+version: 1
+trigger: manual
+handler: ./RemoveUsersFromUserRelation.ts
+ai:
+  skill: organization-removeusersfromuserrelation
+  title: RemoveUsersFromUserRelation
+  description: Intershop organization pipelet – RemoveUsersFromUserRelation.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  User: any
+  RelatedUser: any
+  RelatedUsers: iterator
+  RelationID: string
+  DefaultRelationID: string
+  RemoveAll: boolean
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.RemoveUsersFromUserRelation

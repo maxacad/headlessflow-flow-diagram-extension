@@ -1,0 +1,51 @@
+flow: "ProcessPagelet"
+kind: "process"
+
+entries:
+  - id: "StartNode7"
+    name: "GetPageletConfiguration"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "PageletUUID"
+        type: "java.lang.String"
+        required: true
+
+steps:
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ConfigurationParameterMap"
+        type: "java.util.Map"
+        guaranteed: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+  - id: "GetConfigurationParametersAsMap1"
+    type: "pipelet"
+    ref: "GetConfigurationParametersAsMap"
+    bindings:
+      ConfigurationParameterCtnr: "Pagelet"
+      Locale: "CurrentSession:Locale"
+  - id: "GetPageletByUUID1"
+    type: "pipelet"
+    ref: "GetPageletByUUID"
+
+links:
+  - from: "GetPageletByUUID1"
+    via: "error"
+    to: "EndNode6"
+    into: "in"
+  - from: "GetPageletByUUID1"
+    via: "next"
+    to: "GetConfigurationParametersAsMap1"
+    into: "in"
+  - from: "GetConfigurationParametersAsMap1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode7"
+    via: "next"
+    to: "GetPageletByUUID1"
+    into: "in"

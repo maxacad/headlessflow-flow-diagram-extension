@@ -1,0 +1,21 @@
+name: GetCurrentStagingProcessState
+version: 1
+trigger: manual
+handler: ./GetCurrentStagingProcessState.ts
+ai:
+  skill: core-getcurrentstagingprocessstate
+  title: GetCurrentStagingProcessState
+  description: Intershop core pipelet – GetCurrentStagingProcessState.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingService: object
+outputs:
+  StagingProcess: any
+  ComponentsIterator: iterator
+  ErrorStatus: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.GetCurrentStagingProcessState

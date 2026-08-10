@@ -1,0 +1,33 @@
+flow: "UpdateObjectStatistics_32"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "ProcessChannel"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CurrentChannel"
+        type: "com.intershop.component.mvc.capi.catalog.Repository"
+        required: true
+
+steps:
+  - id: "CallNode2"
+    type: "call"
+    ref: "UpdateObjectStatisticsRealtime-Update"
+    bindings:
+      ObjectDomain: "CurrentChannel:RepositoryDomain"
+      GroupName: "\"Product\""
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+
+links:
+  - from: "CallNode2"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode2"
+    into: "in"

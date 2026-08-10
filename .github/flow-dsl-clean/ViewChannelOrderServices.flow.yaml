@@ -1,0 +1,71 @@
+flow: "ViewChannelOrderServices"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "ListAll"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "Update"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessService-Activate"
+  - id: "GetServicesByDomain1"
+    type: "pipelet"
+    ref: "GetServicesByDomain"
+    bindings:
+      Domain: "CurrentChannel:RepositoryDomain"
+      AssignedDomain: "CurrentChannel:RepositoryDomain"
+      ServiceGroupID: "\"Order Services\""
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "ViewChannelOrderServices-ListAll"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "CurrentChannel:RepositoryDomain"
+      OutValue_1: "ConfigDomain"
+  - id: "PrepareApplicationView1"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      WorkingTemplate: "service/OrderServices"
+      SelectedMenuItem: "Orders"
+
+links:
+  - from: "PrepareApplicationView1"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "GetServicesByDomain1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "GetServicesByDomain1"
+    via: "next"
+    to: "PrepareApplicationView1"
+    into: "in"

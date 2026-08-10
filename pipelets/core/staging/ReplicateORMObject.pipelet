@@ -1,0 +1,23 @@
+name: ReplicateORMObject
+version: 1
+trigger: manual
+handler: ./ReplicateORMObject.ts
+ai:
+  skill: core-replicateormobject
+  title: ReplicateORMObject
+  description: Intershop core pipelet – ReplicateORMObject.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  ORMObject: any
+  TargetSystem: any
+  TargetCluster: any
+  Parameters: any
+outputs:
+  Replicator: any
+  Exception: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.ReplicateORMObject

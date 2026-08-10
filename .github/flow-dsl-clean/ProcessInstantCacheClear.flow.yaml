@@ -1,0 +1,62 @@
+flow: "ProcessInstantCacheClear"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "ClearCachesForObjects"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Object"
+        type: "java.lang.Object"
+        required: false
+      - key: "Objects"
+        type: "java.util.Iterator<Object>"
+        required: false
+  - id: "StartNode2"
+    name: "ClearCachesForClasses"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ClassNames"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "ProcessInstantCacheClear1"
+    type: "pipelet"
+    ref: "ProcessInstantCacheClear"
+    config:
+      ObjectNature: "ObjectInstances"
+  - id: "ProcessInstantCacheClear2"
+    type: "pipelet"
+    ref: "ProcessInstantCacheClear"
+    config:
+      ObjectNature: "ClassNames"
+    bindings:
+      Objects: "null"
+      Object: "null"
+
+links:
+  - from: "ProcessInstantCacheClear2"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "ProcessInstantCacheClear1"
+    into: "in"
+  - from: "ProcessInstantCacheClear1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "ProcessInstantCacheClear2"
+    into: "in"

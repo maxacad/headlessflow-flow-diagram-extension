@@ -1,0 +1,25 @@
+name: GetApplicationPreference
+version: 1
+trigger: manual
+handler: ./GetApplicationPreference.ts
+ai:
+  skill: core-getapplicationpreference
+  title: GetApplicationPreference
+  description: Intershop core pipelet – GetApplicationPreference.
+  tags: [integration, data]
+  capabilities:
+    - execute-app-operation
+inputs:
+  Type: string
+  ApplicationPreferenceKey: string
+  Application: any
+  DomainPreference: any
+outputs:
+  ApplicationPreferenceStringValue: string
+  ApplicationPreferenceIntValue: number
+  ApplicationPreferenceDoubleValue: number
+  ApplicationPreference: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.app.GetApplicationPreference

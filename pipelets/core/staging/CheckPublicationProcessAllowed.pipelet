@@ -1,0 +1,19 @@
+name: CheckPublicationProcessAllowed
+version: 1
+trigger: manual
+handler: ./CheckPublicationProcessAllowed.ts
+ai:
+  skill: core-checkpublicationprocessallowed
+  title: CheckPublicationProcessAllowed
+  description: Intershop core pipelet – CheckPublicationProcessAllowed.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcess: any
+outputs:
+  ErrorStatus: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.CheckPublicationProcessAllowed

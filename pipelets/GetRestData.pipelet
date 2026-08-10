@@ -1,0 +1,24 @@
+name: GetRestData
+version: 1
+trigger: manual
+handler: ./GetRestData.ts
+ai:
+  skill: get-rest-data
+  title: Get REST Data
+  description: Fetch data from a REST endpoint and expose status plus response payload.
+  tags: [http, rest, integration]
+  capabilities:
+    - configure-rest-request
+    - map-rest-response
+    - suggest-error-handling
+inputs:
+  url: string
+  method: string?
+  headers: object?
+outputs:
+  status: number
+  data: object
+steps:
+  - type: function
+    runtime: nodejs
+    function: GetRestData

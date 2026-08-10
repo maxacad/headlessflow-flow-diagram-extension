@@ -1,0 +1,190 @@
+flow: "ProcessAssignmentFilter"
+kind: "process"
+
+entries:
+  - id: "StartNode7"
+    name: "StoreFilterConfigInSession"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "AssignmentFilterConfiguration"
+        type: "com.intershop.component.foundation.capi.assignment.filter.AssignmentFilterConfiguration"
+        required: true
+      - key: "IdentifierKeys"
+        type: "java.util.Map"
+        required: false
+  - id: "StartNode8"
+    name: "GetFilterConfigFromSession"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode9"
+    name: "ClearFilterConfigFromSession"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "AssignmentFilterConfiguration"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+  - id: "EndNode4"
+    type: "end"
+    strict: false
+  - id: "ExchangeSessionObject1"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Put Object to Session"
+      SessionObjectName: "CurrentAssignmentFilterConfiguration"
+    bindings:
+      SaveObject: "AssignmentFilterConfiguration"
+  - id: "ExchangeSessionObject2"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Get Object from Session"
+      SessionObjectName: "CurrentAssignmentFilterConfiguration"
+    bindings:
+      LoadObject: "AssignmentFilterConfiguration"
+  - id: "ExchangeSessionObject3"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Put Object to Session"
+      SessionObjectName: "CurrentAssignmentFilterConfiguration"
+    bindings:
+      SaveObject: "null"
+  - id: "ExchangeSessionObject4"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Put Object to Session"
+      SessionObjectName: "AssignmentFilterConfigurationIdentifierKeys"
+    bindings:
+      SaveObject: "IdentifierKeys"
+  - id: "ExchangeSessionObject5"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Get Object from Session"
+      SessionObjectName: "AssignmentFilterConfigurationIdentifierKeys"
+    bindings:
+      LoadObject: "AssignmentFilterConfigurationIdentifierKeys"
+  - id: "ExchangeSessionObject6"
+    type: "pipelet"
+    ref: "ExchangeSessionObject"
+    config:
+      ProcessMethod: "Put Object to Session"
+      SessionObjectName: "AssignmentFilterConfigurationIdentifierKeys"
+    bindings:
+      SaveObject: "null"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    config:
+      ValueType: "Form Value"
+    bindings:
+      InValue_1: "Entry:Value"
+      OutValue_1: "EntryValue"
+  - id: "LoopNode1"
+    type: "loop"
+  - id: "RemoveDictionaryValue1"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      RemoveFormValues: true
+      Key: "EntryValue"
+  - id: "RemoveDictionaryValue2"
+    type: "pipelet"
+    ref: "RemoveDictionaryValue"
+    config:
+      RemoveFormValues: false
+      Key: "Entry"
+  - id: "SetIndirectDictValue1"
+    type: "pipelet"
+    ref: "SetIndirectDictValue"
+    bindings:
+      MappedEntry: "EntryValue"
+      KeyNameHolder: "Entry:Key"
+
+links:
+  - from: "SetIndirectDictValue1"
+    via: "next"
+    to: "LoopNode1"
+    into: "loop"
+  - from: "ExchangeSessionObject4"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "LoopNode1"
+    via: "next"
+    to: "RemoveDictionaryValue2"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "SetIndirectDictValue1"
+    into: "in"
+  - from: "StartNode9"
+    via: "next"
+    to: "ExchangeSessionObject3"
+    into: "in"
+  - from: "RemoveDictionaryValue2"
+    via: "next"
+    to: "RemoveDictionaryValue1"
+    into: "in"
+  - from: "ExchangeSessionObject5"
+    via: "next"
+    to: "LoopNode1"
+    into: "in"
+  - from: "ExchangeSessionObject2"
+    via: "next"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "ExchangeSessionObject5"
+    into: "in"
+  - from: "ExchangeSessionObject3"
+    via: "next"
+    to: "ExchangeSessionObject6"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "EndNode4"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "ExchangeSessionObject2"
+    into: "in"
+  - from: "ExchangeSessionObject1"
+    via: "next"
+    to: "ExchangeSessionObject4"
+    into: "in"
+  - from: "LoopNode1"
+    via: "do"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "RemoveDictionaryValue1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "ExchangeSessionObject6"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "StartNode7"
+    via: "next"
+    to: "ExchangeSessionObject1"
+    into: "in"

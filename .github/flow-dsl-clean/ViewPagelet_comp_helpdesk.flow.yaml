@@ -1,0 +1,82 @@
+flow: "ViewPagelet_comp_helpdesk"
+kind: "include"
+
+entries:
+  - id: "StartNode1"
+    name: "Breadcrumbs"
+    mode: "include"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "InitContactForm"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CreateForm1"
+    type: "pipelet"
+    ref: "CreateForm"
+    config:
+      FormName: "ContactUsForm"
+      FormResource: "ContactUs"
+    bindings:
+      Form: "ContactUsForm"
+  - id: "CreateHelpdeskBreadcrumbs1"
+    type: "pipelet"
+    ref: "CreateHelpdeskBreadcrumbs"
+    bindings:
+      BreadcrumbHTML: "trailtext0"
+  - id: "DecisionNode6"
+    type: "decision"
+    condition: "ContactUsForm"
+  - id: "EndNode2"
+    type: "end"
+    strict: false
+  - id: "EndNode3"
+    type: "end"
+    strict: false
+  - id: "JoinNode8"
+    type: "join"
+  - id: "SetFormParameterValue1"
+    type: "pipelet"
+    ref: "SetFormParameterValue"
+    bindings:
+      FormParameter: "ContactUsForm:PageletEntryPointID"
+      Value: "PageletEntryPointID"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "DecisionNode6"
+    into: "in"
+  - from: "CreateForm1"
+    via: "next"
+    to: "SetFormParameterValue1"
+    into: "in"
+  - from: "CreateHelpdeskBreadcrumbs1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CreateHelpdeskBreadcrumbs1"
+    into: "in"
+  - from: "DecisionNode6"
+    via: "yes"
+    to: "JoinNode8"
+    into: "in2"
+  - from: "DecisionNode6"
+    via: "no"
+    to: "CreateForm1"
+    into: "in"
+  - from: "SetFormParameterValue1"
+    via: "next"
+    to: "JoinNode8"
+    into: "in1"
+  - from: "JoinNode8"
+    via: "next"
+    to: "EndNode3"
+    into: "in"

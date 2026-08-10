@@ -1,0 +1,22 @@
+name: CallPipeline
+version: 1
+trigger: manual
+handler: ./CallPipeline.ts
+ai:
+  skill: core-callpipeline
+  title: CallPipeline
+  description: Intershop core pipelet – CallPipeline.
+  tags: [integration, data]
+  capabilities:
+    - execute-pipeline-operation
+inputs:
+  Pipeline: string
+  StartNode: string
+  PipelineExecutor: any
+  Parameters: any
+outputs:
+  PipelineResult: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.pipeline.CallPipeline

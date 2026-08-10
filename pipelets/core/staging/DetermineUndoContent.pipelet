@@ -1,0 +1,21 @@
+name: DetermineUndoContent
+version: 1
+trigger: manual
+handler: ./DetermineUndoContent.ts
+ai:
+  skill: core-determineundocontent
+  title: DetermineUndoContent
+  description: Intershop core pipelet – DetermineUndoContent.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingContext: any
+  UndoComponents: any
+  StagingProcess: any
+outputs:
+  ErrorStatus: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.DetermineUndoContent

@@ -1,0 +1,19 @@
+name: UnassignUserFromUserGroup
+version: 1
+trigger: manual
+handler: ./UnassignUserFromUserGroup.ts
+ai:
+  skill: core-unassignuserfromusergroup
+  title: UnassignUserFromUserGroup
+  description: Intershop core pipelet – UnassignUserFromUserGroup.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  CurrentDomain: any
+  CurrentUser: any
+  UserGroupID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.UnassignUserFromUserGroup

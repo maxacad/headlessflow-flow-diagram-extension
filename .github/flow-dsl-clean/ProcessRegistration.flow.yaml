@@ -1,0 +1,223 @@
+flow: "ProcessRegistration"
+kind: "process"
+
+entries:
+  - id: "Start"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "Login"
+        type: "java.lang.String"
+        required: false
+      - key: "Password"
+        type: "java.lang.String"
+        required: false
+      - key: "PasswordConfirmation"
+        type: "java.lang.String"
+        required: false
+      - key: "FirstName"
+        type: "java.lang.String"
+        required: false
+      - key: "LastName"
+        type: "java.lang.String"
+        required: false
+      - key: "Title"
+        type: "java.lang.String"
+        required: false
+      - key: "Company"
+        type: "java.lang.String"
+        required: false
+      - key: "ConfirmMail"
+        type: "java.lang.String"
+        required: false
+      - key: "ConfirmFax"
+        type: "java.lang.String"
+        required: false
+      - key: "City"
+        type: "java.lang.String"
+        required: false
+      - key: "State"
+        type: "java.lang.String"
+        required: false
+      - key: "Street"
+        type: "java.lang.String"
+        required: false
+      - key: "ZipCode"
+        type: "java.lang.String"
+        required: false
+      - key: "Country"
+        type: "java.lang.String"
+        required: false
+      - key: "PhoneBusiness"
+        type: "java.lang.String"
+        required: false
+      - key: "PhoneBusinessDirect"
+        type: "java.lang.String"
+        required: false
+      - key: "PhoneHome"
+        type: "java.lang.String"
+        required: false
+      - key: "Fax"
+        type: "java.lang.String"
+        required: false
+      - key: "Email"
+        type: "java.lang.String"
+        required: false
+  - id: "Start2"
+    name: "StoreFormValues"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DetermineUserProfile1"
+    type: "pipelet"
+    ref: "DetermineUserProfile"
+    bindings:
+      CurrentUser: "RegisteredUser"
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "End5"
+    type: "end"
+    strict: false
+  - id: "End6"
+    type: "end"
+    strict: false
+  - id: "EvaluateFormValues1"
+    type: "pipelet"
+    ref: "EvaluateFormValues"
+    config:
+      performChecks: false
+  - id: "GenerateSeriesNumber1"
+    type: "pipelet"
+    ref: "GenerateSeriesNumber"
+    config:
+      DomainSpecific: true
+      NumberPattern: 0000000
+      SeriesIdentifier: "BusinesspartnerNo"
+      BlockSize: 50
+      StartWith: 1
+  - id: "GetWebForm1"
+    type: "pipelet"
+    ref: "GetWebForm"
+    config:
+      webform-id: "RegForm"
+    bindings:
+      WebForm: "RegForm"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "JoinNode3"
+    type: "join"
+  - id: "LoginUser1"
+    type: "pipelet"
+    ref: "LoginUser"
+    bindings:
+      Login: "RegForm:Login:Value"
+      Password: "RegForm:Password:Value"
+  - id: "PrepareFormValues3"
+    type: "pipelet"
+    ref: "PrepareFormValues"
+  - id: "RegisterUser1"
+    type: "pipelet"
+    ref: "RegisterUser"
+    bindings:
+      City: "RegForm:City:Value"
+      Company: "RegForm:Company:Value"
+      ConfirmFax: "RegForm:ConfirmFax:Value"
+      ConfirmMail: "RegForm:ConfirmMail:Value"
+      Country: "RegForm:Country:Value"
+      Email: "RegForm:Email:Value"
+      Fax: "RegForm:Fax:Value"
+      FirstName: "RegForm:FirstName:Value"
+      LastName: "RegForm:LastName:Value"
+      Login: "RegForm:Login:Value"
+      Password: "RegForm:Password:Value"
+      PasswordConfirmation: "RegForm:PasswordConfirmation:Value"
+      PasswordReminder: "RegForm:PasswordReminder:Value"
+      PhoneBusiness: "RegForm:PhoneBusiness:Value"
+      PhoneBusinessDirect: "RegForm:PhoneBusinessDirect:Value"
+      PhoneHome: "RegForm:PhoneHome:Value"
+      PostalCode: "RegForm:PostalCode:Value"
+      State: "RegForm:State:Value"
+      Street: "RegForm:Street:Value"
+      Title: "RegForm:Title:Value"
+  - id: "SetUserBusinessPartnerNo1"
+    type: "pipelet"
+    ref: "SetUserBusinessPartnerNo"
+  - id: "TextNode1"
+    type: "text"
+
+links:
+  - from: "GetWebForm1"
+    via: "next"
+    to: "RegisterUser1"
+    into: "in"
+  - from: "RegisterUser1"
+    via: "next"
+    to: "DetermineUserProfile1"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "LoginUser1"
+    via: "error"
+    to: "JoinNode3"
+    into: "in2"
+  - from: "JoinNode2"
+    via: "next"
+    to: "JoinNode3"
+    into: "in1"
+  - from: "JoinNode3"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "EvaluateFormValues1"
+    into: "in"
+  - from: "EvaluateFormValues1"
+    via: "next"
+    to: "PrepareFormValues3"
+    into: "in"
+  - from: "PrepareFormValues3"
+    via: "next"
+    to: "End6"
+    into: "in"
+  - from: "DetermineUserProfile1"
+    via: "next"
+    to: "GenerateSeriesNumber1"
+    into: "in"
+  - from: "GenerateSeriesNumber1"
+    via: "next"
+    to: "SetUserBusinessPartnerNo1"
+    into: "in"
+  - from: "SetUserBusinessPartnerNo1"
+    via: "next"
+    to: "LoginUser1"
+    into: "in"
+  - from: "LoginUser1"
+    via: "next"
+    to: "End5"
+    into: "in"
+  - from: "Start"
+    via: "next"
+    to: "GetWebForm1"
+    into: "in"
+  - from: "RegisterUser1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "GetWebForm1"
+    via: "error"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "DetermineUserProfile1"
+    via: "error"
+    to: "JoinNode2"
+    into: "in2"

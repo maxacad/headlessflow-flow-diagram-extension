@@ -1,0 +1,23 @@
+name: JoinString
+version: 1
+trigger: manual
+handler: ./JoinString.ts
+ai:
+  skill: core-joinstring
+  title: JoinString
+  description: Intershop core pipelet – JoinString.
+  tags: [utility, data, collection]
+  capabilities:
+    - execute-common-operation
+inputs:
+  SeparatorChar: string
+  StringIterator: iterator
+  StringCollection: iterator
+  QuoteChar: string
+  EscapeChar: string
+outputs:
+  JoinedString: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.common.JoinString

@@ -1,0 +1,26 @@
+name: CreateProcessFileLogAppender
+version: 1
+trigger: manual
+handler: ./CreateProcessFileLogAppender.ts
+ai:
+  skill: core-createprocessfilelogappender
+  title: CreateProcessFileLogAppender
+  description: Intershop core pipelet – CreateProcessFileLogAppender.
+  tags: [logging, monitoring]
+  capabilities:
+    - execute-log-operation
+inputs:
+  ProcessLogAppender: any
+  Level: string
+  ProcessType: string
+  ProcessID: string
+  MaxLogFileSize: number
+  LogFileUnit: any
+  LogFileDirectory: string
+  LogFileName: string
+  FileType: string
+  LogInformationHolder: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.log.CreateProcessFileLogAppender

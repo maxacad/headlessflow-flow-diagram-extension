@@ -1,0 +1,21 @@
+name: CheckUserPermission
+version: 1
+trigger: manual
+handler: ./CheckUserPermission.ts
+ai:
+  skill: core-checkuserpermission
+  title: CheckUserPermission
+  description: Intershop core pipelet – CheckUserPermission.
+  tags: [security, authorization, access-control]
+  capabilities:
+    - execute-security-operation
+inputs:
+  Permission: any
+  PermissionID: string
+  CurrentUser: any
+  AuthorizationObject: any
+  DefaultPermissionID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.security.CheckUserPermission

@@ -1,0 +1,58 @@
+flow: "ProcessPaymentInstrumentAssignment"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "AtCart"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Cart"
+        type: "com.intershop.beehive.bts.capi.orderprocess.basket.Basket"
+        required: true
+      - key: "PaymentInstrumentInfo"
+        type: "com.intershop.beehive.bts.capi.payment.PaymentInstrumentInfo"
+        required: true
+
+steps:
+  - id: "CheckPiiUnique1"
+    type: "pipelet"
+    ref: "CheckPiiUnique"
+    config:
+      LetPaymentMethodDecide: true
+    bindings:
+      User: "null"
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "CartPII"
+        type: "com.intershop.beehive.bts.capi.payment.PaymentInstrumentInfo"
+        guaranteed: true
+  - id: "KeyMapper3"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "PaymentInstrumentInfo"
+      OutValue_1: "CartPII"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "CheckPiiUnique1"
+    into: "in"
+  - from: "KeyMapper3"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "CheckPiiUnique1"
+    via: "next"
+    to: "KeyMapper3"
+    into: "in"
+  - from: "CheckPiiUnique1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"

@@ -1,0 +1,22 @@
+name: CreateContextIndexes
+version: 1
+trigger: manual
+handler: ./CreateContextIndexes.ts
+ai:
+  skill: core-createcontextindexes
+  title: CreateContextIndexes
+  description: Intershop core pipelet – CreateContextIndexes.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingTableName: string
+  TemplateResourceBundlePath: string
+  ContextIndexName: string
+  Activated: boolean
+  StagingTableType: string
+  StagingProcess: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.CreateContextIndexes

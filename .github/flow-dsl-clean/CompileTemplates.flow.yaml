@@ -1,0 +1,27 @@
+flow: "CompileTemplates"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CompileTemplates1"
+    type: "pipelet"
+    ref: "CompileTemplates"
+  - id: "End1"
+    type: "end"
+
+links:
+  - from: "CompileTemplates1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "CompileTemplates1"
+    into: "in"

@@ -1,0 +1,373 @@
+flow: "ViewApplicationRegionalSettings"
+kind: "view"
+
+entries:
+  - id: "StartNode4"
+    name: "SetApplicationPreferences"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode5"
+    name: "GetApplicationPreferences"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode6"
+    name: "ViewAppRegSettings"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ChannelRepository"
+        type: "com.intershop.component.mvc.capi.catalog.Repository"
+        required: true
+      - key: "Application"
+        type: "com.intershop.beehive.core.capi.domain.Application"
+        required: true
+  - id: "StartNode7"
+    name: "UpdateAppRegSettings"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Application"
+        type: "com.intershop.beehive.core.capi.domain.Application"
+        required: true
+      - key: "ChannelRepository"
+        type: "com.intershop.component.mvc.capi.catalog.Repository"
+        required: true
+      - key: "Application_DefaultCurrency"
+        type: "java.lang.String"
+        required: false
+      - key: "Application_DefaultLocale"
+        type: "java.lang.String"
+        required: false
+      - key: "Application_DefaultUnitOfMass"
+        type: "java.lang.String"
+        required: false
+      - key: "Application_DefaultUnitOfLength"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode8"
+    name: "SetsApplicationPreferences"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode9"
+    name: "New"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "ChannelRepository"
+        type: "com.intershop.component.mvc.capi.catalog.Repository"
+        required: true
+
+steps:
+  - id: "CallNode3"
+    type: "call"
+    ref: "ViewApplicationRegionalSettings-GetApplicationPreferences"
+  - id: "CallNode4"
+    type: "call"
+    ref: "ViewApplicationRegionalSettings-SetsApplicationPreferences"
+  - id: "DetermineUnitsOfMeasurement2"
+    type: "pipelet"
+    ref: "DetermineUnitsOfMeasurement"
+    bindings:
+      Domain: "ChannelRepository:Domain:Site"
+  - id: "DetermineUnitsOfMeasurement3"
+    type: "pipelet"
+    ref: "DetermineUnitsOfMeasurement"
+    bindings:
+      Domain: "ChannelRepository:Domain:Site"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode2"
+    type: "end"
+    strict: false
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "DefaultUnitOfMassPreference"
+        type: "com.intershop.beehive.core.capi.preference.ApplicationPreference"
+        guaranteed: false
+      - key: "DefaultUnitOfMass"
+        type: "java.lang.String"
+        guaranteed: false
+      - key: "DefaultUnitOfLengthPreference"
+        type: "com.intershop.beehive.core.capi.preference.ApplicationPreference"
+        guaranteed: false
+      - key: "DefaultUnitOfLength"
+        type: "java.lang.String"
+        guaranteed: false
+      - key: "SystemOfUnits"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "UnitsOfLength"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "Units"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "UnitsOfMass"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "UnitsOfVolume"
+        type: "java.util.Set"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: false
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Locales"
+        type: "java.util.Iterator"
+        guaranteed: false
+      - key: "SystemOfUnits"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "UnitsOfLength"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "Units"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "UnitsOfMass"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "UnitsOfVolume"
+        type: "java.util.Set"
+        guaranteed: true
+      - key: "Currencies"
+        type: "java.util.Iterator"
+        guaranteed: true
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JumpNode10"
+    type: "jump"
+    ref: "ViewApplicationPreferences-ApplicationPreferenceError"
+  - id: "JumpNode11"
+    type: "jump"
+    ref: "ViewApplicationPreferences-ApplicationPreferenceError"
+  - id: "JumpNode13"
+    type: "jump"
+    ref: "ViewApplicationPreferences-ApplicationPreferenceError"
+  - id: "JumpNode3"
+    type: "jump"
+    ref: "ViewApplicationPreferences-ApplicationPreferenceError"
+  - id: "JumpNode5"
+    type: "jump"
+    ref: "ViewApplicationPreferences-ApplicationPreferenceError"
+  - id: "JumpNode9"
+    type: "jump"
+    ref: "ViewApplicationPreferences-ApplicationPreferenceError"
+  - id: "Pipelet10"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ApplicationPreferenceError"
+      Value: "The DefaultUnitOfLength can not be set."
+  - id: "Pipelet14"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ApplicationPreferenceError"
+      Value: "The DefaultUnitOfMass can not be found."
+  - id: "Pipelet15"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ApplicationPreferenceError"
+      Value: "The DefaultUnitOfLength can not be found."
+  - id: "Pipelet17"
+    type: "pipelet"
+    ref: "SetApplicationPreference"
+    config:
+      DefaultApplicationPreferenceKey: "DefaultUnitOfLength"
+      Type: "String"
+    bindings:
+      ApplicationPreferenceStringValue: "Application_DefaultUnitOfLength"
+  - id: "Pipelet20"
+    type: "pipelet"
+    ref: "SetApplicationPreference"
+    config:
+      DefaultApplicationPreferenceKey: "DefaultUnitOfLength"
+      Type: "String"
+    bindings:
+      ApplicationPreferenceStringValue: "RegionalSettingsForm_DefaultUnitOfLength"
+  - id: "Pipelet21"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ApplicationPreferenceError"
+      Value: "The DefaultUnitOfMass can not be set."
+  - id: "Pipelet22"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ApplicationPreferenceError"
+      Value: "The DefaultUnitOfLength can not be set."
+  - id: "Pipelet3"
+    type: "pipelet"
+    ref: "GetApplicationPreference"
+    config:
+      Type: "String"
+      DefaultApplicationPreferenceKey: "DefaultUnitOfMass"
+    bindings:
+      DomainPreference: "ChannelRepository:Domain"
+      ApplicationPreference: "DefaultUnitOfMassPreference"
+      ApplicationPreferenceStringValue: "DefaultUnitOfMass"
+  - id: "Pipelet4"
+    type: "pipelet"
+    ref: "GetApplicationPreference"
+    config:
+      Type: "String"
+      DefaultApplicationPreferenceKey: "DefaultUnitOfLength"
+    bindings:
+      DomainPreference: "ChannelRepository:Domain"
+      ApplicationPreference: "DefaultUnitOfLengthPreference"
+      ApplicationPreferenceStringValue: "DefaultUnitOfLength"
+  - id: "Pipelet6"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ApplicationPreferenceError"
+      Value: "The DefaultUnitOfMass can not be set."
+  - id: "SetApplicationPreference1"
+    type: "pipelet"
+    ref: "SetApplicationPreference"
+    config:
+      DefaultApplicationPreferenceKey: "DefaultUnitOfMass"
+      Type: "String"
+    bindings:
+      ApplicationPreferenceStringValue: "Application_DefaultUnitOfMass"
+  - id: "SetApplicationPreference4"
+    type: "pipelet"
+    ref: "SetApplicationPreference"
+    config:
+      DefaultApplicationPreferenceKey: "DefaultUnitOfMass"
+      Type: "String"
+    bindings:
+      ApplicationPreferenceStringValue: "RegionalSettingsForm_DefaultUnitOfMass"
+
+links:
+  - from: "CallNode3"
+    via: "next"
+    to: "DetermineUnitsOfMeasurement2"
+    into: "in"
+  - from: "CallNode4"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "DetermineUnitsOfMeasurement2"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "DetermineUnitsOfMeasurement3"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "Pipelet10"
+    via: "next"
+    to: "JumpNode3"
+    into: "in"
+  - from: "Pipelet14"
+    via: "next"
+    to: "JumpNode9"
+    into: "in"
+  - from: "Pipelet15"
+    via: "next"
+    to: "JumpNode10"
+    into: "in"
+  - from: "Pipelet17"
+    via: "error"
+    to: "Pipelet10"
+    into: "in"
+  - from: "Pipelet17"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "Pipelet20"
+    via: "error"
+    to: "Pipelet22"
+    into: "in"
+  - from: "Pipelet20"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "Pipelet21"
+    via: "next"
+    to: "JumpNode13"
+    into: "in"
+  - from: "Pipelet22"
+    via: "next"
+    to: "JumpNode11"
+    into: "in"
+  - from: "Pipelet3"
+    via: "error"
+    to: "Pipelet14"
+    into: "in"
+  - from: "Pipelet3"
+    via: "next"
+    to: "Pipelet4"
+    into: "in"
+  - from: "Pipelet4"
+    via: "error"
+    to: "Pipelet15"
+    into: "in"
+  - from: "Pipelet4"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "Pipelet6"
+    via: "next"
+    to: "JumpNode5"
+    into: "in"
+  - from: "SetApplicationPreference1"
+    via: "error"
+    to: "Pipelet6"
+    into: "in"
+  - from: "SetApplicationPreference1"
+    via: "next"
+    to: "Pipelet17"
+    into: "in"
+  - from: "SetApplicationPreference4"
+    via: "error"
+    to: "Pipelet21"
+    into: "in"
+  - from: "SetApplicationPreference4"
+    via: "next"
+    to: "Pipelet20"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "SetApplicationPreference4"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "Pipelet3"
+    into: "in"
+  - from: "StartNode6"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "StartNode7"
+    via: "next"
+    to: "CallNode4"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "SetApplicationPreference1"
+    into: "in"
+  - from: "StartNode9"
+    via: "next"
+    to: "DetermineUnitsOfMeasurement3"
+    into: "in"

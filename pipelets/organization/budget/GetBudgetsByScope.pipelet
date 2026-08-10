@@ -1,0 +1,19 @@
+name: GetBudgetsByScope
+version: 1
+trigger: manual
+handler: ./GetBudgetsByScope.ts
+ai:
+  skill: organization-getbudgetsbyscope
+  title: GetBudgetsByScope
+  description: Intershop organization pipelet – GetBudgetsByScope.
+  tags: [budget, finance]
+  capabilities:
+    - execute-budget-operation
+inputs:
+  Scope: any
+outputs:
+  Budgets: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.budget.GetBudgetsByScope

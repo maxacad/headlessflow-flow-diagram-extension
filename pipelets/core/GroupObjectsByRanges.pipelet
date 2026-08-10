@@ -1,0 +1,21 @@
+name: GroupObjectsByRanges
+version: 1
+trigger: manual
+handler: ./GroupObjectsByRanges.ts
+ai:
+  skill: core-groupobjectsbyranges
+  title: GroupObjectsByRanges
+  description: Intershop core pipelet – GroupObjectsByRanges.
+  tags: [integration, data]
+  capabilities:
+    - execute-GroupObjectsByRanges-operation
+inputs:
+  RangeString: string
+  Objects: iterator
+  Locale: any
+outputs:
+  Groups: map
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.GroupObjectsByRanges

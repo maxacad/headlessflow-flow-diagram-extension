@@ -1,0 +1,23 @@
+name: CreateShippingChargeOverride
+version: 1
+trigger: manual
+handler: ./CreateShippingChargeOverride.ts
+ai:
+  skill: shipping-createshippingchargeoverride
+  title: CreateShippingChargeOverride
+  description: Intershop shipping pipelet – CreateShippingChargeOverride.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Product: any
+  ShippingChargePrice: any
+  Region: any
+  ShippingMethod: any
+outputs:
+  ShippingChargeOverride: any
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.CreateShippingChargeOverride

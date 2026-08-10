@@ -1,0 +1,20 @@
+name: MergeWebObjects
+version: 1
+trigger: manual
+handler: ./MergeWebObjects.ts
+ai:
+  skill: core-mergewebobjects
+  title: MergeWebObjects
+  description: Intershop core pipelet – MergeWebObjects.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  WebObjects: any
+  Parameters: any
+outputs:
+  AffectedORMObjects: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.MergeWebObjects

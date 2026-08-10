@@ -1,0 +1,19 @@
+name: AssignUserToUserGroup
+version: 1
+trigger: manual
+handler: ./AssignUserToUserGroup.ts
+ai:
+  skill: core-assignusertousergroup
+  title: AssignUserToUserGroup
+  description: Intershop core pipelet – AssignUserToUserGroup.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  CurrentUser: any
+  CurrentDomain: any
+  UserGroupID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.AssignUserToUserGroup

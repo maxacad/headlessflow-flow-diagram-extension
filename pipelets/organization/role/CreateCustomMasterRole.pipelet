@@ -1,0 +1,24 @@
+name: CreateCustomMasterRole
+version: 1
+trigger: manual
+handler: ./CreateCustomMasterRole.ts
+ai:
+  skill: organization-createcustommasterrole
+  title: CreateCustomMasterRole
+  description: Intershop organization pipelet – CreateCustomMasterRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  RoleID: string
+  Name: string
+  Description: string
+  LocaleInformation: any
+  Type: string
+outputs:
+  Role: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CreateCustomMasterRole

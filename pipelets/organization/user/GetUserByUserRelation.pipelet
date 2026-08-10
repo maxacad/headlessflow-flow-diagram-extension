@@ -1,0 +1,21 @@
+name: GetUserByUserRelation
+version: 1
+trigger: manual
+handler: ./GetUserByUserRelation.ts
+ai:
+  skill: organization-getuserbyuserrelation
+  title: GetUserByUserRelation
+  description: Intershop organization pipelet – GetUserByUserRelation.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  User: any
+  RelationID: string
+  DefaultRelationID: string
+outputs:
+  RelatedUser: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.user.GetUserByUserRelation

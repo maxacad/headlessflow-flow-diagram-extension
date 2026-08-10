@@ -1,0 +1,35 @@
+flow: "CheckSiteLiveStatus"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CheckIsSiteLive1"
+    type: "pipelet"
+    ref: "CheckIsSiteLive"
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "Jump1"
+    type: "jump"
+    ref: "ShowSiteMaintenanceStatus-Start"
+
+links:
+  - from: "Start1"
+    via: "next"
+    to: "CheckIsSiteLive1"
+    into: "in"
+  - from: "CheckIsSiteLive1"
+    via: "error"
+    to: "Jump1"
+    into: "in"
+  - from: "CheckIsSiteLive1"
+    via: "next"
+    to: "End1"
+    into: "in"

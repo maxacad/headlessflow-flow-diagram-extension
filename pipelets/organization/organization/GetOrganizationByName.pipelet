@@ -1,0 +1,21 @@
+name: GetOrganizationByName
+version: 1
+trigger: manual
+handler: ./GetOrganizationByName.ts
+ai:
+  skill: organization-getorganizationbyname
+  title: GetOrganizationByName
+  description: Intershop organization pipelet – GetOrganizationByName.
+  tags: [integration, data]
+  capabilities:
+    - execute-organization-operation
+inputs:
+  DefaultName: string
+  Name: string
+outputs:
+  Organization: any
+  OrganizationDomain: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.organization.GetOrganizationByName

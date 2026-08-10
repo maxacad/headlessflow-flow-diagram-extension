@@ -1,0 +1,19 @@
+name: GetAccountTransactionsByDomain
+version: 1
+trigger: manual
+handler: ./GetAccountTransactionsByDomain.ts
+ai:
+  skill: organization-getaccounttransactionsbydomain
+  title: GetAccountTransactionsByDomain
+  description: Intershop organization pipelet – GetAccountTransactionsByDomain.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  Domain: any
+outputs:
+  AccountTransactions: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.GetAccountTransactionsByDomain

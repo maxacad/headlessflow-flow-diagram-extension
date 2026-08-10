@@ -1,0 +1,80 @@
+flow: "ProcessReplicationPageCache_52"
+kind: "process"
+
+entries:
+  - id: "Start2"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode1"
+    name: "GetAllSites"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Channel"
+        type: "com.intershop.component.mvc.capi.catalog.Repository"
+        required: true
+
+steps:
+  - id: "AddObjectToVector1"
+    type: "pipelet"
+    ref: "AddObjectToVector"
+    config:
+      Mode: "Forbid Duplicates"
+    bindings:
+      InVector: "null"
+      Iterator: "null"
+      Object: "Channel:RepositoryDomain:Site:DomainName"
+      Objects: "null"
+      OutVector: "SiteNames"
+  - id: "CallNode2"
+    type: "call"
+    ref: "This:GetAllSites"
+    bindings:
+      Channel: "CurrentChannel"
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "SiteNames"
+        type: "java.util.Collection"
+        guaranteed: true
+  - id: "UpdateCustomAttribute2"
+    type: "pipelet"
+    ref: "UpdateCustomAttribute"
+    config:
+      DefaultAttributeName: "PageCacheSiteNames"
+      DefaultAttributeType: "MultipleString"
+    bindings:
+      AttributeName: "null"
+      AttributeType: "null"
+      AttributeValue: "SiteNames:Iterator"
+      ExtensibleObject: "ReplicationTask"
+      LocaleInformation: "null"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "AddObjectToVector1"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "UpdateCustomAttribute2"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "UpdateCustomAttribute2"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "AddObjectToVector1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

@@ -1,0 +1,20 @@
+name: GetAccessPermissionGroups
+version: 1
+trigger: manual
+handler: ./GetAccessPermissionGroups.ts
+ai:
+  skill: organization-getaccesspermissiongroups
+  title: GetAccessPermissionGroups
+  description: Intershop organization pipelet – GetAccessPermissionGroups.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Organization: any
+  OrganizationTypeCode: string
+outputs:
+  PermissionGroups: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetAccessPermissionGroups

@@ -1,0 +1,19 @@
+name: GetDomain
+version: 1
+trigger: manual
+handler: ./GetDomain.ts
+ai:
+  skill: core-getdomain
+  title: GetDomain
+  description: Intershop core pipelet – GetDomain.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingDomainName: string
+outputs:
+  StagingDomain: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.GetDomain

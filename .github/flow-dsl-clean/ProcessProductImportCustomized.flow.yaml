@@ -1,0 +1,53 @@
+flow: "ProcessProductImportCustomized"
+kind: "process"
+
+entries:
+  - id: "StartNode4"
+    name: "RebuildSearchIndexes"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "SelectedSearchIndexID"
+        type: "java.util.Iterator"
+        required: false
+      - key: "UnitName"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "CallNode20"
+    type: "call"
+    ref: "ProcessSearchIndex-RebuildIndex"
+  - id: "EndNode3"
+    type: "end"
+    strict: false
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      OutValue_1: "SearchIndexDomainName"
+      InValue_1: "UnitName"
+  - id: "LoopNode1"
+    type: "loop"
+
+links:
+  - from: "CallNode20"
+    via: "next"
+    to: "LoopNode1"
+    into: "loop"
+  - from: "LoopNode1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "LoopNode1"
+    via: "do"
+    to: "CallNode20"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"
+  - from: "KeyMapper1"
+    via: "next"
+    to: "LoopNode1"
+    into: "in"

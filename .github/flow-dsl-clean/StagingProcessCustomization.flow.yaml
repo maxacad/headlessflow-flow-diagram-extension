@@ -1,0 +1,320 @@
+flow: "StagingProcessCustomization"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Error"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start10"
+    name: "OnPreInitialReplication"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start11"
+    name: "OnPostInitialReplication"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start3"
+    name: "OnPostReplication"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start4"
+    name: "OnPreReplication"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start5"
+    name: "OnPrePublication"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start6"
+    name: "OnPostPublication"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start7"
+    name: "OnPostSaveNoneUndoContent"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start8"
+    name: "OnPreSaveNoneUndoContent"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "Start9"
+    name: "OnPreCompletion"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "Decision1"
+    type: "decision"
+    condition: "StagingProcessMode"
+  - id: "Decision5"
+    type: "decision"
+    condition: "StagingProcessMode"
+  - id: "End10"
+    type: "end"
+  - id: "End11"
+    type: "end"
+  - id: "End12"
+    type: "end"
+  - id: "End13"
+    type: "end"
+  - id: "End14"
+    type: "end"
+  - id: "End15"
+    type: "end"
+  - id: "End16"
+    type: "end"
+  - id: "End17"
+    type: "end"
+  - id: "End18"
+    type: "end"
+  - id: "End19"
+    type: "end"
+  - id: "End2"
+    type: "end"
+  - id: "End3"
+    type: "end"
+  - id: "End5"
+    type: "end"
+  - id: "End6"
+    type: "end"
+  - id: "End7"
+    type: "end"
+  - id: "End8"
+    type: "end"
+  - id: "End9"
+    type: "end"
+  - id: "ExecuteCartridgePipelines1"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPreInitialReplicationPipeline"
+  - id: "ExecuteCartridgePipelines2"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPostInitialReplicationPipeline"
+  - id: "ExecuteCartridgePipelines3"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPreReplicationPipeline"
+  - id: "ExecuteCartridgePipelines4"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPostReplicationPipeline"
+  - id: "ExecuteCartridgePipelines5"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPrePublicationPipeline"
+  - id: "ExecuteCartridgePipelines6"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPostPublicationPipeline"
+  - id: "ExecuteCartridgePipelines7"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPrePublicationPipeline"
+  - id: "ExecuteCartridgePipelines8"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPostSaveNoneUndoContent"
+  - id: "ExecuteCartridgePipelines9"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      ProcessReversely: false
+      PipelinePropertyName: "OnPrePublicationPipeline"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "JoinNode3"
+    type: "join"
+  - id: "JumpNode1"
+    type: "jump"
+    ref: "StagingProcess-Error"
+
+links:
+  - from: "Start4"
+    via: "next"
+    to: "Decision5"
+    into: "in"
+  - from: "ExecuteCartridgePipelines5"
+    via: "error"
+    to: "End10"
+    into: "in"
+  - from: "Start6"
+    via: "next"
+    to: "ExecuteCartridgePipelines6"
+    into: "in"
+  - from: "ExecuteCartridgePipelines6"
+    via: "next"
+    to: "End12"
+    into: "in"
+  - from: "ExecuteCartridgePipelines6"
+    via: "error"
+    to: "End11"
+    into: "in"
+  - from: "Decision5"
+    via: "no"
+    to: "ExecuteCartridgePipelines3"
+    into: "in"
+  - from: "ExecuteCartridgePipelines3"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "End8"
+    into: "in"
+  - from: "Start9"
+    via: "next"
+    to: "ExecuteCartridgePipelines9"
+    into: "in"
+  - from: "Decision5"
+    via: "yes"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "Decision1"
+    via: "yes"
+    to: "JoinNode2"
+    into: "in2"
+  - from: "ExecuteCartridgePipelines3"
+    via: "error"
+    to: "End7"
+    into: "in"
+  - from: "Start5"
+    via: "next"
+    to: "ExecuteCartridgePipelines5"
+    into: "in"
+  - from: "Decision1"
+    via: "no"
+    to: "ExecuteCartridgePipelines4"
+    into: "in"
+  - from: "ExecuteCartridgePipelines1"
+    via: "error"
+    to: "End17"
+    into: "in"
+  - from: "ExecuteCartridgePipelines2"
+    via: "next"
+    to: "End19"
+    into: "in"
+  - from: "Start11"
+    via: "next"
+    to: "ExecuteCartridgePipelines2"
+    into: "in"
+  - from: "ExecuteCartridgePipelines2"
+    via: "error"
+    to: "End18"
+    into: "in"
+  - from: "Start10"
+    via: "next"
+    to: "ExecuteCartridgePipelines1"
+    into: "in"
+  - from: "ExecuteCartridgePipelines8"
+    via: "error"
+    to: "End14"
+    into: "in"
+  - from: "ExecuteCartridgePipelines9"
+    via: "error"
+    to: "JoinNode3"
+    into: "in2"
+  - from: "ExecuteCartridgePipelines9"
+    via: "next"
+    to: "JoinNode3"
+    into: "in1"
+  - from: "Start3"
+    via: "next"
+    to: "Decision1"
+    into: "in"
+  - from: "Start8"
+    via: "next"
+    to: "ExecuteCartridgePipelines7"
+    into: "in"
+  - from: "JoinNode3"
+    via: "next"
+    to: "End3"
+    into: "in"
+  - from: "ExecuteCartridgePipelines4"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "JoinNode2"
+    via: "next"
+    to: "End5"
+    into: "in"
+  - from: "ExecuteCartridgePipelines1"
+    via: "next"
+    to: "End2"
+    into: "in"
+  - from: "ExecuteCartridgePipelines4"
+    via: "error"
+    to: "End6"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "JumpNode1"
+    into: "in"
+  - from: "ExecuteCartridgePipelines7"
+    via: "next"
+    to: "End16"
+    into: "in"
+  - from: "ExecuteCartridgePipelines7"
+    via: "error"
+    to: "End15"
+    into: "in"
+  - from: "Start7"
+    via: "next"
+    to: "ExecuteCartridgePipelines8"
+    into: "in"
+  - from: "ExecuteCartridgePipelines8"
+    via: "next"
+    to: "End13"
+    into: "in"
+  - from: "ExecuteCartridgePipelines5"
+    via: "next"
+    to: "End9"
+    into: "in"

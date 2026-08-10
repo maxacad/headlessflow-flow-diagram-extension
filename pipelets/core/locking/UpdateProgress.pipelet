@@ -1,0 +1,19 @@
+name: UpdateProgress
+version: 1
+trigger: manual
+handler: ./UpdateProgress.ts
+ai:
+  skill: core-updateprogress
+  title: UpdateProgress
+  description: Intershop core pipelet – UpdateProgress.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  ProgressValue: number
+  ProgressSize: number
+  ProgressMonitor: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.UpdateProgress

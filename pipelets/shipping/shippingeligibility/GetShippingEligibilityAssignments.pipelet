@@ -1,0 +1,20 @@
+name: GetShippingEligibilityAssignments
+version: 1
+trigger: manual
+handler: ./GetShippingEligibilityAssignments.ts
+ai:
+  skill: shipping-getshippingeligibilityassignments
+  title: GetShippingEligibilityAssignments
+  description: Intershop shipping pipelet – GetShippingEligibilityAssignments.
+  tags: [shipping, eligibility, freight]
+  capabilities:
+    - execute-shippingeligibility-operation
+inputs:
+  Region: any
+  ShippingMethod: any
+outputs:
+  ShippingEligibilityAssignments: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.shippingeligibility.GetShippingEligibilityAssignments

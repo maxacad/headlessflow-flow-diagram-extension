@@ -1,0 +1,35 @@
+name: UpdateWebService
+version: 1
+trigger: manual
+handler: ./UpdateWebService.ts
+ai:
+  skill: core-updatewebservice
+  title: UpdateWebService
+  description: Intershop core pipelet – UpdateWebService.
+  tags: [integration, data]
+  capabilities:
+    - execute-webservice-operation
+inputs:
+  Domain: any
+  DomainName: string
+  CartridgeName: string
+  WebServiceName: string
+  NewWebServiceName: string
+  WebServicePipelineName: string
+  WebServiceNamespace: string
+  WebServiceDocumentation: string
+  WebServiceUserAuthentication: string
+  WebServicePermissionID: string
+  WebServiceOperation0.Name: string
+  WebServiceOperation0.Parameter0.Name: string
+  WebServiceOperation0.Parameter0.ClassName: string
+  WebServiceOperation0.ReturnType.Name: string
+  WebServiceOperation0.ReturnType.ClassName: string
+  WebServiceOperation0.ReturnType.Alias: string
+outputs:
+  WebService: object
+  ErrorMessage: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.webservice.UpdateWebService

@@ -1,0 +1,19 @@
+name: GetRolesByDomain
+version: 1
+trigger: manual
+handler: ./GetRolesByDomain.ts
+ai:
+  skill: organization-getrolesbydomain
+  title: GetRolesByDomain
+  description: Intershop organization pipelet – GetRolesByDomain.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  DomainID: string
+outputs:
+  DomainRoles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetRolesByDomain

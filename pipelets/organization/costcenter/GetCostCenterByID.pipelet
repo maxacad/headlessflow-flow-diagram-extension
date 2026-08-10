@@ -1,0 +1,20 @@
+name: GetCostCenterByID
+version: 1
+trigger: manual
+handler: ./GetCostCenterByID.ts
+ai:
+  skill: organization-getcostcenterbyid
+  title: GetCostCenterByID
+  description: Intershop organization pipelet – GetCostCenterByID.
+  tags: [integration, data]
+  capabilities:
+    - execute-costcenter-operation
+inputs:
+  CostCenterID: string
+  Organization: any
+outputs:
+  CostCenter: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.costcenter.GetCostCenterByID

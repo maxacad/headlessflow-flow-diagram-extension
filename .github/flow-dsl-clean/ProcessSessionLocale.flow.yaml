@@ -1,0 +1,53 @@
+flow: "ProcessSessionLocale"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "SetLocale"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "CurrentUserProfile"
+        type: "com.intershop.beehive.core.capi.profile.Profile"
+        required: false
+      - key: "Organization"
+        type: "com.intershop.component.organization.capi.Organization"
+        required: false
+
+steps:
+  - id: "CheckForEmptyString1"
+    type: "pipelet"
+    ref: "CheckForEmptyString"
+    bindings:
+      FilledString: "CurrentUser:Profile:PreferredLocale"
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "End2"
+    type: "end"
+    strict: false
+  - id: "SwitchLocale1"
+    type: "pipelet"
+    ref: "SwitchLocale"
+    bindings:
+      LocaleID: "CurrentOrganization:Profile:PreferredLocale"
+  - id: "Text1"
+    type: "text"
+
+links:
+  - from: "CheckForEmptyString1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "CheckForEmptyString1"
+    into: "in"
+  - from: "SwitchLocale1"
+    via: "next"
+    to: "End2"
+    into: "in"
+  - from: "CheckForEmptyString1"
+    via: "error"
+    to: "SwitchLocale1"
+    into: "in"

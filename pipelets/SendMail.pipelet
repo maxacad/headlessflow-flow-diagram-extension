@@ -1,0 +1,25 @@
+name: SendMail
+version: 1
+trigger: manual
+handler: ./SendMail.ts
+ai:
+  skill: send-mail
+  title: Send Mail
+  description: Compose and send an email message from flow data.
+  tags: [mail, notification, communication]
+  capabilities:
+    - configure-mail-message
+    - map-mail-inputs
+    - suggest-delivery-handling
+inputs:
+  to: string
+  subject: string
+  body: string
+  from: string?
+outputs:
+  messageId: string
+  accepted: string[]
+steps:
+  - type: function
+    runtime: nodejs
+    function: SendMail

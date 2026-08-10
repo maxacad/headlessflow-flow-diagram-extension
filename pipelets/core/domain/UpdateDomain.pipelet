@@ -1,0 +1,25 @@
+name: UpdateDomain
+version: 1
+trigger: manual
+handler: ./UpdateDomain.ts
+ai:
+  skill: core-updatedomain
+  title: UpdateDomain
+  description: Intershop core pipelet – UpdateDomain.
+  tags: [integration, data]
+  capabilities:
+    - execute-domain-operation
+inputs:
+  Domain: any
+  DomainStatus: string
+  ServerGroup: string
+  DomainDisplayName: string
+  DomainDescription: string
+  LocaleID: string
+  DomainPageCachingAllowed: string
+  DomainStaticContentMaxAge: string
+  DomainInvalidatePageCache: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.domain.UpdateDomain

@@ -1,0 +1,22 @@
+name: GetShippingOverride
+version: 1
+trigger: manual
+handler: ./GetShippingOverride.ts
+ai:
+  skill: shipping-getshippingoverride
+  title: GetShippingOverride
+  description: Intershop shipping pipelet – GetShippingOverride.
+  tags: [shipping, method, surcharge]
+  capabilities:
+    - execute-advancedshipping-operation
+inputs:
+  Product: any
+  ShippingMethod: any
+  Region: any
+  Currency: string
+outputs:
+  ShippingOverride: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.shipping.pipelet.advancedshipping.GetShippingOverride

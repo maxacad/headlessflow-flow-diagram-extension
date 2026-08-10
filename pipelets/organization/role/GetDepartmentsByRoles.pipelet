@@ -1,0 +1,20 @@
+name: GetDepartmentsByRoles
+version: 1
+trigger: manual
+handler: ./GetDepartmentsByRoles.ts
+ai:
+  skill: organization-getdepartmentsbyroles
+  title: GetDepartmentsByRoles
+  description: Intershop organization pipelet – GetDepartmentsByRoles.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  Roles: iterator
+outputs:
+  DepartmentsMap: map
+  Departments: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.GetDepartmentsByRoles

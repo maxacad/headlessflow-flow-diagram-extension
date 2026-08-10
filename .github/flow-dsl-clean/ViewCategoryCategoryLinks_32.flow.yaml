@@ -1,0 +1,147 @@
+flow: "ViewCategoryCategoryLinks_32"
+kind: "view"
+
+entries:
+  - id: "StartNode10"
+    name: "GetTypeCodesToEdit"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "GetTypeCodes"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+  - id: "StartNode4"
+    name: "GetTypeCodesToShow"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+
+steps:
+  - id: "CallNode1"
+    type: "call"
+    ref: "ViewCategoryCategoryLinks-GetTypeCodesToShow"
+  - id: "CallNode2"
+    type: "call"
+    ref: "ViewCategoryCategoryLinks-GetTypeCodesToEdit"
+  - id: "CallNode3"
+    type: "call"
+    ref: "ViewCategoryCategoryLinks_32-GetTypeCodesToEdit"
+  - id: "CallNode4"
+    type: "call"
+    ref: "ViewCategoryCategoryLinks_32-GetTypeCodesToShow"
+  - id: "CombineIterators1"
+    type: "pipelet"
+    ref: "CombineIterators"
+    config:
+      ProcessMethod: "Concatenate Iterators and Remove Duplicates"
+    bindings:
+      Iterator1: "TypeCodesToEdit"
+      Iterator: "TypeCodesToEdit"
+      Iterator2: "TypeCodesChannel"
+  - id: "CombineIterators2"
+    type: "pipelet"
+    ref: "CombineIterators"
+    config:
+      ProcessMethod: "Concatenate Iterators and Remove Duplicates"
+    bindings:
+      Iterator1: "TypeCodesToShow"
+      Iterator: "TypeCodesToShow"
+      Iterator2: "TypeCodesChannel"
+  - id: "CreateIteratorFromConfigValues1"
+    type: "pipelet"
+    ref: "CreateIteratorFromConfigValues"
+    bindings:
+      ValuesIterator: "TypeCodesChannel"
+  - id: "CreateIteratorFromConfigValues2"
+    type: "pipelet"
+    ref: "CreateIteratorFromConfigValues"
+    bindings:
+      ValuesIterator: "TypeCodesChannel"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "TypeCodesToEdit"
+        type: "java.util.Iterator"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "TypeCodesToShow"
+        type: "java.util.Iterator"
+        guaranteed: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "TypeCodesToShow"
+        type: "java.util.Iterator"
+        guaranteed: true
+      - key: "TypeCodesToEdit"
+        type: "java.util.Iterator"
+        guaranteed: true
+      - key: "TypeCodeGroup"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "Pipelet3"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "TypeCodeGroup"
+      Value: "CatalogCategoryLink"
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "CallNode3"
+    into: "in"
+  - from: "Pipelet3"
+    via: "next"
+    to: "EndNode6"
+    into: "in"
+  - from: "StartNode10"
+    via: "next"
+    to: "CallNode2"
+    into: "in"
+  - from: "CreateIteratorFromConfigValues2"
+    via: "next"
+    to: "CombineIterators1"
+    into: "in"
+  - from: "CallNode4"
+    via: "next"
+    to: "Pipelet3"
+    into: "in"
+  - from: "CallNode1"
+    via: "next"
+    to: "CreateIteratorFromConfigValues1"
+    into: "in"
+  - from: "CallNode3"
+    via: "next"
+    to: "CallNode4"
+    into: "in"
+  - from: "CombineIterators2"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "CreateIteratorFromConfigValues1"
+    via: "next"
+    to: "CombineIterators2"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "CombineIterators1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "CallNode2"
+    via: "next"
+    to: "CreateIteratorFromConfigValues2"
+    into: "in"

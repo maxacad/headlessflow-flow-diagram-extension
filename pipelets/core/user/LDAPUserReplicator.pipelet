@@ -1,0 +1,19 @@
+name: LDAPUserReplicator
+version: 1
+trigger: manual
+handler: ./LDAPUserReplicator.ts
+ai:
+  skill: core-ldapuserreplicator
+  title: LDAPUserReplicator
+  description: Intershop core pipelet – LDAPUserReplicator.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  LDAPPropertyFile: string
+  CurrentUser: any
+  Profile: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.LDAPUserReplicator

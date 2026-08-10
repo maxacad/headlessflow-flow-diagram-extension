@@ -1,0 +1,104 @@
+flow: "CleanUp"
+kind: "job"
+
+entries:
+  - id: "StartNode1"
+    name: "Job"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CleanUpJobHistory1"
+    type: "pipelet"
+    ref: "CleanUpJobHistory"
+  - id: "CleanupPagecacheTables1"
+    type: "pipelet"
+    ref: "CleanupPagecacheTables"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+  - id: "EndNode2"
+    type: "end"
+    strict: false
+  - id: "EndNode3"
+    type: "end"
+    strict: false
+  - id: "ExecuteCartridgePipelines1"
+    type: "pipelet"
+    ref: "ExecuteCartridgePipelines"
+    config:
+      Asynchronous: false
+      PipelinePropertyName: "CleanUpPipeline"
+      ProcessReversely: false
+  - id: "ExecuteStoredProcedure1"
+    type: "pipelet"
+    ref: "ExecuteStoredProcedure"
+    config:
+      StoredProcedure: "sp_deleteReplicationProcesses"
+      ParameterDefinition: "olderThan=number"
+  - id: "ExecuteStoredProcedure2"
+    type: "pipelet"
+    ref: "ExecuteStoredProcedure"
+    config:
+      StoredProcedure: "sp_deleteProcesses"
+      Parameters: "'Product Editing', null, 0"
+  - id: "ExecuteStoredProcedure3"
+    type: "pipelet"
+    ref: "ExecuteStoredProcedure"
+    config:
+      StoredProcedure: "sp_deleteProcesses"
+      ParameterDefinition: "name=string;type=string;olderThan=number"
+      AllowNullParameter: true
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "RemoveOldInstanceResources"
+
+links:
+  - from: "ExecuteCartridgePipelines1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "ExecuteStoredProcedure2"
+    via: "next"
+    to: "ExecuteStoredProcedure3"
+    into: "in"
+  - from: "ExecuteStoredProcedure3"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "ExecuteCartridgePipelines1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode2"
+    via: "next"
+    to: "CleanUpJobHistory1"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "ExecuteCartridgePipelines1"
+    into: "in"
+  - from: "CleanUpJobHistory1"
+    via: "next"
+    to: "CleanupPagecacheTables1"
+    into: "in"
+  - from: "CleanupPagecacheTables1"
+    via: "next"
+    to: "ExecuteStoredProcedure1"
+    into: "in"
+  - from: "ExecuteStoredProcedure1"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "ExecuteStoredProcedure2"
+    into: "in"

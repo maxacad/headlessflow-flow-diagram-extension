@@ -1,0 +1,18 @@
+name: SetStagingState
+version: 1
+trigger: manual
+handler: ./SetStagingState.ts
+ai:
+  skill: core-setstagingstate
+  title: SetStagingState
+  description: Intershop core pipelet – SetStagingState.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcessID: string
+  StagingState: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.process.SetStagingState

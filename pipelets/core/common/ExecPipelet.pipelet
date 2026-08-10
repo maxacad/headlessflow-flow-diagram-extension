@@ -1,0 +1,43 @@
+name: ExecPipelet
+version: 1
+trigger: manual
+handler: ./ExecPipelet.ts
+ai:
+  skill: core-execpipelet
+  title: ExecPipelet
+  description: Intershop core pipelet – ExecPipelet.
+  tags: [utility, data, collection]
+  capabilities:
+    - execute-common-operation
+inputs:
+  Cmd-win32-x86: string
+  Cmd-win-AMD64: string
+  Cmd-SunOS-5.6-sparc: string
+  Cmd-SunOS-5.7-sparc: string
+  Cmd-SunOS-5.8-sparc: string
+  Cmd-SunOS-5.9-sparc: string
+  Cmd-SunOS-5.9-sparc_64: string
+  Cmd-SunOS-5.10-sparc_64: string
+  Cmd-SunOS-5.10-x86_64: string
+  Cmd-HP-UX-B.11.00: string
+  Cmd-HP-UX-B.11.11: string
+  Cmd-HP-UX-B.11.11_64: string
+  Cmd-Linux: string
+  CmdInputTemplate: string
+  CmdMaxOutputLength: number
+  CmdMaxErrorLength: number
+  CmdTimeOut: number
+  CmdOutputName: string
+  CmdErrorName: string
+  CmdExitCodeName: string
+  CmdIsScript: string
+outputs:
+  CmdOutput: string
+  CmdError: string
+  CmdExitCode: number
+  IS_HOME: string
+  IS_SHARE: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.common.ExecPipelet

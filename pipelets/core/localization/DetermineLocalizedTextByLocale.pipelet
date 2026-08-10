@@ -1,0 +1,22 @@
+name: DetermineLocalizedTextByLocale
+version: 1
+trigger: manual
+handler: ./DetermineLocalizedTextByLocale.ts
+ai:
+  skill: core-determinelocalizedtextbylocale
+  title: DetermineLocalizedTextByLocale
+  description: Intershop core pipelet – DetermineLocalizedTextByLocale.
+  tags: [integration, data]
+  capabilities:
+    - execute-localization-operation
+inputs:
+  LocalizationContext: any
+  SearchedKey: string
+  SearchedValue: string
+  SearchType: string
+outputs:
+  LocalizationTexts: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.localization.DetermineLocalizedTextByLocale

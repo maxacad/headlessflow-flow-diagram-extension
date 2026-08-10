@@ -1,0 +1,19 @@
+name: AssignUsersToWorkflowActivity
+version: 1
+trigger: manual
+handler: ./AssignUsersToWorkflowActivity.ts
+ai:
+  skill: core-assignuserstoworkflowactivity
+  title: AssignUsersToWorkflowActivity
+  description: Intershop core pipelet – AssignUsersToWorkflowActivity.
+  tags: [workflow, approval, process]
+  capabilities:
+    - execute-workflow-operation
+inputs:
+  WorkflowActivity: any
+  Users: iterator
+  UserGroups: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.workflow.AssignUsersToWorkflowActivity

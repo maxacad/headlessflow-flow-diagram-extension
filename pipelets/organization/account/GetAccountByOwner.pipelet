@@ -1,0 +1,20 @@
+name: GetAccountByOwner
+version: 1
+trigger: manual
+handler: ./GetAccountByOwner.ts
+ai:
+  skill: organization-getaccountbyowner
+  title: GetAccountByOwner
+  description: Intershop organization pipelet – GetAccountByOwner.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  Owner: any
+  TypeCode: number
+outputs:
+  Account: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.GetAccountByOwner

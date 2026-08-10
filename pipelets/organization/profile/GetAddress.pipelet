@@ -1,0 +1,20 @@
+name: GetAddress
+version: 1
+trigger: manual
+handler: ./GetAddress.ts
+ai:
+  skill: organization-getaddress
+  title: GetAddress
+  description: Intershop organization pipelet – GetAddress.
+  tags: [profile, address]
+  capabilities:
+    - execute-profile-operation
+inputs:
+  Profile: any
+  AddressID: string
+outputs:
+  Address: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.profile.GetAddress

@@ -1,0 +1,21 @@
+name: GetAccountTransactions
+version: 1
+trigger: manual
+handler: ./GetAccountTransactions.ts
+ai:
+  skill: organization-getaccounttransactions
+  title: GetAccountTransactions
+  description: Intershop organization pipelet – GetAccountTransactions.
+  tags: [account, balance, transaction]
+  capabilities:
+    - execute-account-operation
+inputs:
+  Account: any
+  FromDate: any
+  ToDate: any
+outputs:
+  AccountTransactions: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.account.GetAccountTransactions

@@ -1,0 +1,27 @@
+name: UpdateDepartment
+version: 1
+trigger: manual
+handler: ./UpdateDepartment.ts
+ai:
+  skill: organization-updatedepartment
+  title: UpdateDepartment
+  description: Intershop organization pipelet – UpdateDepartment.
+  tags: [integration, data]
+  capabilities:
+    - execute-department-operation
+inputs:
+  DepartmentName: string
+  DepartmentDesc: string
+  ParentDepartmentID: string
+  CostCenterID: string
+  DepartmentProfileID: string
+  DepartmentAdminGroup: any
+  Department: any
+  Organization: any
+  LocaleInformation: any
+outputs:
+  ErrorCode: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.department.UpdateDepartment

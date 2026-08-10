@@ -1,0 +1,24 @@
+name: UpdateAssignmentLists
+version: 1
+trigger: manual
+handler: ./UpdateAssignmentLists.ts
+ai:
+  skill: core-updateassignmentlists
+  title: UpdateAssignmentLists
+  description: Intershop core pipelet – UpdateAssignmentLists.
+  tags: [integration, data]
+  capabilities:
+    - execute-request-operation
+inputs:
+  UpdateMode: string
+  AvailableValuesParameter: string
+  AssignedValuesParameter: string
+  ValuesToAddParameter: string
+  ValuesToRemoveParameter: string
+outputs:
+  AssignedValues: iterator
+  AvailableValues: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.request.UpdateAssignmentLists

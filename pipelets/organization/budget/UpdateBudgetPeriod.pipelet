@@ -1,0 +1,27 @@
+name: UpdateBudgetPeriod
+version: 1
+trigger: manual
+handler: ./UpdateBudgetPeriod.ts
+ai:
+  skill: organization-updatebudgetperiod
+  title: UpdateBudgetPeriod
+  description: Intershop organization pipelet – UpdateBudgetPeriod.
+  tags: [budget, finance]
+  capabilities:
+    - execute-budget-operation
+inputs:
+  BudgetPeriod: any
+  AmountValue: string
+  AmountCurrency: string
+  Amount: any
+  FromDate: any
+  ToDate: any
+  DefaultAmountValue: string
+  DefaultAmountCurrency: string
+  DefaultDateTimes: string
+outputs:
+  ErrorMessage: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.budget.UpdateBudgetPeriod

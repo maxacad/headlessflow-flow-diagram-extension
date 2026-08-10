@@ -1,0 +1,22 @@
+name: FilterRolesByPrefix
+version: 1
+trigger: manual
+handler: ./FilterRolesByPrefix.ts
+ai:
+  skill: organization-filterrolesbyprefix
+  title: FilterRolesByPrefix
+  description: Intershop organization pipelet – FilterRolesByPrefix.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  SourceRoles: iterator
+  FilterPrefix1: string
+  FilterPrefix2: string
+  FilterPrefix3: string
+outputs:
+  FilteredRoles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.FilterRolesByPrefix

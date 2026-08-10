@@ -1,0 +1,82 @@
+flow: "CorePrefix"
+kind: "view"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode0"
+    name: "include"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "CheckUserPermission2"
+    type: "pipelet"
+    ref: "CheckUserPermission"
+    bindings:
+      AuthorizationObject: "CurrentDomain"
+      Permission: "DomainPerm"
+  - id: "End3"
+    type: "end"
+    strict: false
+  - id: "EndNode0"
+    type: "end"
+    strict: false
+  - id: "InteractionEnd1"
+    type: "interaction"
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "Loop1"
+    type: "loop"
+  - id: "Pipelet1"
+    type: "pipelet"
+    ref: "GetPipelinePermissionsByContext"
+    config:
+      DefaultContext: "Domain"
+      ExtendedSecurity: true
+    bindings:
+      Domain: "CurrentDomain"
+      PipelineName: "CurrentPipelineName"
+      StartNodeName: "CurrentStartNodeName"
+      Application: "CurrentApplication"
+      PermissionIDs: "DomainPerms"
+
+links:
+  - from: "CheckUserPermission2"
+    via: "error"
+    to: "InteractionEnd1"
+    into: "in"
+  - from: "CheckUserPermission2"
+    via: "next"
+    to: "Loop1"
+    into: "loop"
+  - from: "Loop1"
+    via: "do"
+    to: "CheckUserPermission2"
+    into: "in"
+  - from: "Loop1"
+    via: "next"
+    to: "End3"
+    into: "in"
+  - from: "Pipelet1"
+    via: "error"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "Pipelet1"
+    via: "next"
+    to: "Loop1"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "Pipelet1"
+    into: "in"
+  - from: "StartNode0"
+    via: "next"
+    to: "EndNode0"
+    into: "in"

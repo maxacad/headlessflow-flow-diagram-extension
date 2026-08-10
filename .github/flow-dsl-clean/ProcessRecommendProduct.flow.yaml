@@ -1,0 +1,55 @@
+flow: "ProcessRecommendProduct"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "SendMail"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CurrentOrganization"
+        type: "com.intershop.component.organization.capi.Organization"
+        required: false
+      - key: "MailFrom"
+        type: "java.lang.String"
+        required: false
+      - key: "MailTo"
+        type: "java.lang.String"
+        required: false
+      - key: "EmailAFriendForm"
+        type: "com.intershop.beehive.core.capi.webform.Form"
+        required: true
+      - key: "ProductBO"
+        type: "java.lang.Object"
+        required: true
+
+steps:
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+  - id: "ProcessMail1"
+    type: "pipelet"
+    ref: "ProcessMail"
+    config:
+      UseErrorConnector: true
+      WaitForResult: true
+    bindings:
+      MailTemplate: "\"email/product/RecommendProductMail.isml\""
+      Domain: "CurrentOrganization:OwningDomain"
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "ProcessMail1"
+    into: "in"
+  - from: "ProcessMail1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "ProcessMail1"
+    via: "error"
+    to: "EndNode2"
+    into: "in"

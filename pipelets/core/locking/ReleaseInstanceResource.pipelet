@@ -1,0 +1,21 @@
+name: ReleaseInstanceResource
+version: 1
+trigger: manual
+handler: ./ReleaseInstanceResource.ts
+ai:
+  skill: core-releaseinstanceresource
+  title: ReleaseInstanceResource
+  description: Intershop core pipelet – ReleaseInstanceResource.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  PersistentObject: string
+  User: any
+  LockingDomain: any
+outputs:
+  Process: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.ReleaseInstanceResource

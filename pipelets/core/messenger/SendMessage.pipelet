@@ -1,0 +1,18 @@
+name: SendMessage
+version: 1
+trigger: manual
+handler: ./SendMessage.ts
+ai:
+  skill: core-sendmessage
+  title: SendMessage
+  description: Intershop core pipelet – SendMessage.
+  tags: [messaging, async, event]
+  capabilities:
+    - execute-messenger-operation
+inputs:
+  Message: string
+  MessengerPoolID: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.messenger.SendMessage

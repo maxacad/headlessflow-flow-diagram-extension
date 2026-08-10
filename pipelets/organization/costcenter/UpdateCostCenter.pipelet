@@ -1,0 +1,22 @@
+name: UpdateCostCenter
+version: 1
+trigger: manual
+handler: ./UpdateCostCenter.ts
+ai:
+  skill: organization-updatecostcenter
+  title: UpdateCostCenter
+  description: Intershop organization pipelet – UpdateCostCenter.
+  tags: [integration, data]
+  capabilities:
+    - execute-costcenter-operation
+inputs:
+  CostCenterName: string
+  ErpID: string
+  CostCenterDesc: string
+  CostCenterAdminGroup: any
+  CostCenter: any
+  LocaleInformation: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.costcenter.UpdateCostCenter

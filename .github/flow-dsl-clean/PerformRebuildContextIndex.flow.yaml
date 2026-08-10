@@ -1,0 +1,37 @@
+flow: "PerformRebuildContextIndex"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "End1"
+    type: "end"
+    strict: false
+  - id: "End4"
+    type: "end"
+    strict: false
+  - id: "PerformRebuildContextIndex3"
+    type: "pipelet"
+    ref: "PerformRebuildContextIndex"
+    config:
+      TableName: "DOMAIN_AV"
+
+links:
+  - from: "PerformRebuildContextIndex3"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "PerformRebuildContextIndex3"
+    via: "error"
+    to: "End4"
+    into: "in"
+  - from: "Start1"
+    via: "next"
+    to: "PerformRebuildContextIndex3"
+    into: "in"

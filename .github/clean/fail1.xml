@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<replication-configuration 
+    xsi:schemaLocation="http://www.intershop.com/xml/ns/enfinity/6.5.0/core/replication replicationprocess-config.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.intershop.com/xml/ns/enfinity/6.5.0/core/replication">
+    
+    <processes>
+        <process id="nightly">
+            <type>Publication</type>
+            <description>This process is started every night.</description>
+            <task ref="PrimeTechSpecialsProducts"/>
+        </process>
+    </processes>    
+    
+    <tasks>
+        <task name="PrimeTechSpecialsProducts">
+            <organization>PrimeTech</organization>
+            <channel>PrimeTechSpecials</channel>
+            <description>Replicates all products of channel PrimeTechSpecials</description>
+            <group ref="CATALOGS"/>
+            <group ref="PRODUCTS"/>
+        </task>
+    </tasks>
+    
+    <groups>
+        <group id="PRODUCTS">
+            <business-unit-types>20 30</business-unit-types>
+            <locale id="de_DE">
+                <name>Produkte</name>
+                <description>Alle Produktdaten</description>
+            </locale>
+            <locale id="en_US">
+	            <name>Products</name>
+	            <description>All product content.</description>
+	        </locale>
+        </group>
+    </groups>
+
+</replication-configuration>

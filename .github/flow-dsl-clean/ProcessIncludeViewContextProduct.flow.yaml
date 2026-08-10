@@ -1,0 +1,81 @@
+flow: "ProcessIncludeViewContextProduct"
+kind: "process"
+
+entries:
+  - id: "StartNode8"
+    name: "GetPageletEntryPoint"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductBO"
+        type: "com.intershop.component.product.capi.ProductBO"
+        required: true
+      - key: "CategoryBO"
+        type: "com.intershop.component.catalog.capi.CatalogCategoryBO"
+        required: false
+      - key: "ViewContext"
+        type: "com.intershop.component.pmc.capi.viewcontext.ViewContext"
+        required: true
+
+steps:
+  - id: "EndNode18"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "PageletEntryPoint"
+        type: "com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"
+        guaranteed: true
+  - id: "GetPageletEntryPointByViewContext1"
+    type: "pipelet"
+    ref: "GetPageletEntryPointByViewContext"
+    config:
+      Strategy: "Product"
+    bindings:
+      Site: "CurrentDomain:Site"
+      Domain: "Repository:RepositoryDomain"
+  - id: "GetValuesFromRequest3"
+    type: "pipelet"
+    ref: "GetValuesFromRequest"
+    config:
+      Namespace: "ApplicationRepository"
+    bindings:
+      Namespace: "null"
+      Key: "null"
+  - id: "SetDictionaryValue3"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ViewContextInclusionName"
+      Value: "includeProduct"
+
+links:
+  - from: "SetDictionaryValue3"
+    via: "next"
+    to: "GetPageletEntryPointByViewContext1"
+    into: "in"
+  - from: "GetPageletEntryPointByViewContext1"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "GetPageletEntryPointByViewContext1"
+    via: "error"
+    to: "EndNode3"
+    into: "in"
+  - from: "GetValuesFromRequest3"
+    via: "error"
+    to: "EndNode18"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "GetValuesFromRequest3"
+    into: "in"
+  - from: "GetValuesFromRequest3"
+    via: "next"
+    to: "SetDictionaryValue3"
+    into: "in"

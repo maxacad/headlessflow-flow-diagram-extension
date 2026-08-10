@@ -1,0 +1,28 @@
+flow: "IncludeProductInformation"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "Start"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "DetermineVersionInformation1"
+    type: "pipelet"
+    ref: "DetermineVersionInformation"
+  - id: "EndNode1"
+    type: "end"
+    strict: false
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "DetermineVersionInformation1"
+    into: "in"
+  - from: "DetermineVersionInformation1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

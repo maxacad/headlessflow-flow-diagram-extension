@@ -1,0 +1,18 @@
+name: CheckAccessRole
+version: 1
+trigger: manual
+handler: ./CheckAccessRole.ts
+ai:
+  skill: organization-checkaccessrole
+  title: CheckAccessRole
+  description: Intershop organization pipelet – CheckAccessRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  AccessRoles: iterator
+  AccessRole: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.CheckAccessRole

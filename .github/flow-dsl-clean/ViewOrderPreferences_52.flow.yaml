@@ -1,0 +1,97 @@
+flow: "ViewOrderPreferences_52"
+kind: "view"
+
+entries:
+  - id: "StartNode1"
+    name: "OrderHistory"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+  - id: "StartNode2"
+    name: "UpdateOrderHistory"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "GetDomainPreference4"
+    type: "pipelet"
+    ref: "GetDomainPreference"
+    config:
+      DefaultPreferenceKey: "OrderStatusTracking"
+      Type: "String"
+    bindings:
+      PreferenceStringValue: "OrderStatusTracking"
+      PreferenceDomain: "ChannelRepository:Domain"
+  - id: "InteractionNode1"
+    type: "interaction"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode2"
+    type: "join"
+  - id: "JoinNode8"
+    type: "join"
+  - id: "Pipelet10"
+    type: "pipelet"
+    ref: "SetDomainPreference"
+    config:
+      DefaultPreferenceKey: "OrderStatusTracking"
+      DefaultPreferenceValue: false
+      Type: "String"
+    bindings:
+      PreferenceDomain: "ChannelRepository:Domain"
+      PreferenceDoubleValue: "null"
+      PreferenceIntValue: "null"
+      PreferenceKey: "null"
+      PreferenceStringValue: "activateOrderHistory"
+      PreferenceValue: "null"
+  - id: "Pipelet3"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "ChannelDomainPreference"
+      WorkingTemplate: "channel/OrderHistoryPreference_52"
+
+links:
+  - from: "JoinNode8"
+    via: "next"
+    to: "JoinNode2"
+    into: "in1"
+  - from: "Pipelet10"
+    via: "next"
+    to: "JoinNode2"
+    into: "in2"
+  - from: "Pipelet10"
+    via: "error"
+    to: "JoinNode8"
+    into: "in2"
+  - from: "Pipelet3"
+    via: "next"
+    to: "InteractionNode1"
+    into: "in"
+  - from: "GetDomainPreference4"
+    via: "error"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "StartNode2"
+    via: "next"
+    to: "Pipelet10"
+    into: "in"
+  - from: "GetDomainPreference4"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "StartNode1"
+    via: "next"
+    to: "JoinNode8"
+    into: "in1"
+  - from: "JoinNode1"
+    via: "next"
+    to: "Pipelet3"
+    into: "in"
+  - from: "JoinNode2"
+    via: "next"
+    to: "GetDomainPreference4"
+    into: "in"

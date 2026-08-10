@@ -1,0 +1,47 @@
+flow: "ViewPagelet_comp_contentnavigation"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "ContentNavigationTree"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Locale"
+        type: "com.intershop.beehive.core.capi.localization.LocaleInformation"
+        required: true
+      - key: "PageletConfigurationParameters"
+        type: "java.util.HashMap"
+        required: true
+      - key: "Date"
+        type: "java.util.Date"
+        required: true
+      - key: "PageletEntryPointID"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "CreateTableOfContentsCategoryTree1"
+    type: "pipelet"
+    ref: "CreateContentNavigationTree"
+    bindings:
+      RootPageID: "PageletConfigurationParameters:root"
+      CurrentPageletEntryPointID: "PageletEntryPointID"
+      MaxDepth: "PageletConfigurationParameters:depth"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ContentNavigationTree"
+        type: "java.util.List"
+        guaranteed: true
+
+links:
+  - from: "StartNode1"
+    via: "next"
+    to: "CreateTableOfContentsCategoryTree1"
+    into: "in"
+  - from: "CreateTableOfContentsCategoryTree1"
+    via: "next"
+    to: "EndNode1"
+    into: "in"

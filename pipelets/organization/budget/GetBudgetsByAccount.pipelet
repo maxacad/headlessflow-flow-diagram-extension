@@ -1,0 +1,21 @@
+name: GetBudgetsByAccount
+version: 1
+trigger: manual
+handler: ./GetBudgetsByAccount.ts
+ai:
+  skill: organization-getbudgetsbyaccount
+  title: GetBudgetsByAccount
+  description: Intershop organization pipelet – GetBudgetsByAccount.
+  tags: [budget, finance]
+  capabilities:
+    - execute-budget-operation
+inputs:
+  Account: any
+  ScopeType: string
+  DefaultScopeType: number
+outputs:
+  Budgets: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.budget.GetBudgetsByAccount

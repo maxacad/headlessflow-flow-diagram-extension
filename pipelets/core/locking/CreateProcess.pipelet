@@ -1,0 +1,24 @@
+name: CreateProcess
+version: 1
+trigger: manual
+handler: ./CreateProcess.ts
+ai:
+  skill: core-createprocess
+  title: CreateProcess
+  description: Intershop core pipelet – CreateProcess.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  ProcessName: string
+  ProcessDescription: string
+  InitialState: string
+  Type: string
+  CurrentDomain: any
+  User: any
+outputs:
+  Process: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.CreateProcess

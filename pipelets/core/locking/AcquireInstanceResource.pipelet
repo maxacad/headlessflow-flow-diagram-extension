@@ -1,0 +1,28 @@
+name: AcquireInstanceResource
+version: 1
+trigger: manual
+handler: ./AcquireInstanceResource.ts
+ai:
+  skill: core-acquireinstanceresource
+  title: AcquireInstanceResource
+  description: Intershop core pipelet – AcquireInstanceResource.
+  tags: [integration, data]
+  capabilities:
+    - execute-locking-operation
+inputs:
+  PersistentObject: any
+  User: any
+  ProcessName: string
+  ProcessName: string
+  ProcessDescription: string
+  ProcessDescription: string
+  Lifetime: number
+  CurrentDomain: any
+  LockingDomain: any
+outputs:
+  ResourceAcquisitionResult: any
+  Process: any
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.locking.AcquireInstanceResource

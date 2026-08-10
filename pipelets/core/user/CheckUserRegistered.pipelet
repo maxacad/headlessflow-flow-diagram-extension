@@ -1,0 +1,19 @@
+name: CheckUserRegistered
+version: 1
+trigger: manual
+handler: ./CheckUserRegistered.ts
+ai:
+  skill: core-checkuserregistered
+  title: CheckUserRegistered
+  description: Intershop core pipelet – CheckUserRegistered.
+  tags: [user, authentication, profile]
+  capabilities:
+    - execute-user-operation
+inputs:
+  CurrentUser: any
+outputs:
+  ERROR_User: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.user.CheckUserRegistered

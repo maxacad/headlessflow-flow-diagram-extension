@@ -1,0 +1,20 @@
+name: DetermineAccessRolesForOrganizationRole
+version: 1
+trigger: manual
+handler: ./DetermineAccessRolesForOrganizationRole.ts
+ai:
+  skill: organization-determineaccessrolesfororganizationrole
+  title: DetermineAccessRolesForOrganizationRole
+  description: Intershop organization pipelet – DetermineAccessRolesForOrganizationRole.
+  tags: [role, permission, access]
+  capabilities:
+    - execute-role-operation
+inputs:
+  RoleID: string
+  DomainID: string
+outputs:
+  AccessRoles: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.component.organization.pipelet.role.DetermineAccessRolesForOrganizationRole

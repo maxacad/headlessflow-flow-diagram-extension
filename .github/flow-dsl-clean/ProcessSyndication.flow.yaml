@@ -1,0 +1,70 @@
+flow: "ProcessSyndication"
+kind: "process"
+
+entries:
+  - id: "Start4"
+    name: "Assign"
+    mode: "private"
+    strict: false
+    inputs:
+      - key: "Objects"
+        type: "java.util.Iterator"
+        required: false
+      - key: "ChannelID"
+        type: "java.lang.String"
+        required: false
+      - key: "OrganizationUUID"
+        type: "java.lang.String"
+        required: false
+
+steps:
+  - id: "Call1"
+    type: "call"
+    ref: "BatchProcessSyndication-Initialize"
+  - id: "Call2"
+    type: "call"
+    ref: "BatchProcessSyndication-Finish"
+  - id: "Call3"
+    type: "call"
+    ref: "BatchProcessSyndication-Syndicate"
+  - id: "End3"
+    type: "end"
+    strict: false
+  - id: "Join1"
+    type: "join"
+  - id: "KeyMapper1"
+    type: "pipelet"
+    ref: "KeyMapper"
+    bindings:
+      InValue_1: "Products"
+      OutValue_1: "Objects"
+
+links:
+  - from: "KeyMapper1"
+    via: "next"
+    to: "Call1"
+    into: "in"
+  - from: "Call2"
+    via: "next"
+    to: "Join1"
+    into: "in1"
+  - from: "Call3"
+    via: "next"
+    to: "Call2"
+    into: "in"
+  - from: "Call1"
+    via: "next"
+    to: "Call3"
+    into: "in"
+  - from: "Join1"
+    via: "next"
+    to: "End3"
+    into: "in"
+  - from: "Call1"
+    via: "Error"
+    to: "Join1"
+    into: "in3"
+  - from: "Start4"
+    via: "next"
+    to: "KeyMapper1"
+    into: "in"

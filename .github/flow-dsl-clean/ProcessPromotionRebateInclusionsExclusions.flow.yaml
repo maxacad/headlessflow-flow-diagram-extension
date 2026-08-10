@@ -1,0 +1,397 @@
+flow: "ProcessPromotionRebateInclusionsExclusions"
+kind: "process"
+
+entries:
+  - id: "Start1"
+    name: "DeleteAllEntriesFromCategoriesClipboard"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+  - id: "Start6"
+    name: "DeleteAllEntriesFromProductClipboard"
+    mode: "private"
+    strict: true
+    inputs:
+      []
+  - id: "StartNode1"
+    name: "GetProductLookupHelper"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CurrentProductRepository"
+        type: "com.intershop.component.mvc.capi.catalog.Repository"
+        required: false
+      - key: "FactoryName"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode25"
+    name: "GetCategoriesCatalog"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Categories"
+        type: "java.util.Iterator"
+        required: false
+  - id: "StartNode34"
+    name: "UpdateCategoryClipboard"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "CategoryUUID"
+        type: "java.lang.String[]"
+        required: true
+      - key: "SelectedCategoryUUID"
+        type: "java.lang.String[]"
+        required: true
+  - id: "StartNode35"
+    name: "UpdateProductClipboard"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ProductUUID"
+        type: "java.lang.String[]"
+        required: true
+      - key: "SelectedProductUUID"
+        type: "java.lang.String[]"
+        required: true
+  - id: "StartNode5"
+    name: "GetApplicationRebateFilterGroups"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "Domain"
+        type: "com.intershop.beehive.core.capi.domain.Domain"
+        required: false
+      - key: "ApplicationUUID"
+        type: "java.lang.String"
+        required: true
+
+steps:
+  - id: "DecisionNode42"
+    type: "decision"
+    condition: "Categories"
+  - id: "End1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "CategoriesClipboard"
+        type: "com.intershop.component.foundation.capi.clipboard.Clipboard"
+        guaranteed: true
+  - id: "End6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductsClipboard"
+        type: "com.intershop.component.foundation.capi.clipboard.Clipboard"
+        guaranteed: true
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "LookupHelper"
+        type: "com.intershop.component.mvc.capi.product.ProductIdentifierLookupHelper"
+        guaranteed: false
+  - id: "EndNode10"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "CatalogMap"
+        type: "java.util.Map"
+        guaranteed: false
+  - id: "EndNode13"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ProductUUIDIterator"
+        type: "java.util.Iterator"
+        guaranteed: true
+      - key: "SelectedProductUUIDIterator"
+        type: "java.util.Iterator"
+        guaranteed: true
+      - key: "ProductClipboard"
+        type: "com.intershop.component.foundation.capi.clipboard.Clipboard"
+        guaranteed: false
+  - id: "EndNode16"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "SelectedCategoryUUIDIterator"
+        type: "java.util.Iterator"
+        guaranteed: true
+      - key: "CategoryUUIDIterator"
+        type: "java.util.Iterator"
+        guaranteed: true
+      - key: "CategoryClipboard"
+        type: "com.intershop.component.foundation.capi.clipboard.Clipboard"
+        guaranteed: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ExcludedProductsGroup"
+        type: "com.intershop.component.marketing.capi.rebate.RebateFilterGroup"
+        guaranteed: false
+      - key: "ExcludedCategoriesGroup"
+        type: "com.intershop.component.marketing.capi.rebate.RebateFilterGroup"
+        guaranteed: false
+  - id: "GetApplicationRebateFilterGroup5"
+    type: "pipelet"
+    ref: "GetApplicationRebateFilterGroup"
+    config:
+      FilterObjectType: "CATEGORY"
+    bindings:
+      FilterObjectType: "null"
+      RebateFilterGroup: "ExcludedCategoriesGroup"
+  - id: "GetApplicationRebateFilterGroup6"
+    type: "pipelet"
+    ref: "GetApplicationRebateFilterGroup"
+    config:
+      FilterObjectType: "PRODUCT"
+    bindings:
+      FilterObjectType: "null"
+      RebateFilterGroup: "ExcludedProductsGroup"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode40"
+    type: "join"
+  - id: "JoinNode64"
+    type: "join"
+  - id: "JoinNode8"
+    type: "join"
+  - id: "LoopNode2"
+    type: "loop"
+  - id: "Pipelet132"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "SelectedCategoryUUID"
+    bindings:
+      Selection: "SelectedCategoryUUIDIterator"
+  - id: "Pipelet133"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "ProductUUID"
+    bindings:
+      Selection: "ProductUUIDIterator"
+  - id: "Pipelet134"
+    type: "pipelet"
+    ref: "UpdateClipboard"
+    config:
+      SessionRegistrationID: "Products"
+      StoreFormValues: "No"
+    bindings:
+      AllObjectUUIDs: "ProductUUIDIterator"
+      SelectedObjectUUIDs: "SelectedProductUUIDIterator"
+      Clipboard: "ProductClipboard"
+  - id: "Pipelet135"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "CategoryUUID"
+    bindings:
+      Selection: "CategoryUUIDIterator"
+  - id: "Pipelet136"
+    type: "pipelet"
+    ref: "UpdateClipboard"
+    config:
+      SessionRegistrationID: "Categories"
+      StoreFormValues: "No"
+    bindings:
+      AllObjectUUIDs: "CategoryUUIDIterator"
+      SelectedObjectUUIDs: "SelectedCategoryUUIDIterator"
+      Clipboard: "CategoryClipboard"
+  - id: "Pipelet137"
+    type: "pipelet"
+    ref: "GetFormSelection"
+    config:
+      DefaultParameterName: "SelectedProductUUID"
+    bindings:
+      Selection: "SelectedProductUUIDIterator"
+  - id: "Pipelet17"
+    type: "pipelet"
+    ref: "GetCatalogByCategory"
+    bindings:
+      CatalogCategory: "Category"
+  - id: "Pipelet18"
+    type: "pipelet"
+    ref: "UpdateMapping"
+    config:
+      Mode: "Add"
+    bindings:
+      Key: "Category:UUID"
+      OutMap: "CatalogMap"
+      Value: "Catalog"
+      InMap: "CatalogMap"
+  - id: "Pipelet54"
+    type: "pipelet"
+    ref: "CreateProductIdentifierLookupHelper"
+    config:
+      LookupType: "ProductDomainLookup"
+    bindings:
+      ProductDomain: "CurrentProductRepository:RepositoryDomain"
+  - id: "RemoveClipboard1"
+    type: "pipelet"
+    ref: "RemoveClipboard"
+    config:
+      SessionRegistrationID: "Categories"
+  - id: "RemoveClipboard2"
+    type: "pipelet"
+    ref: "RemoveClipboard"
+    config:
+      SessionRegistrationID: "Products"
+  - id: "UpdateClipboard1"
+    type: "pipelet"
+    ref: "UpdateClipboard"
+    config:
+      SessionRegistrationID: "Categories"
+      StoreFormValues: "No"
+    bindings:
+      AllObjectUUIDs: "NULL"
+      SelectedObjectUUIDs: "NULL"
+      Clipboard: "CategoriesClipboard"
+  - id: "UpdateClipboard2"
+    type: "pipelet"
+    ref: "UpdateClipboard"
+    config:
+      SessionRegistrationID: "Products"
+      StoreFormValues: "No"
+    bindings:
+      AllObjectUUIDs: "NULL"
+      SelectedObjectUUIDs: "NULL"
+      Clipboard: "ProductsClipboard"
+
+links:
+  - from: "RemoveClipboard2"
+    via: "next"
+    to: "UpdateClipboard2"
+    into: "in"
+  - from: "Pipelet134"
+    via: "next"
+    to: "EndNode13"
+    into: "in"
+  - from: "Pipelet137"
+    via: "next"
+    to: "Pipelet133"
+    into: "in"
+  - from: "Pipelet135"
+    via: "next"
+    to: "Pipelet136"
+    into: "in"
+  - from: "GetApplicationRebateFilterGroup6"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "Start6"
+    via: "next"
+    to: "RemoveClipboard2"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "GetApplicationRebateFilterGroup5"
+    into: "in"
+  - from: "Pipelet136"
+    via: "next"
+    to: "EndNode16"
+    into: "in"
+  - from: "Pipelet133"
+    via: "next"
+    to: "Pipelet134"
+    into: "in"
+  - from: "JoinNode8"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "StartNode35"
+    via: "next"
+    to: "Pipelet137"
+    into: "in"
+  - from: "UpdateClipboard2"
+    via: "next"
+    to: "End6"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "GetApplicationRebateFilterGroup6"
+    into: "in"
+  - from: "StartNode34"
+    via: "next"
+    to: "Pipelet132"
+    into: "in"
+  - from: "GetApplicationRebateFilterGroup5"
+    via: "next"
+    to: "JoinNode8"
+    into: "in1"
+  - from: "Start1"
+    via: "next"
+    to: "RemoveClipboard1"
+    into: "in"
+  - from: "GetApplicationRebateFilterGroup6"
+    via: "error"
+    to: "JoinNode1"
+    into: "in2"
+  - from: "Pipelet18"
+    via: "next"
+    to: "JoinNode64"
+    into: "in1"
+  - from: "DecisionNode42"
+    via: "no"
+    to: "JoinNode40"
+    into: "in2"
+  - from: "DecisionNode42"
+    via: "yes"
+    to: "LoopNode2"
+    into: "in"
+  - from: "LoopNode2"
+    via: "do"
+    to: "Pipelet17"
+    into: "in"
+  - from: "UpdateClipboard1"
+    via: "next"
+    to: "End1"
+    into: "in"
+  - from: "StartNode25"
+    via: "next"
+    to: "DecisionNode42"
+    into: "in"
+  - from: "LoopNode2"
+    via: "next"
+    to: "JoinNode40"
+    into: "in1"
+  - from: "Pipelet17"
+    via: "error"
+    to: "JoinNode64"
+    into: "in1"
+  - from: "JoinNode64"
+    via: "next"
+    to: "LoopNode2"
+    into: "loop"
+  - from: "Pipelet17"
+    via: "next"
+    to: "Pipelet18"
+    into: "in"
+  - from: "JoinNode40"
+    via: "next"
+    to: "EndNode10"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "Pipelet54"
+    into: "in"
+  - from: "Pipelet54"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "Pipelet132"
+    via: "next"
+    to: "Pipelet135"
+    into: "in"
+  - from: "RemoveClipboard1"
+    via: "next"
+    to: "UpdateClipboard1"
+    into: "in"
+  - from: "GetApplicationRebateFilterGroup5"
+    via: "error"
+    to: "JoinNode8"
+    into: "in3"

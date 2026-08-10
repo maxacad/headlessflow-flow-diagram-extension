@@ -1,0 +1,18 @@
+name: RefreshDBCache
+version: 1
+trigger: manual
+handler: ./RefreshDBCache.ts
+ai:
+  skill: core-refreshdbcache
+  title: RefreshDBCache
+  description: Intershop core pipelet – RefreshDBCache.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcess: any
+  ChangedStagingTables: iterator
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.RefreshDBCache

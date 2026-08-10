@@ -1,0 +1,743 @@
+flow: "ProcessProductConfigurationValidatorValueList"
+kind: "process"
+
+entries:
+  - id: "StartNode1"
+    name: "CreateValidatorValueList"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ID"
+        type: "java.lang.String"
+        required: true
+      - key: "Description"
+        type: "java.lang.String"
+        required: false
+      - key: "ProductConfigurationValidatorValueListBORepository"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBORepository"
+        required: true
+  - id: "StartNode10"
+    name: "GetAllValidatorValueLists"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "PageSize"
+        type: "java.lang.Integer"
+        required: false
+      - key: "ProductConfigurationValidatorValueListBORepository"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBORepository"
+        required: true
+  - id: "StartNode11"
+    name: "RemoveValueFromValidatorValueList"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValueNumber"
+        type: "java.lang.Integer"
+        required: true
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+  - id: "StartNode12"
+    name: "IncreaseValueCount"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+  - id: "StartNode13"
+    name: "DecreaseValueCount"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+  - id: "StartNode14"
+    name: "AddFormParameter"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DimensionTypeDisplayName"
+        type: "java.lang.String"
+        required: true
+      - key: "Webform"
+        type: "com.intershop.beehive.core.capi.webform.Form"
+        required: true
+      - key: "ParameterName"
+        type: "java.lang.String"
+        required: true
+  - id: "StartNode2"
+    name: "UpdateValidatorValueList"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+      - key: "Description"
+        type: "java.lang.String"
+        required: false
+  - id: "StartNode3"
+    name: "RemoveValidatorValueList"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+      - key: "ProductConfigurationValidatorValueListBORepository"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBORepository"
+        required: true
+  - id: "StartNode4"
+    name: "GetValidatorValueListByID"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ID"
+        type: "java.lang.String"
+        required: true
+      - key: "ProductConfigurationValidatorValueListBORepository"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBORepository"
+        required: true
+  - id: "StartNode5"
+    name: "AddDimensionToValidatorValueList"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+      - key: "TypeCodeName"
+        type: "java.lang.String"
+        required: true
+      - key: "DimensionName"
+        type: "java.lang.String"
+        required: true
+  - id: "StartNode6"
+    name: "RemoveDimensionFromValidatorValueList"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+      - key: "DimensionNo"
+        type: "java.lang.Integer"
+        required: true
+  - id: "StartNode7"
+    name: "SetValueCountForValidatorValueList"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+      - key: "ValueCount"
+        type: "java.lang.Integer"
+        required: true
+  - id: "StartNode8"
+    name: "SetValidatorValueListEntry"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DimensionNumber"
+        type: "java.lang.Integer"
+        required: true
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+      - key: "ValueNumber"
+        type: "java.lang.Integer"
+        required: true
+      - key: "ValueToSet"
+        type: "java.lang.Object"
+        required: true
+      - key: "ValueType"
+        type: "java.lang.String"
+        required: true
+  - id: "StartNode9"
+    name: "GetValidatorValueListEntry"
+    mode: "private"
+    strict: true
+    inputs:
+      - key: "DimensionNumber"
+        type: "java.lang.Integer"
+        required: true
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        required: true
+      - key: "ValueNumber"
+        type: "java.lang.Integer"
+        required: true
+
+steps:
+  - id: "AddDimensionToValidatorValueList1"
+    type: "pipelet"
+    ref: "AddDimensionToValidatorValueList"
+  - id: "AddFormParameterDefinition1"
+    type: "pipelet"
+    ref: "AddFormParameterDefinition"
+    bindings:
+      Form: "Webform"
+      Type: "ParameterType"
+      Name: "ParameterName"
+  - id: "CallNode1"
+    type: "call"
+    ref: "ProcessProductConfigurationValidatorValueList-GetValidatorValueListByID"
+  - id: "ChangeValueCountOfValidatorValueList1"
+    type: "pipelet"
+    ref: "ChangeValueCountOfValidatorValueList"
+    config:
+      ChangeMode: "IncreaseByOne"
+  - id: "ChangeValueCountOfValidatorValueList2"
+    type: "pipelet"
+    ref: "ChangeValueCountOfValidatorValueList"
+    config:
+      ChangeMode: "DecreaseByOne"
+  - id: "CreatePageableFromCollection1"
+    type: "pipelet"
+    ref: "CreatePageableFromCollection"
+    bindings:
+      Collection: "ValidatorValueListsCollection"
+      Pageable: "ValidatorValueLists"
+  - id: "CreateProductConfigurationValidatorValueList1"
+    type: "pipelet"
+    ref: "CreateProductConfigurationValidatorValueList"
+  - id: "DecisionNode1"
+    type: "decision"
+    condition: "DimensionTypeDisplayName"
+  - id: "DecisionNode6"
+    type: "decision"
+    condition: "DimensionTypeDisplayName"
+  - id: "DecisionNode7"
+    type: "decision"
+    condition: "DimensionTypeDisplayName"
+  - id: "DecisionNode8"
+    type: "decision"
+    condition: "DimensionTypeDisplayName"
+  - id: "EndNode1"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        guaranteed: true
+  - id: "EndNode10"
+    type: "end"
+    strict: true
+  - id: "EndNode11"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode12"
+    type: "end"
+    strict: true
+  - id: "EndNode13"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode14"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode15"
+    type: "end"
+    strict: true
+  - id: "EndNode16"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode17"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListEntry"
+        type: "java.lang.Object"
+        guaranteed: true
+      - key: "EntryType"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode18"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode19"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValidatorValueLists"
+        type: "java.util.Collection"
+        guaranteed: true
+  - id: "EndNode2"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode20"
+    type: "end"
+    strict: true
+  - id: "EndNode21"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode22"
+    type: "end"
+    strict: true
+  - id: "EndNode23"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode24"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode25"
+    type: "end"
+    strict: true
+  - id: "EndNode26"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "Webform"
+        type: "com.intershop.beehive.core.capi.webform.Form"
+        guaranteed: true
+  - id: "EndNode27"
+    type: "end"
+    strict: true
+  - id: "EndNode3"
+    type: "end"
+    strict: true
+  - id: "EndNode4"
+    type: "end"
+    strict: true
+  - id: "EndNode5"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValidatorValueList"
+        type: "com.intershop.component.productconfiguration.capi.validator.ProductConfigurationValidatorValueListBO"
+        guaranteed: true
+  - id: "EndNode6"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "EndNode7"
+    type: "end"
+    strict: true
+  - id: "EndNode9"
+    type: "end"
+    strict: true
+    outputs:
+      - key: "ValueListError"
+        type: "java.lang.String"
+        guaranteed: true
+  - id: "GetAllValidatorValueLists1"
+    type: "pipelet"
+    ref: "GetAllValidatorValueLists"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      ValidatorValueLists: "ValidatorValueListsCollection"
+  - id: "GetProductConfigurationValidatorValueListByID1"
+    type: "pipelet"
+    ref: "GetProductConfigurationValidatorValueListByID"
+  - id: "GetProductConfigurationValidatorValueListEntry1"
+    type: "pipelet"
+    ref: "GetProductConfigurationValidatorValueListEntry"
+  - id: "JoinNode1"
+    type: "join"
+  - id: "JoinNode3"
+    type: "join"
+  - id: "JoinNode4"
+    type: "join"
+  - id: "JoinNode5"
+    type: "join"
+  - id: "RemoveDimensionFromValidatorValueList1"
+    type: "pipelet"
+    ref: "RemoveDimensionFromValidatorValueList"
+  - id: "RemoveProductConfigurationValidatorValueList1"
+    type: "pipelet"
+    ref: "RemoveProductConfigurationValidatorValueList"
+  - id: "RemoveValueFromProductConfigurationValidatorValueList1"
+    type: "pipelet"
+    ref: "RemoveValueFromProductConfigurationValidatorValueList"
+  - id: "SetDictionaryValue1"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ValueListError"
+      Value: "The provided ID is not unique."
+  - id: "SetDictionaryValue10"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "Validator"
+      Value: "GlobalValidators-string"
+  - id: "SetDictionaryValue11"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ParameterType"
+      Value: "java.lang.String"
+  - id: "SetDictionaryValue2"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ValueListError"
+      Value: "An error occurred while creating the value list."
+  - id: "SetDictionaryValue4"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ParameterType"
+      Value: "java.math.BigDecimal"
+  - id: "SetDictionaryValue5"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ParameterType"
+      Value: "java.lang.String"
+  - id: "SetDictionaryValue6"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "ParameterType"
+      Value: "java.lang.Integer"
+  - id: "SetDictionaryValue7"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "Validator"
+      Value: "GlobalValidators-string"
+  - id: "SetDictionaryValue8"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "Validator"
+      Value: "GlobalValidators-integer"
+  - id: "SetDictionaryValue9"
+    type: "pipelet"
+    ref: "SetDictionaryValue"
+    config:
+      Name: "Validator"
+      Value: "GlobalValidators-bigdecimal"
+  - id: "SetProductConfigurationValidatorValueListEntry1"
+    type: "pipelet"
+    ref: "SetProductConfigurationValidatorValueListEntry"
+  - id: "SetValueCountForValidatorValueList1"
+    type: "pipelet"
+    ref: "SetValueCountForValidatorValueList"
+  - id: "UpdatePageSize1"
+    type: "pipelet"
+    ref: "UpdatePageSize"
+    config:
+      DefaultPageSize: 15
+    bindings:
+      PageableIterator: "ValidatorValueLists"
+  - id: "UpdateProductConfigurationValidatorValueList1"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationValidatorValueList"
+    bindings:
+      RemoveDescriptionIfBlank: "\"(Boolean)true\""
+  - id: "UpdateProductConfigurationValidatorValueList2"
+    type: "pipelet"
+    ref: "UpdateProductConfigurationValidatorValueList"
+    bindings:
+      RemoveDescriptionIfBlank: "\"(Boolean)true\""
+
+links:
+  - from: "StartNode2"
+    via: "next"
+    to: "UpdateProductConfigurationValidatorValueList1"
+    into: "in"
+  - from: "GetProductConfigurationValidatorValueListByID1"
+    via: "next"
+    to: "EndNode5"
+    into: "in"
+  - from: "GetProductConfigurationValidatorValueListByID1"
+    via: "error"
+    to: "EndNode6"
+    into: "in"
+  - from: "SetDictionaryValue2"
+    via: "next"
+    to: "JoinNode1"
+    into: "in1"
+  - from: "SetDictionaryValue1"
+    via: "next"
+    to: "JoinNode1"
+    into: "in3"
+  - from: "RemoveProductConfigurationValidatorValueList1"
+    via: "next"
+    to: "EndNode4"
+    into: "in"
+  - from: "JoinNode1"
+    via: "next"
+    to: "EndNode2"
+    into: "in"
+  - from: "StartNode3"
+    via: "next"
+    to: "RemoveProductConfigurationValidatorValueList1"
+    into: "in"
+  - from: "AddDimensionToValidatorValueList1"
+    via: "next"
+    to: "EndNode7"
+    into: "in"
+  - from: "StartNode5"
+    via: "next"
+    to: "AddDimensionToValidatorValueList1"
+    into: "in"
+  - from: "AddDimensionToValidatorValueList1"
+    via: "error"
+    to: "EndNode9"
+    into: "in"
+  - from: "RemoveDimensionFromValidatorValueList1"
+    via: "next"
+    to: "EndNode10"
+    into: "in"
+  - from: "RemoveDimensionFromValidatorValueList1"
+    via: "error"
+    to: "EndNode11"
+    into: "in"
+  - from: "StartNode12"
+    via: "next"
+    to: "ChangeValueCountOfValidatorValueList1"
+    into: "in"
+  - from: "StartNode7"
+    via: "next"
+    to: "SetValueCountForValidatorValueList1"
+    into: "in"
+  - from: "StartNode6"
+    via: "next"
+    to: "RemoveDimensionFromValidatorValueList1"
+    into: "in"
+  - from: "ChangeValueCountOfValidatorValueList1"
+    via: "error"
+    to: "EndNode23"
+    into: "in"
+  - from: "StartNode1"
+    via: "next"
+    to: "CallNode1"
+    into: "in"
+  - from: "UpdateProductConfigurationValidatorValueList1"
+    via: "next"
+    to: "EndNode3"
+    into: "in"
+  - from: "ChangeValueCountOfValidatorValueList1"
+    via: "next"
+    to: "EndNode22"
+    into: "in"
+  - from: "SetValueCountForValidatorValueList1"
+    via: "next"
+    to: "EndNode12"
+    into: "in"
+  - from: "SetValueCountForValidatorValueList1"
+    via: "error"
+    to: "EndNode13"
+    into: "in"
+  - from: "CallNode1"
+    via: "Error"
+    to: "CreateProductConfigurationValidatorValueList1"
+    into: "in"
+  - from: "SetProductConfigurationValidatorValueListEntry1"
+    via: "error"
+    to: "EndNode16"
+    into: "in"
+  - from: "SetProductConfigurationValidatorValueListEntry1"
+    via: "next"
+    to: "EndNode15"
+    into: "in"
+  - from: "StartNode8"
+    via: "next"
+    to: "SetProductConfigurationValidatorValueListEntry1"
+    into: "in"
+  - from: "StartNode9"
+    via: "next"
+    to: "GetProductConfigurationValidatorValueListEntry1"
+    into: "in"
+  - from: "GetProductConfigurationValidatorValueListEntry1"
+    via: "next"
+    to: "EndNode17"
+    into: "in"
+  - from: "CreatePageableFromCollection1"
+    via: "next"
+    to: "UpdatePageSize1"
+    into: "in"
+  - from: "GetProductConfigurationValidatorValueListEntry1"
+    via: "error"
+    to: "EndNode18"
+    into: "in"
+  - from: "StartNode10"
+    via: "next"
+    to: "GetAllValidatorValueLists1"
+    into: "in"
+  - from: "GetAllValidatorValueLists1"
+    via: "next"
+    to: "CreatePageableFromCollection1"
+    into: "in"
+  - from: "StartNode11"
+    via: "next"
+    to: "RemoveValueFromProductConfigurationValidatorValueList1"
+    into: "in"
+  - from: "RemoveValueFromProductConfigurationValidatorValueList1"
+    via: "next"
+    to: "EndNode20"
+    into: "in"
+  - from: "RemoveValueFromProductConfigurationValidatorValueList1"
+    via: "error"
+    to: "EndNode21"
+    into: "in"
+  - from: "CreateProductConfigurationValidatorValueList1"
+    via: "next"
+    to: "UpdateProductConfigurationValidatorValueList2"
+    into: "in"
+  - from: "UpdateProductConfigurationValidatorValueList2"
+    via: "next"
+    to: "EndNode1"
+    into: "in"
+  - from: "StartNode13"
+    via: "next"
+    to: "ChangeValueCountOfValidatorValueList2"
+    into: "in"
+  - from: "ChangeValueCountOfValidatorValueList2"
+    via: "error"
+    to: "EndNode24"
+    into: "in"
+  - from: "UpdatePageSize1"
+    via: "next"
+    to: "EndNode19"
+    into: "in"
+  - from: "ChangeValueCountOfValidatorValueList2"
+    via: "next"
+    to: "EndNode25"
+    into: "in"
+  - from: "DecisionNode8"
+    via: "yes"
+    to: "SetDictionaryValue4"
+    into: "in"
+  - from: "DecisionNode7"
+    via: "no"
+    to: "DecisionNode8"
+    into: "in"
+  - from: "DecisionNode6"
+    via: "no"
+    to: "DecisionNode7"
+    into: "in"
+  - from: "DecisionNode6"
+    via: "yes"
+    to: "SetDictionaryValue5"
+    into: "in"
+  - from: "StartNode14"
+    via: "next"
+    to: "DecisionNode6"
+    into: "in"
+  - from: "DecisionNode7"
+    via: "yes"
+    to: "SetDictionaryValue6"
+    into: "in"
+  - from: "SetDictionaryValue4"
+    via: "next"
+    to: "SetDictionaryValue9"
+    into: "in"
+  - from: "SetDictionaryValue6"
+    via: "next"
+    to: "SetDictionaryValue8"
+    into: "in"
+  - from: "SetDictionaryValue10"
+    via: "next"
+    to: "JoinNode5"
+    into: "in3"
+  - from: "CallNode1"
+    via: "next"
+    to: "SetDictionaryValue1"
+    into: "in"
+  - from: "JoinNode3"
+    via: "next"
+    to: "JoinNode4"
+    into: "in1"
+  - from: "SetDictionaryValue11"
+    via: "next"
+    to: "SetDictionaryValue10"
+    into: "in"
+  - from: "DecisionNode8"
+    via: "no"
+    to: "DecisionNode1"
+    into: "in"
+  - from: "SetDictionaryValue5"
+    via: "next"
+    to: "SetDictionaryValue7"
+    into: "in"
+  - from: "SetDictionaryValue7"
+    via: "next"
+    to: "JoinNode3"
+    into: "in1"
+  - from: "SetDictionaryValue8"
+    via: "next"
+    to: "JoinNode3"
+    into: "in3"
+  - from: "SetDictionaryValue9"
+    via: "next"
+    to: "JoinNode4"
+    into: "in3"
+  - from: "DecisionNode1"
+    via: "yes"
+    to: "SetDictionaryValue11"
+    into: "in"
+  - from: "DecisionNode1"
+    via: "no"
+    to: "EndNode27"
+    into: "in"
+  - from: "JoinNode4"
+    via: "next"
+    to: "JoinNode5"
+    into: "in1"
+  - from: "CreateProductConfigurationValidatorValueList1"
+    via: "error"
+    to: "SetDictionaryValue2"
+    into: "in"
+  - from: "JoinNode5"
+    via: "next"
+    to: "AddFormParameterDefinition1"
+    into: "in"
+  - from: "AddFormParameterDefinition1"
+    via: "next"
+    to: "EndNode26"
+    into: "in"
+  - from: "StartNode4"
+    via: "next"
+    to: "GetProductConfigurationValidatorValueListByID1"
+    into: "in"
+  - from: "RemoveProductConfigurationValidatorValueList1"
+    via: "error"
+    to: "EndNode14"
+    into: "in"

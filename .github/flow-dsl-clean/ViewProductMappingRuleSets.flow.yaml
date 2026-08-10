@@ -1,0 +1,44 @@
+flow: "ViewProductMappingRuleSets"
+kind: "view"
+
+entries:
+  - id: "Start2"
+    name: "ListAll"
+    mode: "private"
+    strict: false
+    inputs:
+      []
+
+steps:
+  - id: "Call1"
+    type: "call"
+    ref: "DetermineRepositories-Suppliers"
+  - id: "Call3"
+    type: "call"
+    ref: "DetermineRepositories-ParentChannel"
+  - id: "InteractionEnd1"
+    type: "interaction"
+  - id: "PrepareApplicationView1"
+    type: "pipelet"
+    ref: "PrepareApplicationView"
+    config:
+      SelectedMenuItem: "Syndication"
+      WorkingTemplate: "syndication/ProductMappingRuleSets"
+
+links:
+  - from: "PrepareApplicationView1"
+    via: "next"
+    to: "InteractionEnd1"
+    into: "in"
+  - from: "Start2"
+    via: "next"
+    to: "Call3"
+    into: "in"
+  - from: "Call3"
+    via: "next"
+    to: "Call1"
+    into: "in"
+  - from: "Call1"
+    via: "next"
+    to: "PrepareApplicationView1"
+    into: "in"

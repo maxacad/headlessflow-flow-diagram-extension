@@ -1,0 +1,19 @@
+name: RefreshFSCaches
+version: 1
+trigger: manual
+handler: ./RefreshFSCaches.ts
+ai:
+  skill: core-refreshfscaches
+  title: RefreshFSCaches
+  description: Intershop core pipelet – RefreshFSCaches.
+  tags: [staging, replication, publishing]
+  capabilities:
+    - execute-staging-operation
+inputs:
+  StagingProcess: any
+  ReloadAllTemplates: boolean
+  PageCacheInvalidationPolicy: string
+steps:
+  - type: function
+    runtime: java
+    function: com.intershop.beehive.core.pipelet.staging.RefreshFSCaches
