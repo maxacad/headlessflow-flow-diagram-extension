@@ -1,8 +1,7 @@
 import React from 'react';
 import { NodeProps, Node, Position } from '@xyflow/react';
-import { BaseNode, HandleDef } from './BaseNode';
-
-const ACCENT = '#00695c';
+import { StandardNode } from './StandardNode';
+import type { HandleDef } from './BaseNode';
 
 const handles: HandleDef[] = [
   { type: 'target', position: Position.Top,    id: 'input'  },
@@ -68,15 +67,12 @@ const Icon = () => (
 interface Data { label: string; subtitle?: string; [k: string]: unknown }
 
 export const ViewNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id }) => (
-  <BaseNode
-    nodeId={id}
+  <StandardNode
+    id={id}
     selected={selected}
-    icon={<Icon />}
     label={data?.label || 'View'}
-    subtitle={data?.subtitle}
+    glyph={<Icon />}
     handles={handles}
-    accentColor={ACCENT}
-    transparentInner
     rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}
   />
 );

@@ -1,12 +1,8 @@
 import React from 'react';
 import type { SVGProps } from 'react';
 import { Handle, NodeProps, Node, Position } from '@xyflow/react';
-import styled, { css } from 'styled-components';
-import { NodeWrapper } from './BaseNode';
-import { NodeRuntimeOverlay } from './NodeRuntimeOverlay';
-
-// ── Theme ──────────────────────────────────────────────────────────────────────
-const ACCENT = '#7c3aed';
+import styled from 'styled-components';
+import { StandardNode, type NodeTag } from './StandardNode';
 
 // ── Approval outcomes ──────────────────────────────────────────────────────────
 export const APPROVAL_OUTCOMES = [
@@ -61,63 +57,8 @@ const GroupIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-// ── Styled components ──────────────────────────────────────────────────────────
-const IconBox = styled.div<{ $selected: boolean }>`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
-  ${({ $selected }) =>
-    $selected &&
-    css`
-      outline: 4px solid ${ACCENT};
-      outline-offset: 3px;
-    `}
-`;
-
-const CellLabel = styled.div`
-  position: absolute;
-  top: 4px;
-  left: 5px;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 9px;
-  color: #243447;
-  opacity: 0.5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 130px;
-  pointer-events: none;
-  user-select: none;
-`;
-
-const FloatingTag = styled.div<{ $top: string; $color: string; $borderColor: string }>`
-  position: absolute;
-  top: ${({ $top }) => $top};
-  left: calc(50% + 36px);
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 9px;
-  font-weight: 500;
-  color: ${({ $color }) => $color};
-  white-space: nowrap;
-  pointer-events: none;
-  background: rgba(10, 5, 25, 0.80);
-  padding: 2px 6px;
-  border-radius: 3px;
-  border: 1px solid ${({ $borderColor }) => $borderColor};
-  max-width: 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-// ── Config panel ───────────────────────────────────────────────────────────────
-// (Config is now in the Node Detail side panel — click the node to open it)
-
 // ── Custom coloured handles ────────────────────────────────────────────────────
-// Positioned relative to NodeWrapper (150×200).
+// Positioned relative to NodeWrapper (240×160, bkz. constants.ts).
 // Inner box is 64×64 centred → center at (75, 100).
 // Each handle is placed 10 px outside the inner box edge.
 
@@ -197,35 +138,30 @@ export const ApprovalNode: React.FC<NodeProps<Node<Data>>> = ({ selected, id, da
   const assigneeName = data?.assigneeName ?? '';
   const webFormFile  = data?.webFormFile  ?? '';
 
-  return (
-    <NodeWrapper>
+  const tags: NodeTag[] = [];
+  if (assigneeName) {
+    const text = `${assigneeType === 'user' ? 'U:' : 'G:'} ${assigneeName}`;
+    tags.push({ text, tone: 'actor', title: text });
+  }
+  if (webFormFile) {
+    tags.push({ text: webFormFile, tone: 'resource', title: webFormFile });
+  }
 
-      {/* ── Handles ── */}
+  return (
+    <StandardNode
+      id={id}
+      selected={selected}
+      label={data?.label || 'Approval'}
+      glyph={assigneeType === 'group' ? <GroupIcon /> : <UserIcon />}
+      handles={[]}
+      tags={tags}
+    >
       <HInput     type="target" position={Position.Top}    id="input"                  className="node-handle" />
       <HApproved  type="source" position={Position.Bottom} id="approved"               className="node-handle" />
       <HRejected  type="source" position={Position.Right}  id="rejected"               className="node-handle" />
       <HFeedback  type="source" position={Position.Right}  id="rejected_with_feedback" className="node-handle" />
       <HInfoReq   type="source" position={Position.Left}   id="info_requested"         className="node-handle" />
       <HEscalated type="source" position={Position.Left}   id="escalated"              className="node-handle" />
-
-      <CellLabel>{data?.label ? `${data.label} · ${id}` : id}</CellLabel>
-
-      <IconBox className="node-inner-box" $selected={selected}>
-        {assigneeType === 'group' ? <GroupIcon /> : <UserIcon />}
-        <NodeRuntimeOverlay nodeId={id} />
-      </IconBox>
-
-      {/* Floating tags beside the node */}
-      {assigneeName && (
-        <FloatingTag $top="calc(50% - 32px)" $color="#c4b5fd" $borderColor="rgba(124,58,237,0.35)">
-          {assigneeType === 'user' ? 'U:' : 'G:'} {assigneeName}
-        </FloatingTag>
-      )}
-      {webFormFile && (
-        <FloatingTag $top="calc(50% - 12px)" $color="#93c5fd" $borderColor="rgba(59,130,246,0.3)">
-          {webFormFile}
-        </FloatingTag>
-      )}
-    </NodeWrapper>
+    </StandardNode>
   );
 };

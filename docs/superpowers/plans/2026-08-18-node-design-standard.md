@@ -18,15 +18,10 @@
   - `webpack.config.js`'teki `ts-loader` `transpileOnly: true` ile çalışıyor, yani `npm run build` de tip hatası yakalamaz.
 
   Bu yüzden Task 1'de `package.json`'a `typecheck:webview` script'i eklenir ve **her webview task'ında çalıştırılır**. Uzantı tarafı (`src/**`) için `npm run compile` geçerliliğini korur.
-- **Bilinen taban hatalar (baseline).** `typecheck:webview` şu an, bu planla ilgisiz **3 hata** üretiyor:
+- **Taban (baseline): sıfır hata.** Bu planın worktree'sinde `npm install` `package-lock.json`'a uyduğu için `@xyflow/react` **12.10.2** kuruludur ve `npm run typecheck:webview` **hiç hata vermez**. Doğrulama adımlarında beklenen sonuç budur: **herhangi bir hata sizin değişikliğinizden gelmiştir.**
 
-  ```
-  webview-src/App.tsx(1173,11): error TS2322: ... OnNodeDrag<Node>
-  webview-src/App.tsx(1174,11): error TS2322: ... OnNodeDrag<Node>
-  webview-src/App.tsx(1175,11): error TS2322: ... OnNodeDrag<Node>
-  ```
+  Uyarı: ana çalışma ağacının `node_modules`'ünde sürüm 12.11.0'a kaymış durumda (repoda hem `package-lock.json` hem `yarn.lock` var) ve 12.11.0 daha katı `OnNodeDrag` tiplemesiyle `App.tsx` 1173/1174/1175'te 3 hata üretiyor. Bu plan kapsamı dışı — **`App.tsx`'e dokunmayın**; lockfile sürümüyle çalışın.
 
-  Bunlar `onNodeDrag*` prop'larının `React.MouseEvent` ile tiplenmesinden kaynaklanıyor ve bu planın kapsamı dışında — **düzeltmeyin**. Her doğrulama adımında beklenen sonuç "yalnızca bu 3 taban hatası, başka hata yok"tur. Dördüncü bir hata çıkarsa o task'ta yaptığınız değişiklikten gelmiştir.
 - **`webview-src/App.tsx` değişmiyor.** Spec §6 bu dosyayı "değişen" arasında saymıştı ama incelemede değişiklik gerekmediği görüldü: `onNodeClick`'teki Ctrl+Click goto mantığı olduğu gibi kalır, `nodeTypes` registry'si aynıdır, `update-node-data` dinleyicisi korunur. Kaldırılan mesaj turlarının (`request-flow-start-nodes` / `flow-start-nodes-response`) gönderici ve dinleyicisi `CallNode` içindeydi, `App.tsx`'te değil. Bu dosyaya dokunmayın.
 - **Seçim outline'ı:** `outline: 4px solid #ff7105; outline-offset: 3px` — sadece `IconBox` üzerinde.
 - **Hover outline'ı:** `outline: 4px solid #4283f4; outline-offset: 3px` — `NodeWrapper:hover .node-inner-box` kuralından gelir; her node'un tıklanabilir kutusu `className="node-inner-box"` taşımalı.
@@ -291,7 +286,7 @@ Bu, `webview-src` altındaki `.d.ts` dosyalarının kaynak ağacına sızmasın�
 npm run typecheck:webview
 ```
 
-Beklenen: **yalnızca** Global Constraints'te listelenen 3 taban hatası (`App.tsx` 1173/1174/1175, `OnNodeDrag`). `StandardNode.tsx` veya `BaseNode.tsx` kaynaklı hiçbir hata olmamalı.
+Beklenen: **hiç hata yok** (Global Constraints'teki sıfır-hata tabanı). `StandardNode.tsx` veya `BaseNode.tsx` kaynaklı bir hata çıkarsa düzeltin.
 
 - [ ] **Step 5: Commit**
 
@@ -430,7 +425,7 @@ export const ViewNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id }
 npm run typecheck:webview && npm run build:webview
 ```
 
-Beklenen: `typecheck:webview` yalnizca Global Constraints'teki 3 taban hatasini (`App.tsx` 1173/1174/1175) uretmeli; bu task'ta dokunulan dosyalardan hata gelmemeli. webpack derlemesi hatasiz bitmeli.
+Beklenen: `typecheck:webview` hic hata vermemeli (sifir-hata tabani) ve webpack derlemesi hatasiz bitmeli.
 
 Eklentiyi çalıştır (`F5` → Extension Development Host), bir `.flow` dosyası aç, Decision / End / View node'larını canvas'a bırak ve doğrula:
 - Sol üstte `label · id` etiketi var.

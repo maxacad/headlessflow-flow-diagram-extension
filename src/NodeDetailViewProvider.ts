@@ -12,12 +12,35 @@ export interface PipeletDetailEntry {
   ai?: Record<string, unknown>;
 }
 
+export interface NodeDetailContext {
+  /** workspace kaynakli - NodeDetailViewProvider doldurur */
+  pipeletFiles?: PipeletDetailEntry[];
+  webformFiles?: Array<{ name: string; uri: string }>;
+  /** dokuman kaynakli - FlowEditorProvider doldurur */
+  flowNodes?: Array<{ id: string; label: string; nodeType: string }>;
+  flows?: Array<{ name: string; startNodes: Array<{ id: string; label: string }> }>;
+}
+
 export interface NodeDetailPayload {
   id: string;
   nodeType: string;
   data: Record<string, unknown>;
-  webformFiles?: Array<{ name: string; uri: string }>;
-  pipeletFiles?: PipeletDetailEntry[];
+  context?: NodeDetailContext;
+}
+
+export interface HttpCallRequest {
+  method: string;
+  url: string;
+  headers: Record<string, string>;
+  body?: string;
+  baseUrl?: string;
+}
+
+/** Panelin eklenti host'undaki flow editorune eristigi dar arayuz */
+export interface FlowHost {
+  executeHttpCallRequest(req: HttpCallRequest): Promise<{ status: number; body: string }>;
+  getApiToken(baseUrl: string): string | undefined;
+  storeApiTokenFor(baseUrl: string, token: string): void;
 }
 
 function getNonce(): string {
@@ -31,8 +54,13 @@ export class NodeDetailViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'reactdnd.nodeDetailView';
   private _view?: vscode.WebviewView;
   private _activeFlowWebview?: vscode.Webview;
+  private _flowHost?: FlowHost;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
+
+  setFlowHost(host: FlowHost): void {
+    this._flowHost = host;
+  }
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
     this._view = webviewView;
@@ -55,6 +83,44 @@ export class NodeDetailViewProvider implements vscode.WebviewViewProvider {
           });
         }
       }
+
+      if (msg.type === 'http-call-execute' && this._flowHost) {
+        const req: HttpCallRequest = {
+          method: String(msg.method ?? 'GET'),
+          url: String(msg.url ?? ''),
+          headers: (msg.headers as Record<string, string> | undefined) ?? {},
+          body: typeof msg.body === 'string' ? msg.body : undefined,
+          baseUrl: typeof msg.baseUrl === 'string' ? msg.baseUrl : undefined,
+        };
+        void this._flowHost.executeHttpCallRequest(req).then((result) => {
+          void webviewView.webview.postMessage({
+            type: 'http-call-response',
+            nodeId: msg.nodeId,
+            status: result.status,
+            body: result.body,
+          });
+        });
+      }
+
+      if (msg.type === 'request-api-token' && typeof msg.baseUrl === 'string' && this._flowHost) {
+        void webviewView.webview.postMessage({
+          type: 'api-token-response',
+          reqId: msg.reqId,
+          baseUrl: msg.baseUrl,
+          token: this._flowHost.getApiToken(msg.baseUrl) ?? null,
+        });
+      }
+
+      if (msg.type === 'store-api-token'
+          && typeof msg.baseUrl === 'string'
+          && typeof msg.token === 'string'
+          && this._flowHost) {
+        this._flowHost.storeApiTokenFor(msg.baseUrl, msg.token);
+        void webviewView.webview.postMessage({
+          type: 'api-token-stored',
+          baseUrl: msg.baseUrl,
+        });
+      }
     });
   }
 
@@ -64,14 +130,17 @@ export class NodeDetailViewProvider implements vscode.WebviewViewProvider {
     this._view.show(true);
 
     const sendPayload = async (base: NodeDetailPayload) => {
-      let nextPayload = base;
+      const context: NodeDetailContext = { ...(base.context ?? {}) };
       if (base.nodeType === 'approval') {
-        nextPayload = { ...nextPayload, webformFiles: await this.readWebformFiles() };
+        context.webformFiles = await this.readWebformFiles();
       }
       if (base.nodeType === 'process') {
-        nextPayload = { ...nextPayload, pipeletFiles: await this.readPipeletFiles() };
+        context.pipeletFiles = await this.readPipeletFiles();
       }
-      void this._view!.webview.postMessage({ type: 'show-node', payload: nextPayload });
+      void this._view!.webview.postMessage({
+        type: 'show-node',
+        payload: { ...base, context },
+      });
     };
 
     // Load saved config and merge before sending to webview

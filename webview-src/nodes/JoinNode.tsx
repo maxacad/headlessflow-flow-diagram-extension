@@ -1,10 +1,7 @@
 import React from 'react';
 import { Handle, NodeProps, Node, Position, useNodeConnections } from '@xyflow/react';
-import styled, { css } from 'styled-components';
-import { NodeWrapper } from './BaseNode';
-import { NODE_WIDTH, NODE_HEIGHT } from '../constants';
-
-const RADIUS = 16;
+import styled from 'styled-components';
+import { StandardNode } from './StandardNode';
 
 const CustomHandle = (props: any) => {
   const connections = useNodeConnections({
@@ -12,45 +9,14 @@ const CustomHandle = (props: any) => {
     handleId: props.id,
   });
 
-  //if (connections.length >= props.connectionCount) return null;
-
   return (
     <Handle
-    disabled={connections.length >= props.connectionCount}
+      disabled={connections.length >= props.connectionCount}
       {...props}
       isConnectable={true}
     />
   );
 };
-
-const JoinPoint = styled.div<{ $selected: boolean }>`
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 30%, #f5e4b8 0%, #f3bf3e 48%, #e6a020 100%);
-  border: 1.5px solid #c98a10;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.25);
-
-  ${({ $selected }) =>
-    $selected &&
-    css`
-      outline: 4px solid #ff7105;
-      outline-offset: 3px;
-    `}
-`;
-
-const FlowHint = styled.svg`
-  width: 36px;
-  height: 36px;
-  overflow: visible;
-`;
 
 const EdgeHandle = styled(CustomHandle)`
   && {
@@ -62,42 +28,53 @@ const EdgeHandle = styled(CustomHandle)`
   }
 `;
 
+const Icon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <defs>
+      <radialGradient id="JoinNode_Gradient_1" cx="30%" cy="30%" r="75%">
+        <stop offset="0%" stopColor="#F5E4B8" />
+        <stop offset="48%" stopColor="#F3BF3E" />
+        <stop offset="100%" stopColor="#E6A020" />
+      </radialGradient>
+    </defs>
+    <g transform="translate(32 32)">
+      {/* dis halka */}
+      <circle r="17" fill="none" stroke="#C98A10" strokeOpacity="0.5" strokeWidth="1" />
+      {/* sari govde - eski 28px JoinPoint ile ayni cap */}
+      <circle r="14" fill="url(#JoinNode_Gradient_1)" stroke="#C98A10" strokeWidth="1.5" />
+      {/* akis yonu ipucu */}
+      <path d="M-4 2 L0 6 L4 2" fill="none" stroke="#7A4A00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      {/* kontur */}
+      <circle r="14" fill="none" stroke="#333333" strokeWidth="1" strokeOpacity="0.55" />
+    </g>
+  </svg>
+);
+
 interface Data { label: string; subtitle?: string; [k: string]: unknown }
 
-// Project-level extension for handle placement semantics.
-// We do not patch @xyflow Position enum in node_modules.
-type ExtendedPosition = Position | 'center';
-
-function resolveHandlePosition(position: ExtendedPosition): Position {
-  return position === 'center' ? Position.Top : position;
-}
-
-export const JoinNode: React.FC<NodeProps<Node<Data>>> = ({ selected }) => (
-  <NodeWrapper $width={NODE_WIDTH} $height={NODE_HEIGHT}>
+export const JoinNode: React.FC<NodeProps<Node<Data>>> = ({ selected, id, data }) => (
+  <StandardNode
+    id={id}
+    selected={selected}
+    label={data?.label || 'Join'}
+    glyph={<Icon />}
+    handles={[]}
+  >
     <EdgeHandle
       type="target"
-      position={resolveHandlePosition('center')}
+      position={Position.Top}
       id="centerInput"
       className="node-handle"
+      connectionCount={4}
       style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
-              connectionCount={4}
-
     />
-
     <EdgeHandle
       type="source"
       position={Position.Bottom}
       id="output"
       className="node-handle"
       connectionCount={1}
-      style={{ left: '50%', top: '50%', transform: `translate(calc(-50% + 0px), calc(-50% + ${RADIUS+8}px))` }}
+      style={{ left: '50%', top: '50%', transform: 'translate(-50%, calc(-50% + 24px))' }}
     />
-
-    <JoinPoint className="node-inner-box" $selected={selected}>
-      <FlowHint viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="18" cy="18" r="14" stroke="#c98a10" strokeOpacity="0.5" strokeWidth="1" />
-        <path d="M14.5 22.5L18 26L21.5 22.5" stroke="#7a4a00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </FlowHint>
-    </JoinPoint>
-  </NodeWrapper>
+  </StandardNode>
 );

@@ -1,25 +1,13 @@
 import React from 'react';
 import { NodeProps, Node, Position } from '@xyflow/react';
-import styled from 'styled-components';
-import { BaseNode, HandleDef, NodeWrapper, NodeInner, NodeIcon, NodeLabel, NodeSubtitle, BottomHandle, RightHandle, TopHandle } from './BaseNode';
-
-const ACCENT = '#e65100';
+import { StandardNode } from './StandardNode';
+import type { HandleDef } from './BaseNode';
 
 const handles: HandleDef[] = [
   { type: 'target', position: Position.Top,    id: 'input' },
   { type: 'source', position: Position.Bottom, id: 'yes'   },
   { type: 'source', position: Position.Right,  id: 'no'    },
 ];
-
-// Decision node has a diamond-shaped inner box
-const DiamondInner = styled(NodeInner)`
-  border-radius: 4px;
-  transform: rotate(45deg);
-
-  & > * {
-    transform: rotate(-45deg);
-  }
-`;
 
 const Icon = () => (
   <svg
@@ -65,15 +53,12 @@ const Icon = () => (
 interface Data { label: string; subtitle?: string; [k: string]: unknown }
 
 export const DecisionNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id }) => (
-  <BaseNode
-    nodeId={id}
+  <StandardNode
+    id={id}
     selected={selected}
-    icon={<Icon />}
     label={data?.label || 'Decision'}
-    subtitle={data?.subtitle}
+    glyph={<Icon />}
     handles={handles}
-    accentColor={ACCENT}
-    transparentInner
     rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}
   />
 );

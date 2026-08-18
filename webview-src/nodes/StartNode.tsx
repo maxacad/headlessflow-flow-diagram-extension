@@ -1,63 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import type { SVGProps } from 'react';
-import { NodeProps, Node, Position, useUpdateNodeInternals } from '@xyflow/react';
-import styled, { css, keyframes } from 'styled-components';
-import { NodeWrapper, BottomHandle, LeftHandle, RightHandle, TopHandle } from './BaseNode';
-import { NodeRuntimeOverlay } from './NodeRuntimeOverlay';
+import { NodeProps, Node, Position } from '@xyflow/react';
+import styled, { keyframes } from 'styled-components';
+import { StandardNode } from './StandardNode';
+import type { HandleDef } from './BaseNode';
 import vscodeApi from '../vscodeApi';
-
-const ACCENT = '#1b5e20';
-
-const CellLabel = styled.div`
-  position: absolute;
-  top: 4px;
-  left: 5px;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 9px;
-  font-weight: 400;
-  color: #243447;
-  opacity: 0.5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 130px;
-  pointer-events: none;
-  user-select: none;
-  letter-spacing: 0.2px;
-`;
-
-type Rotation = 0 | 90 | 180 | 270;
-
-function normalizeRotation(value: unknown): Rotation {
-  return value === 90 || value === 180 || value === 270 ? value : 0;
-}
-
-function sourceHandleFor(rotation: Rotation) {
-  switch (rotation) {
-    case 90:  return LeftHandle;
-    case 180: return TopHandle;
-    case 270: return RightHandle;
-    default:  return BottomHandle;
-  }
-}
-
-const IconBox = styled.div<{ $selected: boolean; $rotation: Rotation }>`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
-  transform: ${({ $rotation }) => ($rotation ? `rotate(${$rotation}deg)` : 'none')};
-
-  ${({ $selected }) =>
-    $selected &&
-    css`
-      outline: 4px solid #ff7105;
-      outline-offset: 3px;
-    `}
-`;
 
 const popoverIn = keyframes`
   from { opacity: 0; transform: translateX(-50%) translateY(3px); }
@@ -111,7 +58,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
   >
     <defs>
       <linearGradient
-        id="Gradient_1"
+        id="StartNode_Gradient_1"
         x1="0"
         x2="0"
         y1="0"
@@ -123,7 +70,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
         <stop offset="100%" stopColor="#EEC04E"></stop>
       </linearGradient>
       <filter
-        id="Filter_1"
+        id="StartNode_Filter_1"
         width="140%"
         height="140%"
         x="-20%"
@@ -138,7 +85,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
       </filter>
       <g id="StartNode_0_Layer0_0_FILL">
         <path
-          fill="url(#Gradient_1)"
+          fill="url(#StartNode_Gradient_1)"
           d="M4.65 26.65L24.9 47.1l20.75-20.6-41 .15m37.5-1.5l.1-6.15H7.9l.1 6.15h34.15M48.4 5.9l-3.8-4.2H5.1L1.6 5.3l.15 7.3 3.65 4.3 40.1.1 2.95-4.15-.05-6.95z"
         ></path>
         <path
@@ -160,7 +107,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
         d="M45.7 0H4.65L.05 4.8v9.4M45.7 0L50 4.55v9.8L46.85 19h-4.6l-.1 6.15h7.75L25.1 50l-1.55-1.5L0 25.15h8L7.9 19H4.75l-4.7-4.8M8 25.15h34.15m.1-6.15H7.9"
       ></path>
     </defs>
-    <g filter="url(#Filter_1)">
+    <g filter="url(#StartNode_Filter_1)">
       <g transform="translate(7 7.4)">
         <use xlinkHref="#StartNode_0_Layer0_0_FILL"></use>
         <use xlinkHref="#StartNode_0_Layer0_0_1_STROKES"></use>
@@ -169,17 +116,14 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const handles: HandleDef[] = [
+  { type: 'source', position: Position.Bottom, id: 'output' },
+];
+
 interface Data { label: string; subtitle?: string; [k: string]: unknown }
 
 export const StartNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id }) => {
   const [hovered, setHovered] = useState(false);
-  const rotation = normalizeRotation(data?.rotation);
-  const SourceHandle = sourceHandleFor(rotation);
-  const updateNodeInternals = useUpdateNodeInternals();
-
-  useEffect(() => {
-    updateNodeInternals(id);
-  }, [id, rotation, updateNodeInternals]);
 
   const handleStart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -187,13 +131,16 @@ export const StartNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id 
   };
 
   return (
-    <NodeWrapper
+    <StandardNode
+      id={id}
+      selected={selected}
+      label={data?.label || 'Start'}
+      glyph={<Icon />}
+      handles={handles}
+      rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <CellLabel>{data?.label ? `${data.label} · ${id}` : id}</CellLabel>
-      <SourceHandle type="source" position={rotation === 90 ? Position.Left : rotation === 180 ? Position.Top : rotation === 270 ? Position.Right : Position.Bottom} id="output" className="node-handle" />
-
       {hovered && (
         <Popover>
           <PopoverBtn onClick={handleStart}>
@@ -204,11 +151,6 @@ export const StartNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id 
           </PopoverBtn>
         </Popover>
       )}
-
-      <IconBox className="node-inner-box" $selected={selected} $rotation={rotation}>
-        <Icon />
-        <NodeRuntimeOverlay nodeId={id} />
-      </IconBox>
-    </NodeWrapper>
+    </StandardNode>
   );
 };
