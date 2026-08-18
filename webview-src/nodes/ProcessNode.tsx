@@ -72,7 +72,7 @@ export const ProcessNode: React.FC<NodeProps<Node<Data>>> = ({ selected, id, dat
     <StandardNode
       id={id}
       selected={selected}
-      label={data?.label}
+      label={data?.label || 'Process'}
       glyph={<Icon />}
       handles={handles}
       rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}

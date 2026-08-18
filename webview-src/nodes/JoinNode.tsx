@@ -56,7 +56,7 @@ export const JoinNode: React.FC<NodeProps<Node<Data>>> = ({ selected, id, data }
   <StandardNode
     id={id}
     selected={selected}
-    label={data?.label}
+    label={data?.label || 'Join'}
     glyph={<Icon />}
     handles={[]}
   >

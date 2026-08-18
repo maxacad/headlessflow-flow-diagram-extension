@@ -64,7 +64,9 @@ interface Data {
 }
 
 export const FunctionNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id }) => {
-  const endpointPath = data?.path ?? data?.subtitle;
+  // Yalnizca gercek endpoint yolu rozet olur. `subtitle` fallback'i her sade
+  // Function node'una ("Execute Logic" gibi) sahte rozet takiyordu.
+  const endpointPath = data?.path;
 
   const tags: NodeTag[] = [];
   if (endpointPath) {
@@ -75,7 +77,7 @@ export const FunctionNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, 
     <StandardNode
       id={id}
       selected={selected}
-      label={data?.label}
+      label={data?.label || 'Function'}
       glyph={<Icon />}
       handles={handles}
       rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}

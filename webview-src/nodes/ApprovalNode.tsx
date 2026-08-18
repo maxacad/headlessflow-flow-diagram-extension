@@ -58,7 +58,7 @@ const GroupIcon = (props: SVGProps<SVGSVGElement>) => (
 );
 
 // ── Custom coloured handles ────────────────────────────────────────────────────
-// Positioned relative to NodeWrapper (150×200).
+// Positioned relative to NodeWrapper (240×160, bkz. constants.ts).
 // Inner box is 64×64 centred → center at (75, 100).
 // Each handle is placed 10 px outside the inner box edge.
 
@@ -151,7 +151,7 @@ export const ApprovalNode: React.FC<NodeProps<Node<Data>>> = ({ selected, id, da
     <StandardNode
       id={id}
       selected={selected}
-      label={data?.label}
+      label={data?.label || 'Approval'}
       glyph={assigneeType === 'group' ? <GroupIcon /> : <UserIcon />}
       handles={[]}
       tags={tags}

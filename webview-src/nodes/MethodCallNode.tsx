@@ -97,7 +97,7 @@ export const MethodCallNode: React.FC<NodeProps<Node<Data>>> = ({ id, data, sele
     <StandardNode
       id={id}
       selected={selected}
-      label={data?.label}
+      label={data?.label || 'HTTP Call'}
       glyph={<Icon accent={color} />}
       handles={handles}
       rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}

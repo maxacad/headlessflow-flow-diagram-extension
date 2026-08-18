@@ -269,40 +269,6 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider, Flow
         void this.dagDebug.sendCommand(message.command as DagCommandType, (message.payload as Record<string, unknown> | undefined) ?? undefined);
       }
 
-      // ── HTTP Method Call Node ──────────────────────────────────────────────
-      if (message.type === 'http-call-execute' && typeof message.url === 'string') {
-        void this.executeHttpCall(
-          webviewPanel.webview,
-          String(message.nodeId ?? ''),
-          String(message.method ?? 'GET'),
-          String(message.url),
-          (message.headers as Record<string, string> | undefined) ?? {},
-          typeof message.body === 'string' ? message.body : undefined,
-          typeof message.baseUrl === 'string' ? message.baseUrl : undefined,
-        );
-      }
-
-      if (message.type === 'request-api-token' && typeof message.baseUrl === 'string') {
-        const tokens = this.readAuthTokens();
-        const key = this.normalizeBaseUrl(message.baseUrl);
-        const token = tokens[key]?.token ?? null;
-        webviewPanel.webview.postMessage({
-          type: 'api-token-response',
-          reqId: message.reqId,
-          baseUrl: message.baseUrl,
-          token,
-        });
-      }
-
-      if (message.type === 'store-api-token'
-          && typeof message.baseUrl === 'string'
-          && typeof message.token === 'string') {
-        this.writeAuthToken(message.baseUrl, message.token);
-        webviewPanel.webview.postMessage({
-          type: 'api-token-stored',
-          baseUrl: message.baseUrl,
-        });
-      }
     });
 
   }
@@ -687,24 +653,6 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider, Flow
     } catch (err) {
       return { status: 0, body: `Error: ${(err as Error).message}` };
     }
-  }
-
-  private async executeHttpCall(
-    webview: vscode.Webview,
-    nodeId: string,
-    method: string,
-    url: string,
-    extraHeaders: Record<string, string>,
-    body: string | undefined,
-    baseUrl: string | undefined,
-  ): Promise<void> {
-    const result = await this.executeHttpCallRequest({ method, url, headers: extraHeaders, body, baseUrl });
-    void webview.postMessage({
-      type: 'http-call-response',
-      nodeId,
-      status: result.status,
-      body: result.body,
-    });
   }
 
   private async updateDocument(document: vscode.TextDocument, data: unknown, preSerialised?: string): Promise<void> {

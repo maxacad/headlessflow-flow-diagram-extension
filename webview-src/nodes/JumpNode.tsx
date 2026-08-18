@@ -43,7 +43,7 @@ export const JumpNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id }
     <StandardNode
       id={id}
       selected={selected}
-      label={data?.label}
+      label={data?.label || 'Jump'}
       glyph={<Icon />}
       handles={handles}
       rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}

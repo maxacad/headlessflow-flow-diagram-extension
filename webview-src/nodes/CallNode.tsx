@@ -85,7 +85,8 @@ export const CallNode: React.FC<NodeProps<Node<Data>>> = ({ id, data, selected }
   const target = data?.callTarget;
 
   const tags: NodeTag[] = [];
-  if (target) {
+  // Hedef temizlendiginde panel bos string'ler yaziyor — icerige bakarak guard'la.
+  if (target?.flow && target?.nodeId) {
     const text = `${target.flow} › ${target.label}`;
     tags.push({ text, tone: 'target', title: `${text} (${target.nodeId})` });
   }

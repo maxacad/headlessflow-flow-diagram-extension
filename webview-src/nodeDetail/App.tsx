@@ -50,7 +50,6 @@ interface GenericFields {
   script: string;
   condition: string;
   expression: string;
-  target: string;
 }
 
 interface ProcessFields {
@@ -84,7 +83,6 @@ const DEFAULT_SCRIPTS: Record<string, string> = {
   script:   '// Script node\nconst result = input.data;\nreturn result;',
   decision: '// Decision node\nif (input.value > 0) {\n  return "yes";\n}\nreturn "no";',
   loop:     '// Loop node\nfor (const item of input.items) {\n  process(item);\n}',
-  call:     '// Call node\nreturn await invoke("service", input);',
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -463,9 +461,12 @@ function CallForm({ payload }: { payload: NodePayload }) {
       id: payload.id,
       fields: {
         label: fields.label,
+        // `undefined` bir JSON postMessage'da tamamen dusuyor; canvas
+        // {...eskiData, ...yeniData} ile birlestirdigi icin hedef temizlenemiyordu.
+        // JumpForm'un jumpTargetId: '' desenini yansitip acik bos deger yaziyoruz.
         callTarget: selectedNode
           ? { flow: selectedNode.flow, nodeId: selectedNode.id, label: selectedNode.label }
-          : undefined,
+          : { flow: '', nodeId: '', label: '' },
         subtitle: selectedNode ? `${selectedNode.flow} > ${selectedNode.label}` : '',
       },
     });
@@ -861,7 +862,6 @@ function GenericNodeForm({ payload }: { payload: NodePayload }) {
     script: toStr(data.script) || DEFAULT_SCRIPTS[nodeType] || `// ${nodeType} node\n`,
     condition: toStr(data.condition),
     expression: toStr(data.expression),
-    target: toStr(data.target) || toStr(data.jumpTargetId),
   });
 
   useEffect(() => {
@@ -872,8 +872,7 @@ function GenericNodeForm({ payload }: { payload: NodePayload }) {
       script: toStr(data.script) || DEFAULT_SCRIPTS[nodeType] || `// ${nodeType} node\n`,
       condition: toStr(data.condition),
       expression: toStr(data.expression),
-      target: toStr(data.target) || toStr(data.jumpTargetId),
-    });
+      });
   }, [payload.id, data, nodeType]);
 
   const set = useCallback((key: keyof GenericFields) => (e: Event | React.ChangeEvent) => {
@@ -902,7 +901,7 @@ function GenericNodeForm({ payload }: { payload: NodePayload }) {
     if (key === 'script') {
       return <React.Fragment key={key}><label style={labelStyle}>{config.scriptLabel ?? 'Script'}</label><VSCodeTextArea value={fields.script} onInput={set('script') as never} rows={8} resize="vertical" style={codeAreaStyle} /></React.Fragment>;
     }
-    const labels: Record<string, string> = { condition: 'Condition', expression: 'Expression', target: 'Target' };
+    const labels: Record<string, string> = { condition: 'Condition', expression: 'Expression' };
     return <React.Fragment key={key}><label style={labelStyle}>{labels[key]}</label><VSCodeTextField value={fields[key]} onInput={set(key) as never} placeholder={labels[key]} /></React.Fragment>;
   };
 

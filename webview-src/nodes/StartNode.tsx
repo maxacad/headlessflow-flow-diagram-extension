@@ -58,7 +58,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
   >
     <defs>
       <linearGradient
-        id="Gradient_1"
+        id="StartNode_Gradient_1"
         x1="0"
         x2="0"
         y1="0"
@@ -70,7 +70,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
         <stop offset="100%" stopColor="#EEC04E"></stop>
       </linearGradient>
       <filter
-        id="Filter_1"
+        id="StartNode_Filter_1"
         width="140%"
         height="140%"
         x="-20%"
@@ -85,7 +85,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
       </filter>
       <g id="StartNode_0_Layer0_0_FILL">
         <path
-          fill="url(#Gradient_1)"
+          fill="url(#StartNode_Gradient_1)"
           d="M4.65 26.65L24.9 47.1l20.75-20.6-41 .15m37.5-1.5l.1-6.15H7.9l.1 6.15h34.15M48.4 5.9l-3.8-4.2H5.1L1.6 5.3l.15 7.3 3.65 4.3 40.1.1 2.95-4.15-.05-6.95z"
         ></path>
         <path
@@ -107,7 +107,7 @@ const Icon = (props: SVGProps<SVGSVGElement>) => (
         d="M45.7 0H4.65L.05 4.8v9.4M45.7 0L50 4.55v9.8L46.85 19h-4.6l-.1 6.15h7.75L25.1 50l-1.55-1.5L0 25.15h8L7.9 19H4.75l-4.7-4.8M8 25.15h34.15m.1-6.15H7.9"
       ></path>
     </defs>
-    <g filter="url(#Filter_1)">
+    <g filter="url(#StartNode_Filter_1)">
       <g transform="translate(7 7.4)">
         <use xlinkHref="#StartNode_0_Layer0_0_FILL"></use>
         <use xlinkHref="#StartNode_0_Layer0_0_1_STROKES"></use>
@@ -134,7 +134,7 @@ export const StartNode: React.FC<NodeProps<Node<Data>>> = ({ data, selected, id 
     <StandardNode
       id={id}
       selected={selected}
-      label={data?.label}
+      label={data?.label || 'Start'}
       glyph={<Icon />}
       handles={handles}
       rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}
