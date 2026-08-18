@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   VSCodeButton,
   VSCodeDivider,
@@ -93,6 +93,7 @@ const TYPE_LABELS: Record<string, string> = {
   call: 'Call', join: 'Join', start: 'Start',
   input: 'Input', process: 'Process', output: 'Output',
   approval: 'Approval', jump: 'Jump',
+  methodCall: 'HTTP Call', httpCall: 'HTTP Call',
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -100,6 +101,7 @@ const TYPE_COLORS: Record<string, string> = {
   stop: '#c62828', end: '#4a148c', view: '#00695c', loop: '#283593',
   call: '#006064', join: '#37474f', input: '#2e7d32', process: '#1565c0',
   output: '#ef6c00', custom: '#555', approval: '#7c3aed', jump: '#e6a020',
+  methodCall: '#3b82f6', httpCall: '#3b82f6',
 };
 
 const STATUSES = ['idle', 'running', 'success', 'error', 'disabled'];
@@ -572,6 +574,269 @@ function JumpForm({ payload }: { payload: NodePayload }) {
   );
 }
 
+// -- Method Call Node Form ----------------------------------------------------
+interface EndpointParam {
+  name: string;
+  in: 'path' | 'query' | 'header' | 'body' | 'formData' | 'cookie';
+  required?: boolean;
+  type?: string;
+  description?: string;
+}
+
+const METHOD_COLOR: Record<string, string> = {
+  get: '#22c55e', post: '#3b82f6', put: '#f59e0b', patch: '#f97316',
+  delete: '#ef4444', head: '#8b5cf6', options: '#6b7280',
+};
+
+function methodColor(m: string): string {
+  return METHOD_COLOR[m.toLowerCase()] ?? '#6b7280';
+}
+
+function MethodCallForm({ payload }: { payload: NodePayload }) {
+  const { data } = payload;
+
+  const method  = toStr(data.method || 'get').toLowerCase();
+  const path    = toStr(data.path) || toStr(data.label) || '/';
+  const baseUrl = toStr(data.baseUrl);
+  const params  = (Array.isArray(data.params) ? data.params : []) as EndpointParam[];
+  const color   = methodColor(method);
+
+  const [paramValues, setParamValues] = useState<Record<string, string>>(toRecord(data.paramValues));
+  const [bodyValue, setBodyValue]     = useState<string>(
+    toStr(data.bodyValue) || (data.requestSample ? JSON.stringify(data.requestSample, null, 2) : ''),
+  );
+  const [running, setRunning]   = useState(false);
+  const [response, setResponse] = useState<{ status: number; body: string } | null>(null);
+  const [hasToken, setHasToken] = useState(false);
+  const [detectedToken, setDetectedToken] = useState<string | null>(null);
+
+  const reqIdRef = useRef<string | null>(null);
+
+  // Farkli bir node gosterildiginde alanlari sifirla
+  useEffect(() => {
+    setParamValues(toRecord(payload.data.paramValues));
+    setBodyValue(
+      toStr(payload.data.bodyValue)
+        || (payload.data.requestSample ? JSON.stringify(payload.data.requestSample, null, 2) : ''),
+    );
+    setResponse(null);
+    setDetectedToken(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payload.id]);
+
+  // Token durumunu sor
+  useEffect(() => {
+    if (!baseUrl) { setHasToken(false); return; }
+    const reqId = `token-check-${payload.id}`;
+    reqIdRef.current = reqId;
+    vscode?.postMessage({ type: 'request-api-token', baseUrl, reqId });
+  }, [payload.id, baseUrl]);
+
+  // Eklenti host yanitlarini dinle
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      const msg = e.data;
+      if (!msg) { return; }
+
+      if (msg.type === 'api-token-response' && msg.reqId === reqIdRef.current) {
+        setHasToken(!!msg.token);
+      }
+
+      if (msg.type === 'http-call-response' && msg.nodeId === payload.id) {
+        setRunning(false);
+        const statusCode = typeof msg.status === 'number' ? msg.status : 0;
+        let bodyStr = '';
+        try {
+          bodyStr = typeof msg.body === 'string' ? msg.body : JSON.stringify(msg.body, null, 2);
+        } catch { bodyStr = String(msg.body ?? ''); }
+        setResponse({ status: statusCode, body: bodyStr });
+
+        // Yanitta bearer token ara
+        try {
+          const parsed = typeof msg.body === 'object'
+            ? msg.body as Record<string, unknown>
+            : JSON.parse(msg.body as string) as Record<string, unknown>;
+          const token = parsed.token ?? parsed.accessToken ?? parsed.access_token
+            ?? parsed.bearerToken ?? parsed.bearer_token ?? parsed.jwt;
+          if (typeof token === 'string' && token.length > 10) {
+            setDetectedToken(`Bearer ${token}`);
+          }
+        } catch { /* JSON degil */ }
+      }
+
+      if (msg.type === 'api-token-stored' && msg.baseUrl === baseUrl) {
+        setHasToken(true);
+        setDetectedToken(null);
+      }
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, [payload.id, baseUrl]);
+
+  const nonBodyParams = params.filter((p) => p.in !== 'body' && p.in !== 'formData');
+  const hasBodyParam  = params.some((p)  => p.in === 'body' || p.in === 'formData');
+
+  const handleRun = () => {
+    if (running) { return; }
+    setRunning(true);
+    setResponse(null);
+    setDetectedToken(null);
+
+    let resolvedPath = path;
+    for (const [k, v] of Object.entries(paramValues)) {
+      resolvedPath = resolvedPath.replace(`{${k}}`, encodeURIComponent(v));
+    }
+
+    const qs = nonBodyParams
+      .filter((p) => p.in === 'query')
+      .filter((p) => paramValues[p.name] !== undefined && paramValues[p.name] !== '')
+      .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(paramValues[p.name] ?? '')}`)
+      .join('&');
+    const url = `${baseUrl}${resolvedPath}${qs ? '?' + qs : ''}`;
+
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    for (const p of nonBodyParams.filter((x) => x.in === 'header')) {
+      if (paramValues[p.name]) { headers[p.name] = paramValues[p.name]; }
+    }
+
+    const body = ['post', 'put', 'patch'].includes(method) && bodyValue.trim()
+      ? bodyValue.trim()
+      : undefined;
+
+    vscode?.postMessage({
+      type: 'http-call-execute',
+      nodeId: payload.id,
+      method: method.toUpperCase(),
+      url,
+      headers,
+      body,
+      baseUrl,
+    });
+  };
+
+  const handleSave = () => {
+    vscode?.postMessage({
+      type: 'save-node',
+      id: payload.id,
+      fields: { label: toStr(data.label), paramValues, bodyValue },
+    });
+  };
+
+  const statusColor = response
+    ? (response.status >= 200 && response.status < 300 ? '#22c55e'
+      : response.status === 0 ? '#ef4444' : '#f59e0b')
+    : '#6b7280';
+
+  return (
+    <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+        <span style={{
+          fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+          background: `${color}22`, border: `1px solid ${color}55`, color,
+        }}>
+          {method.toUpperCase()}
+        </span>
+        <span
+          style={{
+            fontSize: 12, fontFamily: 'var(--vscode-editor-font-family, monospace)',
+            color: 'var(--vscode-foreground)', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}
+          title={`${baseUrl}${path}`}
+        >
+          {path}
+        </span>
+      </div>
+
+      {hasToken && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#22c55e',
+          background: '#22c55e11', border: '1px solid #22c55e33', borderRadius: 5, padding: '4px 8px',
+        }}>
+          Authenticated - Bearer token active
+        </div>
+      )}
+
+      <VSCodeDivider />
+
+      {nonBodyParams.length > 0 ? (
+        <>
+          <label style={labelStyle}>Parameters</label>
+          <div style={{ display: 'grid', gap: 8 }}>
+            {nonBodyParams.map((p) => (
+              <div key={p.name} style={{ display: 'grid', gridTemplateColumns: '96px 1fr', gap: 8, alignItems: 'center' }}>
+                <span style={fieldNameStyle} title={p.description ?? p.name}>
+                  {p.name}{p.required ? ' *' : ''}<small>{p.in}</small>
+                </span>
+                <VSCodeTextField
+                  value={paramValues[p.name] ?? ''}
+                  placeholder={p.type ?? 'value'}
+                  onInput={((e: Event) => {
+                    const v = fieldValue(e);
+                    setParamValues((prev) => ({ ...prev, [p.name]: v }));
+                  }) as never}
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      ) : <div style={emptyStyle}>No parameters defined.</div>}
+
+      {(hasBodyParam || ['post', 'put', 'patch'].includes(method)) && (
+        <>
+          <label style={labelStyle}>Request Body (JSON)</label>
+          <VSCodeTextArea
+            value={bodyValue}
+            rows={8}
+            resize="vertical"
+            style={codeAreaStyle}
+            placeholder='{ "key": "value" }'
+            onInput={((e: Event) => setBodyValue(fieldValue(e))) as never}
+          />
+        </>
+      )}
+
+      <VSCodeDivider />
+
+      <div style={{ display: 'flex', gap: 6 }}>
+        <VSCodeButton appearance="primary" onClick={handleRun} disabled={running} style={{ flex: 1 }}>
+          {running ? 'Executing...' : 'Execute'}
+        </VSCodeButton>
+        <VSCodeButton appearance="secondary" onClick={handleSave}>Save</VSCodeButton>
+      </div>
+
+      {response && (
+        <>
+          <label style={labelStyle}>Response</label>
+          <div style={{ border: `1px solid ${statusColor}55`, borderRadius: 6, overflow: 'hidden' }}>
+            <div style={{
+              padding: '4px 8px', fontSize: 11, fontWeight: 700,
+              color: statusColor, background: `${statusColor}18`,
+            }}>
+              HTTP {response.status}
+            </div>
+            <pre style={{
+              margin: 0, padding: 8, maxHeight: 260, overflow: 'auto',
+              fontFamily: 'var(--vscode-editor-font-family, monospace)',
+              fontSize: 11, whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+              color: 'var(--vscode-foreground)',
+            }}>
+              {response.body}
+            </pre>
+          </div>
+          {detectedToken && (
+            <VSCodeButton
+              appearance="secondary"
+              onClick={() => vscode?.postMessage({ type: 'store-api-token', baseUrl, token: detectedToken })}
+            >
+              Store Bearer Token
+            </VSCodeButton>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ── Node-Type-Aware Generic Form ──────────────────────────────────────────────
 const NODE_FIELD_CONFIG: Record<string, { subtitle: string; fields: Array<keyof GenericFields>; scriptLabel?: string }> = {
   start:    { subtitle: 'Flow Entry', fields: ['label', 'subtitle', 'status'] },
@@ -677,6 +942,8 @@ export function NodeDetailApp() {
   if (payload.nodeType === 'process')  { return <ProcessForm  payload={payload} />; }
   if (payload.nodeType === 'call')     { return <CallForm     payload={payload} />; }
   if (payload.nodeType === 'jump')     { return <JumpForm     payload={payload} />; }
+  if (payload.nodeType === 'methodCall'
+   || payload.nodeType === 'httpCall')   { return <MethodCallForm payload={payload} />; }
   return <GenericNodeForm payload={payload} />;
 }
 
