@@ -4,11 +4,11 @@ import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
 import { onPipeletDragStart, onPipeletInsertRequest, onEndpointDragStart, onEndpointInsertRequest } from './DragBridge';
-import { NodeDetailViewProvider, type PipeletDetailEntry } from './NodeDetailViewProvider';
+import { NodeDetailViewProvider, type PipeletDetailEntry, type FlowHost, type HttpCallRequest, type NodeDetailContext } from './NodeDetailViewProvider';
 import { DagDebugService } from './DagDebugService';
 import { DagCommandType } from './dagDebugTypes';
 
-export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
+export class FlowEditorProvider implements vscode.CustomTextEditorProvider, FlowHost {
   public static readonly viewType = 'reactdnd.flowEditor';
   private readonly activeWebviews = new Set<vscode.Webview>();
   private readonly activeEditors = new Set<{ panel: vscode.WebviewPanel; document: vscode.TextDocument }>();
@@ -46,6 +46,7 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
   ) {
     this.dagDebug = new DagDebugService(context);
     this.context.subscriptions.push(this.dagDebug);
+    this.nodeDetail.setFlowHost(this);
 
     this.context.subscriptions.push(
       onPipeletDragStart((payload) => {
@@ -253,11 +254,15 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
       }
 
       if (message.type === 'node-selected' && message.id) {
-        this.nodeDetail.showNode({
-          id: String(message.id),
-          nodeType: String(message.nodeType ?? 'custom'),
-          data: (message.data as Record<string, unknown>) ?? {},
-        }, webviewPanel.webview);
+        const nodeType = String(message.nodeType ?? 'custom');
+        void this.buildNodeDetailContext(document, nodeType).then((context) => {
+          this.nodeDetail.showNode({
+            id: String(message.id),
+            nodeType,
+            data: (message.data as Record<string, unknown>) ?? {},
+            context,
+          }, webviewPanel.webview);
+        });
       }
 
       if (message.type === 'start-flow' && typeof message.nodeId === 'string') {
@@ -557,6 +562,55 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
     });
   }
 
+  /** Node tipine gore dokuman/motor kaynakli baglami toplar. */
+  private async buildNodeDetailContext(
+    document: vscode.TextDocument,
+    nodeType: string,
+  ): Promise<NodeDetailContext | undefined> {
+    if (nodeType === 'jump') {
+      return { flowNodes: this.readFlowNodes(document) };
+    }
+    if (nodeType === 'call') {
+      try {
+        const raw = await this.fetchFlowsFromEngine() as {
+          flows?: Array<{ name?: string; startNodes?: Array<{ id?: string; label?: string }>; startNodeIds?: string[] }>;
+        };
+        const flows = (raw.flows ?? []).map((flow) => {
+          const fromStartNodes = (flow.startNodes ?? [])
+            .map((n) => ({ id: String(n.id ?? ''), label: String(n.label ?? n.id ?? '') }))
+            .filter((n) => n.id);
+          const fromIds = (flow.startNodeIds ?? []).map((fid) => ({ id: String(fid), label: String(fid) }));
+          return {
+            name: String(flow.name ?? 'Unnamed Flow'),
+            startNodes: fromStartNodes.length > 0 ? fromStartNodes : fromIds,
+          };
+        });
+        return { flows };
+      } catch {
+        return { flows: [] };
+      }
+    }
+    return undefined;
+  }
+
+  /** Acik .flow dokumanindaki node'lari id/label/tip uclusu olarak okur. */
+  private readFlowNodes(document: vscode.TextDocument): Array<{ id: string; label: string; nodeType: string }> {
+    try {
+      const parsed = JSON.parse(document.getText()) as {
+        nodes?: Array<{ id?: string; type?: string; data?: { label?: string } }>;
+      };
+      return (parsed.nodes ?? [])
+        .filter((n) => typeof n.id === 'string')
+        .map((n) => ({
+          id: String(n.id),
+          label: String(n.data?.label ?? n.id),
+          nodeType: String(n.type ?? 'custom'),
+        }));
+    } catch {
+      return [];
+    }
+  }
+
   // ── Auth token helpers ───────────────────────────────────────────────────────
 
   private authConfigPath(): string | undefined {
@@ -600,46 +654,38 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
 
   // ── HTTP Method Call executor ─────────────────────────────────────────────
 
-  private async executeHttpCall(
-    webview: vscode.Webview,
-    nodeId: string,
-    method: string,
-    url: string,
-    extraHeaders: Record<string, string>,
-    body: string | undefined,
-    baseUrl: string | undefined,
-  ): Promise<void> {
-    // Attach stored bearer token if available for this API
-    const headers: Record<string, string> = { ...extraHeaders };
-    if (baseUrl) {
-      const tokens = this.readAuthTokens();
-      const key = this.normalizeBaseUrl(baseUrl);
-      const stored = tokens[key];
-      if (stored?.token) {
-        headers['Authorization'] = stored.token;
-      }
+  public getApiToken(baseUrl: string): string | undefined {
+    const tokens = this.readAuthTokens();
+    return tokens[this.normalizeBaseUrl(baseUrl)]?.token;
+  }
+
+  public storeApiTokenFor(baseUrl: string, token: string): void {
+    this.writeAuthToken(baseUrl, token);
+  }
+
+  public async executeHttpCallRequest(req: HttpCallRequest): Promise<{ status: number; body: string }> {
+    const headers: Record<string, string> = { ...req.headers };
+    if (req.baseUrl) {
+      const stored = this.getApiToken(req.baseUrl);
+      if (stored) { headers['Authorization'] = stored; }
     }
 
     try {
-      const parsed = new URL(url);
+      const parsed = new URL(req.url);
       const isHttps = parsed.protocol === 'https:';
       const transport = isHttps ? https : http;
-      const port = parsed.port
-        ? parseInt(parsed.port, 10)
-        : (isHttps ? 443 : 80);
+      const port = parsed.port ? parseInt(parsed.port, 10) : (isHttps ? 443 : 80);
 
-      const bodyBuf = body ? Buffer.from(body, 'utf8') : undefined;
-      if (bodyBuf) {
-        headers['Content-Length'] = String(bodyBuf.length);
-      }
+      const bodyBuf = req.body ? Buffer.from(req.body, 'utf8') : undefined;
+      if (bodyBuf) { headers['Content-Length'] = String(bodyBuf.length); }
 
-      const result = await new Promise<{ status: number; body: string }>((resolve, reject) => {
-        const req = transport.request(
+      return await new Promise<{ status: number; body: string }>((resolve, reject) => {
+        const request = transport.request(
           {
             hostname: parsed.hostname,
             port,
             path: `${parsed.pathname}${parsed.search}`,
-            method: method.toUpperCase(),
+            method: req.method.toUpperCase(),
             headers,
             timeout: 15000,
           },
@@ -649,26 +695,32 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
             res.on('end', () => resolve({ status: res.statusCode ?? 0, body: out }));
           },
         );
-        req.on('timeout', () => req.destroy(new Error('Request timeout')));
-        req.on('error', reject);
-        if (bodyBuf) { req.write(bodyBuf); }
-        req.end();
-      });
-
-      webview.postMessage({
-        type: 'http-call-response',
-        nodeId,
-        status: result.status,
-        body: result.body,
+        request.on('timeout', () => request.destroy(new Error('Request timeout')));
+        request.on('error', reject);
+        if (bodyBuf) { request.write(bodyBuf); }
+        request.end();
       });
     } catch (err) {
-      webview.postMessage({
-        type: 'http-call-response',
-        nodeId,
-        status: 0,
-        body: `Error: ${(err as Error).message}`,
-      });
+      return { status: 0, body: `Error: ${(err as Error).message}` };
     }
+  }
+
+  private async executeHttpCall(
+    webview: vscode.Webview,
+    nodeId: string,
+    method: string,
+    url: string,
+    extraHeaders: Record<string, string>,
+    body: string | undefined,
+    baseUrl: string | undefined,
+  ): Promise<void> {
+    const result = await this.executeHttpCallRequest({ method, url, headers: extraHeaders, body, baseUrl });
+    void webview.postMessage({
+      type: 'http-call-response',
+      nodeId,
+      status: result.status,
+      body: result.body,
+    });
   }
 
   private async updateDocument(document: vscode.TextDocument, data: unknown, preSerialised?: string): Promise<void> {
