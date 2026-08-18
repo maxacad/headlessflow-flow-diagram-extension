@@ -166,11 +166,6 @@ export class MsDebugSessionController {
         name: service ? `MS Debug: ${service}` : 'MS Distributed Debugger',
         workspaceId,
         internalConsoleOptions: 'neverOpen',
-        presentation: {
-          hidden: true,
-        },
-      }, {
-        suppressDebugView: true,
       });
     } finally {
       this.starting = false;
