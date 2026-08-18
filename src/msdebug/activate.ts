@@ -568,6 +568,9 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
       line?: number;
       threadName?: string;
       service?: string;
+      /** DAG runtime'inda breakpoint'in gercek kimligi. */
+      nodeId?: string;
+      nodeLabel?: string;
       stackFrames?: Array<{ name: string; line: number; source?: { path?: string } }>;
       variables?: Array<{ name: string; value: string; type?: string }>;
     };
@@ -575,7 +578,9 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
     const firstFrame = d.stackFrames?.[0];
     const file = d.file ?? firstFrame?.source?.path ?? '';
     const line = (d.line && d.line > 0) ? d.line : ((firstFrame?.line ?? 0) > 0 ? firstFrame!.line : 0);
-    const where = file ? `${file.split('/').pop()}:${line}` : 'unknown location';
+    const where = isFlowFile(file) && d.nodeId
+      ? `${file.split('/').pop()} · ${d.nodeId}`
+      : (file ? `${file.split('/').pop()}:${line}` : 'unknown location');
 
     const sessionId = await resolveOwnedBreakpointSessionId(evt, workspaceId, ownedSessionIds, client);
     if (!sessionId) {
@@ -615,7 +620,7 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
       'Continue'
     ).then(async (action) => {
       if (action === 'Open File' && file && line) {
-        await openFileAtLine(file, line);
+        await revealBreakpointLocation(file, line, d.nodeId);
       } else if (action === 'Continue') {
         try {
           await debugSessionController.resume('continue');
@@ -627,15 +632,18 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
       }
     });
 
-    // 1. Open the file in the editor at the breakpoint line
+    // 1. Reveal the breakpoint location.
+    //    .flow dosyalari METIN editorunde acilmaz -- kendi DAG diyagram
+    //    editorleri var; acarsak diyagramin yaninda ikinci bir sekme cikiyor.
     let resolvedFilePath = file;
     if (file && line) {
-      await openFileAtLine(file, line);
-      // Get the actual file path from the opened editor
-      const activeEditor = vscode.window.activeTextEditor;
-      if (activeEditor) {
-        resolvedFilePath = activeEditor.document.uri.fsPath;
-        output.appendLine(`[msdebug] Resolved file path: ${resolvedFilePath}`);
+      await revealBreakpointLocation(file, line, d.nodeId);
+      if (!isFlowFile(file)) {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (activeEditor) {
+          resolvedFilePath = activeEditor.document.uri.fsPath;
+          output.appendLine(`[msdebug] Resolved file path: ${resolvedFilePath}`);
+        }
       }
     }
 
@@ -1084,6 +1092,25 @@ async function selectAgentCommand(
   output.appendLine(`[msdebug] Selected agent: ${selectedService}`);
   onAgentSelected(selectedService);
   void vscode.window.showInformationMessage(`Connected to agent: ${selectedService}`);
+}
+
+/** .flow dosyalarinin kendi custom editoru (DAG diyagram) vardir. */
+function isFlowFile(file?: string): boolean {
+  return typeof file === 'string' && file.toLowerCase().endsWith('.flow');
+}
+
+/**
+ * Breakpoint konumunu gosterir. .flow ise DAG diyagramini acip ilgili node'a
+ * gider (metin editoru acilmaz); diger her sey icin dosyayi satirda acar.
+ */
+async function revealBreakpointLocation(file: string, line: number, nodeId?: string): Promise<void> {
+  if (isFlowFile(file)) {
+    if (nodeId) {
+      await vscode.commands.executeCommand('reactdnd.openFlowNode', { file, nodeId });
+    }
+    return;
+  }
+  await openFileAtLine(file, line);
 }
 
 // Opens a Java source file at the given 1-based line number.
