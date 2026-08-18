@@ -16,6 +16,8 @@ export interface BreakpointDto {
   runtime?: string;
   file: string;
   line: number;
+  /** DAG runtime'inda breakpoint'in gercek kimligi. Kaynak-kod breakpoint'lerinde yok. */
+  nodeId?: string;
   condition?: string;
   hitCount: number;
   verified: boolean;
@@ -217,13 +219,14 @@ export class OrchestratorClient {
     const qsParts = [`sessionId=${encodeURIComponent(resolvedSessionId)}`];
     if (service) qsParts.push(`service=${encodeURIComponent(service)}`);
     const qs = `?${qsParts.join('&')}`;
-    const res = await this.get<{ breakpoints: Array<{ id: string; service?: string; runtime?: string; location?: { file?: string; line?: number }; file?: string; line?: number; condition?: string; hitCount?: number; verified?: boolean }> }>(`/debug/breakpoint${qs}`);
+    const res = await this.get<{ breakpoints: Array<{ id: string; service?: string; runtime?: string; location?: { file?: string; line?: number }; file?: string; line?: number; nodeId?: string; condition?: string; hitCount?: number; verified?: boolean }> }>(`/debug/breakpoint${qs}`);
     return (res.breakpoints ?? []).map((b) => ({
       id: b.id,
       service: b.service ?? '',
       runtime: b.runtime,
       file: b.location?.file ?? b.file ?? '',
       line: b.location?.line ?? b.line ?? 0,
+      nodeId: b.nodeId,
       condition: b.condition,
       hitCount: b.hitCount ?? 0,
       verified: b.verified ?? false,

@@ -39,8 +39,7 @@ export class BreakpointsTreeProvider implements vscode.TreeDataProvider<Breakpoi
       const byLocation = new Map<string, BreakpointDto>();
 
       for (const bp of bps) {
-        const normalizedFile = normalizeFileKey(bp.file);
-        const key = `${bp.service}|${normalizedFile}|${bp.line}`;
+        const key = dedupeKey(bp);
         const existing = byLocation.get(key);
         if (!existing) {
           byLocation.set(key, bp);
@@ -53,7 +52,10 @@ export class BreakpointsTreeProvider implements vscode.TreeDataProvider<Breakpoi
       }
 
       const grouped = new Map<string, BreakpointDto[]>();
-      for (const bp of Array.from(byLocation.values()).sort((a, b) => a.service.localeCompare(b.service) || a.file.localeCompare(b.file) || a.line - b.line)) {
+      const sorted = Array.from(byLocation.values()).sort((a, b) =>
+        a.service.localeCompare(b.service) || breakpointLabel(a).localeCompare(breakpointLabel(b), undefined, { numeric: true }),
+      );
+      for (const bp of sorted) {
         const service = bp.service || 'unknown';
         const list = grouped.get(service) ?? [];
         list.push(bp);
@@ -87,6 +89,21 @@ function isActiveSession(session: SessionDto): boolean {
   return ['running', 'active', 'initializing', 'paused', 'stepping', 'replaying', 'stopping'].includes(session.status);
 }
 
+/**
+ * DAG runtime'inda dosya/satir bir breakpoint'i tanimlamaz: flow engine
+ * `dag-<flowId>.js` adini uydurur ve satiri nodeId'den turetir. Gercek kimlik
+ * nodeId'dir, o yuzden hem etikette hem tekillestirme anahtarinda onu kullaniyoruz.
+ */
+function breakpointLabel(bp: BreakpointDto): string {
+  if (bp.nodeId) { return bp.nodeId; }
+  return `${bp.file.split('/').pop()}:${bp.line}`;
+}
+
+function dedupeKey(bp: BreakpointDto): string {
+  if (bp.nodeId) { return `${bp.service}|node|${bp.nodeId}`; }
+  return `${bp.service}|${normalizeFileKey(bp.file)}|${bp.line}`;
+}
+
 function normalizeFileKey(file: string): string {
   return file.trim().replace(/\\/g, '/').toLowerCase();
 }
@@ -112,12 +129,12 @@ class BreakpointGroupItem extends vscode.TreeItem {
 
 class BreakpointItem extends vscode.TreeItem {
   constructor(public readonly bp: BreakpointDto) {
-    const label = `${bp.file.split('/').pop()}:${bp.line}`;
-    super(label, vscode.TreeItemCollapsibleState.None);
+    super(breakpointLabel(bp), vscode.TreeItemCollapsibleState.None);
 
     this.description = bp.hitCount > 0 ? `hits: ${bp.hitCount}` : '';
     this.tooltip = [
       `Service: ${bp.service}`,
+      bp.nodeId ? `Node: ${bp.nodeId}` : '',
       `File: ${bp.file}`,
       `Line: ${bp.line}`,
       bp.condition ? `Condition: ${bp.condition}` : '',
