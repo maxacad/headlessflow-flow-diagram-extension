@@ -37,11 +37,11 @@ export class LocalDagDebugAgent {
 
     await new Promise<void>((resolve, reject) => {
       this.server?.once('error', reject);
-      this.server?.listen(port, '127.0.0.1', () => resolve());
+      this.server?.listen(port, 'localhost', () => resolve());
     });
 
     const address = this.server.address() as AddressInfo | null;
-    this.logger.appendLine(`[dag-debug] local agent listening on 127.0.0.1:${address?.port ?? port}`);
+    this.logger.appendLine(`[dag-debug] local agent listening on localhost:${address?.port ?? port}`);
     await this.registerAndConnect();
   }
 

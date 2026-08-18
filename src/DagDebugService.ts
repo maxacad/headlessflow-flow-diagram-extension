@@ -399,10 +399,10 @@ export class DagDebugService implements vscode.Disposable {
       service: cfg.get<string>('defaultService') || 'dag-flow-service',
       orchestratorUrl,
       orchestratorWsUrl: cfg.get<string>('orchestratorWsUrl') || 'http://localhost:4000',
-      localAgentUrl: cfg.get<string>('localAgentUrl') || 'http://127.0.0.1:9240/api/v1',
-      runtimeAgentWsUrl: cfg.get<string>('runtimeAgentWsUrl') || 'ws://127.0.0.1:4001',
-      flowEngineUrl: cfg.get<string>('flowEngineUrl') || 'http://localhost:3000',
-      flowEngineWsUrl: cfg.get<string>('flowEngineWsUrl') || 'ws://localhost:3000/ws',
+      localAgentUrl: cfg.get<string>('localAgentUrl') || 'http://localhost:9240/api/v1',
+      runtimeAgentWsUrl: cfg.get<string>('runtimeAgentWsUrl') || 'ws://localhost:4001',
+      flowEngineUrl: cfg.get<string>('flowEngineUrl') || 'http://localhost:3033',
+      flowEngineWsUrl: cfg.get<string>('flowEngineWsUrl') || 'ws://localhost:3033/ws',
     };
   }
 
@@ -656,7 +656,7 @@ export class DagDebugService implements vscode.Disposable {
       const req = http.request(
         {
           hostname: 'localhost',
-          port: 3000,
+          port: 3033,
           path: '/flow/run',
           method: 'POST',
           headers: {

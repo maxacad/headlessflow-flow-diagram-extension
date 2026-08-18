@@ -416,13 +416,13 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
     await this.updateDocument(document, flowData);
     await vscode.commands.executeCommand('workbench.action.files.save');
 
-    // 3. POST to http://localhost:3000/flow/run
+    // 3. POST to http://localhost:3033/flow/run
     const body = JSON.stringify(flowData);
     const result = await new Promise<string>((resolve, reject) => {
       const req = http.request(
         {
           hostname: 'localhost',
-          port: 3000,
+          port: 3033,
           path: '/flow/run',
           method: 'POST',
           headers: {
@@ -530,7 +530,7 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
       const req = http.request(
         {
           hostname: 'localhost',
-          port: 3000,
+          port: 3033,
           path: '/flows',
           method: 'GET',
           timeout: 5000,
@@ -782,7 +782,7 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider {
     content="default-src 'none';
              style-src 'unsafe-inline';
              script-src 'nonce-${nonce}';
-             connect-src ws://localhost:3000 http://localhost:3000 http://localhost:4000 ws://127.0.0.1:4001 http://127.0.0.1:9240;" />
+             connect-src ws://localhost:3033 http://localhost:3033 http://localhost:4000 ws://localhost:4001 http://localhost:9240;" />
   <title>Flow Editor</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-const WS_URL = 'ws://localhost:3000/ws';
-const RECONNECT_DELAY_MS = 3000;
+const WS_URL = 'ws://localhost:3033/ws';
+const RECONNECT_DELAY_MS = 3033;
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
