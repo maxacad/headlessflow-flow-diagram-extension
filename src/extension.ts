@@ -14,6 +14,7 @@ import {
   type PipeletDragPayload,
   type EndpointDragPayload,
 } from './DragBridge';
+import { activateMsDebug, deactivateMsDebug } from './msdebug/activate';
 
 export function activate(context: vscode.ExtensionContext) {
   const nodeDetailProvider = new NodeDetailViewProvider(context);
@@ -295,6 +296,14 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })
   );
+
+  // MS Distributed Debugger — kendi activity bar container'i ve komutlariyla
+  // bagimsiz calisir; reactdnd tarafiyla ortak state paylasmaz.
+  activateMsDebug(context);
+}
+
+export function deactivate(): void {
+  deactivateMsDebug();
 }
 
 async function enrichPipeletPayload(payload: PipeletDragPayload): Promise<PipeletDragPayload> {

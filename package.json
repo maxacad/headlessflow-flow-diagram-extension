@@ -4,7 +4,7 @@
   "description": "VSCode WebView Custom Editor with React Flow drag-and-drop node editor",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.89.0"
   },
   "categories": [
     "Other"
@@ -200,54 +200,153 @@
         "title": "Refresh",
         "category": "Cartridge Explorer",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "msdebug.selectAgent",
+        "title": "Select Agent",
+        "category": "MS Debug",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "msdebug.startSession",
+        "title": "Register Session",
+        "category": "MS Debug",
+        "icon": "$(add)"
+      },
+      {
+        "command": "msdebug.stopSession",
+        "title": "Stop Session",
+        "category": "MS Debug",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "msdebug.refreshSessions",
+        "title": "Refresh Sessions",
+        "category": "MS Debug",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "msdebug.refreshBreakpoints",
+        "title": "Refresh Breakpoints",
+        "category": "MS Debug",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "msdebug.refreshTraces",
+        "title": "Refresh Traces",
+        "category": "MS Debug",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "msdebug.refreshVariables",
+        "title": "Refresh Variables",
+        "category": "MS Debug",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "msdebug.copyVariablesJson",
+        "title": "Copy Variables as JSON",
+        "category": "MS Debug",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "msdebug.selectActiveSession",
+        "title": "Select Active Session",
+        "category": "MS Debug",
+        "icon": "$(list-selection)"
       }
     ],
-    "configuration": {
-      "title": "DAG Flow Debug",
-      "properties": {
-        "dagDebug.defaultService": {
-          "type": "string",
-          "default": "dag-flow-service",
-          "description": "Default service name used to isolate DAG debug sessions and events."
-        },
-        "dagDebug.orchestratorUrl": {
-          "type": "string",
-          "default": "http://localhost:4000/api/v1",
-          "description": "Base URL for the distributed debugging orchestrator REST API."
-        },
-        "dagDebug.orchestratorWsUrl": {
-          "type": "string",
-          "default": "http://localhost:4000",
-          "description": "Base URL for the orchestrator Socket.IO debug gateway."
-        },
-        "dagDebug.localAgentUrl": {
-          "type": "string",
-          "default": "http://localhost:9240/api/v1",
-          "description": "Local DAG debug agent API URL."
-        },
-        "dagDebug.runtimeAgentWsUrl": {
-          "type": "string",
-          "default": "ws://localhost:4001",
-          "description": "Runtime-agent WebSocket URL used by the local DAG debug agent."
-        },
-        "dagDebug.flowEngineUrl": {
-          "type": "string",
-          "default": "http://localhost:3033",
-          "description": "Flow engine HTTP base URL used as a fallback for debug start requests."
-        },
-        "dagDebug.flowEngineWsUrl": {
-          "type": "string",
-          "default": "ws://localhost:3033/ws",
-          "description": "Flow engine WebSocket URL used to send Start With Debug payloads and selected breakpoints."
+    "configuration": [
+      {
+        "title": "DAG Flow Debug",
+        "properties": {
+          "dagDebug.defaultService": {
+            "type": "string",
+            "default": "dag-flow-service",
+            "description": "Default service name used to isolate DAG debug sessions and events."
+          },
+          "dagDebug.orchestratorUrl": {
+            "type": "string",
+            "default": "http://localhost:4000/api/v1",
+            "description": "Base URL for the distributed debugging orchestrator REST API."
+          },
+          "dagDebug.orchestratorWsUrl": {
+            "type": "string",
+            "default": "http://localhost:4000",
+            "description": "Base URL for the orchestrator Socket.IO debug gateway."
+          },
+          "dagDebug.localAgentUrl": {
+            "type": "string",
+            "default": "http://localhost:9240/api/v1",
+            "description": "Local DAG debug agent API URL."
+          },
+          "dagDebug.runtimeAgentWsUrl": {
+            "type": "string",
+            "default": "ws://localhost:4001",
+            "description": "Runtime-agent WebSocket URL used by the local DAG debug agent."
+          },
+          "dagDebug.flowEngineUrl": {
+            "type": "string",
+            "default": "http://localhost:3033",
+            "description": "Flow engine HTTP base URL used as a fallback for debug start requests."
+          },
+          "dagDebug.flowEngineWsUrl": {
+            "type": "string",
+            "default": "ws://localhost:3033/ws",
+            "description": "Flow engine WebSocket URL used to send Start With Debug payloads and selected breakpoints."
+          }
+        }
+      },
+      {
+        "title": "MS Distributed Debugger",
+        "properties": {
+          "msdebug.orchestratorUrl": {
+            "type": "string",
+            "default": "http://localhost:4000/api/v1",
+            "description": "Orchestrator REST API base URL"
+          },
+          "msdebug.orchestratorWsUrl": {
+            "type": "string",
+            "default": "http://localhost:4000",
+            "description": "Orchestrator WebSocket URL (Socket.IO)"
+          },
+          "msdebug.defaultService": {
+            "type": "string",
+            "default": "auto",
+            "description": "Service name for breakpoint/session sync (use 'auto' to discover from registered agents)"
+          },
+          "msdebug.pathMappings": {
+            "type": "array",
+            "default": [],
+            "description": "Map remote/container source paths to local paths. Example: [{\"remote\": \"/app\", \"local\": \"${workspaceFolder}\"}]",
+            "items": {
+              "type": "object",
+              "properties": {
+                "remote": {
+                  "type": "string",
+                  "description": "Path prefix inside the container/remote (e.g. /app)"
+                },
+                "local": {
+                  "type": "string",
+                  "description": "Corresponding local path (supports ${workspaceFolder})"
+                }
+              }
+            }
+          }
         }
       }
-    },
+    ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "reactdnd",
           "title": "Flow",
           "icon": "resources/flow-view-icon.svg"
+        },
+        {
+          "id": "ms-debug-panel",
+          "title": "MS Distributed Debugger",
+          "icon": "$(debug-alt)"
         }
       ]
     },
@@ -284,6 +383,24 @@
           "id": "reactdnd.flowSyncView",
           "name": ".flow Sync",
           "icon": "resources/flow-view-icon.svg"
+        }
+      ],
+      "ms-debug-panel": [
+        {
+          "id": "msDebugSessions",
+          "name": "Debug Sessions"
+        },
+        {
+          "id": "msDebugBreakpoints",
+          "name": "Distributed Breakpoints"
+        },
+        {
+          "id": "msDebugVariables",
+          "name": "Variables"
+        },
+        {
+          "id": "msDebugTraces",
+          "name": "Activity Trace"
         }
       ]
     },
@@ -350,6 +467,51 @@
           "command": "reactdnd.cartridgeExplorerRefresh",
           "when": "view == reactdnd.cartridgeExplorerView",
           "group": "navigation@1"
+        },
+        {
+          "command": "msdebug.selectAgent",
+          "when": "view == msDebugSessions",
+          "group": "navigation@0"
+        },
+        {
+          "command": "msdebug.startSession",
+          "when": "view == msDebugSessions",
+          "group": "navigation@1"
+        },
+        {
+          "command": "msdebug.stopSession",
+          "when": "view == msDebugSessions",
+          "group": "navigation@2"
+        },
+        {
+          "command": "msdebug.selectActiveSession",
+          "when": "view == msDebugSessions",
+          "group": "navigation@0"
+        },
+        {
+          "command": "msdebug.refreshSessions",
+          "when": "view == msDebugSessions",
+          "group": "navigation@4"
+        },
+        {
+          "command": "msdebug.refreshBreakpoints",
+          "when": "view == msDebugBreakpoints",
+          "group": "navigation"
+        },
+        {
+          "command": "msdebug.refreshVariables",
+          "when": "view == msDebugVariables",
+          "group": "navigation"
+        },
+        {
+          "command": "msdebug.copyVariablesJson",
+          "when": "view == msDebugVariables",
+          "group": "navigation"
+        },
+        {
+          "command": "msdebug.refreshTraces",
+          "when": "view == msDebugTraces",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -396,6 +558,23 @@
         "view": "reactdnd.flowSyncView",
         "contents": "Sync .flow files with your versioned service.\nUse toolbar actions to sync active/all files, then rollback from version items."
       }
+    ],
+    "debuggers": [
+      {
+        "type": "msdebug",
+        "label": "MS Distributed Debugger",
+        "languages": [
+          "java",
+          "javascript",
+          "typescript"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [],
+            "properties": {}
+          }
+        }
+      }
     ]
   },
   "scripts": {
@@ -415,7 +594,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/styled-components": "^5.1.36",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.89.0",
     "@types/ws": "^8.5.13",
     "css-loader": "^6.8.1",
     "style-loader": "^3.3.3",
