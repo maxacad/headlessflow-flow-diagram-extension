@@ -1,3 +1,4 @@
+import { belongsToWorkspace } from '../workspaceIdentity';
 // ─── Orchestrator REST Client ─────────────────────────────────────────────────
 
 export interface SessionDto {
@@ -86,7 +87,7 @@ export class OrchestratorClient {
     const active = sessions
       .filter((s) => this.activeStatuses.has(s.status))
       .filter((s) => !preferredService || s.services.includes(preferredService))
-      .filter((s) => !workspaceId || s.workspaceId === workspaceId);
+      .filter((s) => belongsToWorkspace(s.workspaceId, workspaceId));
     if (!active.length) return null;
     active.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
     return active[0];

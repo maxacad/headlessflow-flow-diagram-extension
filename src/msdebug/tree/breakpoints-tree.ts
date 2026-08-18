@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { OrchestratorClient, BreakpointDto, SessionDto } from '../orchestrator-client';
+import { belongsToWorkspace } from '../../workspaceIdentity';
 
 type BreakpointsTreeNode = BreakpointGroupItem | BreakpointItem;
 
@@ -72,7 +73,7 @@ export class BreakpointsTreeProvider implements vscode.TreeDataProvider<Breakpoi
     const sessions = await this.client.listSessions();
     const activeSessions = sessions
       .filter((session) => isActiveSession(session))
-      .filter((session) => !workspaceId || session.workspaceId === workspaceId);
+      .filter((session) => belongsToWorkspace(session.workspaceId, workspaceId));
 
     const breakpoints = await Promise.all(
       activeSessions.map((session) => this.client.listBreakpoints(session.id, undefined, workspaceId)),

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getWorkspaceIdentity, belongsToWorkspace } from '../workspaceIdentity';
 import * as fs from 'fs';
 import * as path from 'path';
 import { BreakpointDto, OrchestratorClient } from './orchestrator-client';
@@ -323,7 +324,7 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
       const activeForService = sessions
         .filter((s) => ['running', 'active', 'initializing', 'paused', 'stepping', 'replaying', 'stopping'].includes(s.status))
         .filter((s) => s.services.includes(targetService))
-        .filter((s) => s.workspaceId === workspaceId)
+        .filter((s) => belongsToWorkspace(s.workspaceId, workspaceId))
         .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 
       if (activeForService.length > 0) {
@@ -375,7 +376,7 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
 
       for (const service of services) {
         const existing = sessions
-          .filter((session) => session.workspaceId === workspaceId)
+          .filter((session) => belongsToWorkspace(session.workspaceId, workspaceId))
           .filter((session) => session.services.includes(service))
           .filter((session) => activeStatuses.has(session.status))
           .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
@@ -798,7 +799,7 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
   ): Promise<boolean> => {
     const sessions = (await client.listSessions())
       .filter((session) => ['running', 'active', 'initializing', 'paused', 'stepping', 'replaying', 'stopping'].includes(session.status))
-      .filter((session) => session.workspaceId === workspaceId);
+      .filter((session) => belongsToWorkspace(session.workspaceId, workspaceId));
 
     if (!sessions.length) {
       if (vscode.debug.breakpoints.length > 0) pendingInitialEditorBreakpoints = true;
@@ -1029,7 +1030,7 @@ async function stopSessionCommand(
     }
   }
 
-  const sessions = (await client.listSessions()).filter((session) => session.workspaceId === workspaceId);
+  const sessions = (await client.listSessions()).filter((session) => belongsToWorkspace(session.workspaceId, workspaceId));
   if (!sessions.length) {
     void vscode.window.showInformationMessage('No active sessions');
     return;
@@ -1204,10 +1205,8 @@ function editorBreakpointKey(bp: vscode.SourceBreakpoint): string {
 }
 
 function getWorkspaceId(): string {
-  const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? 'untitled';
-  // sessionId is unique per VS Code process instance — two windows on the same machine
-  // and same workspace will get different workspaceIds, preventing BP hit leakage.
-  return `${vscode.env.sessionId.slice(0, 12)}:${workspacePath}`;
+  // Tek kanonik kaynak: DAG tarafi da ayni fonksiyonu kullaniyor.
+  return getWorkspaceIdentity();
 }
 
 function isEventForWorkspace(
@@ -1265,7 +1264,7 @@ async function resolveOwnedBreakpointSessionId(
   if (evt.sessionId) {
     try {
       const session = await client.getSession(evt.sessionId);
-      const workspaceMatches = !workspaceId || session.workspaceId === workspaceId;
+      const workspaceMatches = belongsToWorkspace(session.workspaceId, workspaceId);
       const serviceMatches = !evt.service || session.services.includes(evt.service);
       if (workspaceMatches && serviceMatches && activeStatuses.has(session.status)) {
         ownedSessionIds.add(evt.sessionId);

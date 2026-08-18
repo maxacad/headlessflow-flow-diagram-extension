@@ -3,6 +3,7 @@ import * as http from 'http';
 import { basename } from 'path';
 import WebSocket from 'ws';
 import { DagBreakpoint, DagCommandType, DagDebugConfig, DagDebugEventEnvelope, breakpointKey } from './dagDebugTypes';
+import { getWorkspaceIdentity } from './workspaceIdentity';
 import { OrchestratorClient } from './OrchestratorClient';
 import { SocketIoDagDebugBridge } from './SocketIoDagDebugBridge';
 
@@ -392,7 +393,7 @@ export class DagDebugService implements vscode.Disposable {
 
   private readConfig(): DagDebugConfig {
     const cfg = vscode.workspace.getConfiguration('dagDebug');
-    const workspaceId = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    const workspaceId = getWorkspaceIdentity();
     const orchestratorUrl = cfg.get<string>('orchestratorUrl') || 'http://localhost:4000/api/v1';
     return {
       workspaceId,
