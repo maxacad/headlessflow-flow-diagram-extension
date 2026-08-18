@@ -144,13 +144,13 @@ export const LeftHandle = styled(Handle)`
 
 const POSITION_ORDER = [Position.Top, Position.Right, Position.Bottom, Position.Left];
 
-function rotatePosition(pos: Position, steps: number): Position {
+export function rotatePosition(pos: Position, steps: number): Position {
   const idx = POSITION_ORDER.indexOf(pos);
   if (idx === -1) return pos;
   return POSITION_ORDER[(idx + steps + 4) % 4];
 }
 
-function resolveHandle(pos: Position) {
+export function resolveHandle(pos: Position) {
   switch (pos) {
     case Position.Top:    return TopHandle;
     case Position.Bottom: return BottomHandle;
