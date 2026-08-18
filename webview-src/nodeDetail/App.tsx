@@ -26,12 +26,21 @@ interface PipeletFileEntry {
   ai?: Record<string, unknown>;
 }
 
+interface FlowNodeEntry { id: string; label: string; nodeType: string; }
+interface FlowEntry { name: string; startNodes: Array<{ id: string; label: string }>; }
+
+interface NodeDetailContext {
+  pipeletFiles?: PipeletFileEntry[];
+  webformFiles?: WebformFileEntry[];
+  flowNodes?: FlowNodeEntry[];
+  flows?: FlowEntry[];
+}
+
 interface NodePayload {
   id: string;
   nodeType: string;
   data: Record<string, unknown>;
-  webformFiles?: WebformFileEntry[];
-  pipeletFiles?: PipeletFileEntry[];
+  context?: NodeDetailContext;
 }
 
 interface GenericFields {
@@ -83,14 +92,14 @@ const TYPE_LABELS: Record<string, string> = {
   stop: 'Stop', end: 'End', view: 'View', loop: 'Loop',
   call: 'Call', join: 'Join', start: 'Start',
   input: 'Input', process: 'Process', output: 'Output',
-  approval: 'Approval',
+  approval: 'Approval', jump: 'Jump',
 };
 
 const TYPE_COLORS: Record<string, string> = {
   start: '#43a047', fn: '#1565c0', decision: '#e65100', script: '#6a1b9a',
   stop: '#c62828', end: '#4a148c', view: '#00695c', loop: '#283593',
   call: '#006064', join: '#37474f', input: '#2e7d32', process: '#1565c0',
-  output: '#ef6c00', custom: '#555', approval: '#7c3aed',
+  output: '#ef6c00', custom: '#555', approval: '#7c3aed', jump: '#e6a020',
 };
 
 const STATUSES = ['idle', 'running', 'success', 'error', 'disabled'];
@@ -129,7 +138,8 @@ function fieldValue(e: Event | React.ChangeEvent): string {
 
 // ── Approval Node Form ─────────────────────────────────────────────────────────
 function ApprovalForm({ payload }: { payload: NodePayload }) {
-  const { data, webformFiles = [] } = payload;
+  const { data } = payload;
+  const webformFiles = payload.context?.webformFiles ?? [];
 
   const [fields, setFields] = useState<ApprovalFields>({
     label:        toStr(data.label),
@@ -264,7 +274,8 @@ function ApprovalForm({ payload }: { payload: NodePayload }) {
 
 // ── Process Node Form ─────────────────────────────────────────────────────────
 function ProcessForm({ payload }: { payload: NodePayload }) {
-  const { data, pipeletFiles = [] } = payload;
+  const { data } = payload;
+  const pipeletFiles = payload.context?.pipeletFiles ?? [];
   const initialPipelet = toStr(data.pipeletFile);
   const [fields, setFields] = useState<ProcessFields>({
     label: toStr(data.label),
@@ -399,15 +410,175 @@ function ProcessForm({ payload }: { payload: NodePayload }) {
   );
 }
 
+// -- Call Node Form -----------------------------------------------------------
+interface CallFields { label: string; flow: string; nodeId: string; }
+
+function CallForm({ payload }: { payload: NodePayload }) {
+  const { data } = payload;
+  const flows = payload.context?.flows ?? [];
+  const target = (data.callTarget ?? {}) as { flow?: string; nodeId?: string; label?: string };
+
+  const [fields, setFields] = useState<CallFields>({
+    label:  toStr(data.label),
+    flow:   toStr(target.flow),
+    nodeId: toStr(target.nodeId),
+  });
+
+  useEffect(() => {
+    const t = (payload.data.callTarget ?? {}) as { flow?: string; nodeId?: string };
+    setFields({
+      label:  toStr(payload.data.label),
+      flow:   toStr(t.flow),
+      nodeId: toStr(t.nodeId),
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payload.id]);
+
+  // Flow adlari bosluk/ayirici karakter icerebildigi icin dropdown degeri
+  // olarak duzlestirilmis listenin indeksi kullanilir - string kodlama yok.
+  const options = flows.flatMap((flow) =>
+    flow.startNodes.map((n) => ({ flow: flow.name, id: n.id, label: n.label })),
+  );
+
+  const selectedIndex = options.findIndex(
+    (o) => o.flow === fields.flow && o.id === fields.nodeId,
+  );
+  const selectedNode = selectedIndex >= 0 ? options[selectedIndex] : undefined;
+
+  const handleSelect = (e: Event | React.ChangeEvent) => {
+    const idx = Number(fieldValue(e));
+    const picked = Number.isInteger(idx) && idx >= 0 ? options[idx] : undefined;
+    setFields((prev) => ({
+      ...prev,
+      flow:   picked?.flow ?? '',
+      nodeId: picked?.id   ?? '',
+    }));
+  };
+
+  const handleSave = () => {
+    vscode?.postMessage({
+      type: 'save-node',
+      id: payload.id,
+      fields: {
+        label: fields.label,
+        callTarget: selectedNode
+          ? { flow: selectedNode.flow, nodeId: selectedNode.id, label: selectedNode.label }
+          : undefined,
+        subtitle: selectedNode ? `${selectedNode.flow} > ${selectedNode.label}` : '',
+      },
+    });
+  };
+
+  return (
+    <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <Header payload={payload} subtitle="Pipeline Call" />
+      <VSCodeDivider />
+
+      <label style={labelStyle}>Label</label>
+      <VSCodeTextField
+        value={fields.label}
+        onInput={((e: Event) => setFields((prev) => ({ ...prev, label: fieldValue(e) }))) as never}
+        placeholder="Call label"
+      />
+
+      <label style={labelStyle}>Call Pipeline / Start Node</label>
+      {flows.length === 0 ? (
+        <div style={emptyStyle}>No pipelines found.</div>
+      ) : (
+        <VSCodeDropdown value={String(selectedIndex)} onChange={handleSelect as never} style={{ width: '100%' }}>
+          <VSCodeOption value="-1">-- None --</VSCodeOption>
+          {options.map((o, i) => (
+            <VSCodeOption key={`${o.flow}/${o.id}`} value={String(i)}>
+              {o.flow} / {o.label}
+            </VSCodeOption>
+          ))}
+        </VSCodeDropdown>
+      )}
+
+      {selectedNode ? (
+        <div style={{ border: '1px solid var(--vscode-panel-border)', borderRadius: 6, padding: 8, display: 'grid', gap: 5 }}>
+          <div style={metaLineStyle}><b>Flow</b><span>{selectedNode.flow}</span></div>
+          <div style={metaLineStyle}><b>Node</b><span>{selectedNode.label}</span></div>
+          <div style={metaLineStyle}><b>Node ID</b><span>{selectedNode.id}</span></div>
+        </div>
+      ) : (
+        <div style={emptyStyle}>Select a target start node. Ctrl+Click the node on the canvas to jump there.</div>
+      )}
+
+      <VSCodeDivider />
+      <VSCodeButton appearance="primary" onClick={handleSave}>Save Call Target</VSCodeButton>
+    </div>
+  );
+}
+
+// -- Jump Node Form -----------------------------------------------------------
+function JumpForm({ payload }: { payload: NodePayload }) {
+  const { data } = payload;
+  // JumpNode yalnizca ayni flow icindeki start node'lara atlar
+  const startNodes = (payload.context?.flowNodes ?? []).filter((n) => n.nodeType === 'start');
+
+  const [label, setLabel]   = useState(toStr(data.label));
+  const [target, setTarget] = useState(toStr(data.jumpTargetId));
+
+  useEffect(() => {
+    setLabel(toStr(payload.data.label));
+    setTarget(toStr(payload.data.jumpTargetId));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payload.id]);
+
+  const selected = startNodes.find((n) => n.id === target);
+
+  const handleSave = () => {
+    vscode?.postMessage({
+      type: 'save-node',
+      id: payload.id,
+      fields: {
+        label,
+        jumpTargetId: target,
+        subtitle: selected?.label ?? '',
+      },
+    });
+  };
+
+  return (
+    <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <Header payload={payload} subtitle="Jump Target" />
+      <VSCodeDivider />
+
+      <label style={labelStyle}>Label</label>
+      <VSCodeTextField
+        value={label}
+        onInput={((e: Event) => setLabel(fieldValue(e))) as never}
+        placeholder="Jump label"
+      />
+
+      <label style={labelStyle}>Jump to Start Node</label>
+      {startNodes.length === 0 ? (
+        <div style={emptyStyle}>No start nodes in this flow.</div>
+      ) : (
+        <VSCodeDropdown value={target} onChange={((e: Event) => setTarget(fieldValue(e))) as never} style={{ width: '100%' }}>
+          <VSCodeOption value="">-- None --</VSCodeOption>
+          {startNodes.map((n) => (
+            <VSCodeOption key={n.id} value={n.id}>{n.label} ({n.id})</VSCodeOption>
+          ))}
+        </VSCodeDropdown>
+      )}
+
+      {selected ? null : <div style={emptyStyle}>Select a target. Ctrl+Click the node on the canvas to jump there.</div>}
+
+      <VSCodeDivider />
+      <VSCodeButton appearance="primary" onClick={handleSave}>Save Jump Target</VSCodeButton>
+    </div>
+  );
+}
+
 // ── Node-Type-Aware Generic Form ──────────────────────────────────────────────
 const NODE_FIELD_CONFIG: Record<string, { subtitle: string; fields: Array<keyof GenericFields>; scriptLabel?: string }> = {
   start:    { subtitle: 'Flow Entry', fields: ['label', 'subtitle', 'status'] },
   end:      { subtitle: 'Flow Completion', fields: ['label', 'subtitle', 'status'] },
   stop:     { subtitle: 'Execution Stop', fields: ['label', 'subtitle', 'status'] },
   join:     { subtitle: 'Merge Branches', fields: ['label', 'subtitle', 'status'] },
-  jump:     { subtitle: 'Jump Target', fields: ['label', 'subtitle', 'target', 'status'] },
   view:     { subtitle: 'View Render', fields: ['label', 'subtitle', 'expression', 'status'] },
-  call:     { subtitle: 'Pipeline Call', fields: ['label', 'subtitle', 'target', 'expression', 'status'] },
   decision: { subtitle: 'Branch Logic', fields: ['label', 'subtitle', 'condition', 'status'], scriptLabel: 'Condition Script' },
   loop:     { subtitle: 'Iteration', fields: ['label', 'subtitle', 'expression', 'status', 'script'], scriptLabel: 'Loop Script' },
   script:   { subtitle: 'Script Execution', fields: ['label', 'subtitle', 'status', 'script'], scriptLabel: 'Script' },
@@ -503,7 +674,9 @@ export function NodeDetailApp() {
   }
 
   if (payload.nodeType === 'approval') { return <ApprovalForm payload={payload} />; }
-  if (payload.nodeType === 'process') { return <ProcessForm payload={payload} />; }
+  if (payload.nodeType === 'process')  { return <ProcessForm  payload={payload} />; }
+  if (payload.nodeType === 'call')     { return <CallForm     payload={payload} />; }
+  if (payload.nodeType === 'jump')     { return <JumpForm     payload={payload} />; }
   return <GenericNodeForm payload={payload} />;
 }
 

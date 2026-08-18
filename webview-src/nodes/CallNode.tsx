@@ -1,17 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { NodeProps, Node, Position } from '@xyflow/react';
-import styled, { keyframes } from 'styled-components';
-import { BaseNode, HandleDef } from './BaseNode';
-import { useNodeDataUpdate } from '../context/PipeletFilesContext';
-import vscodeApi from '../vscodeApi';
+import { StandardNode, type NodeTag } from './StandardNode';
+import type { HandleDef } from './BaseNode';
 
 const handles: HandleDef[] = [
   { type: 'target', position: Position.Top,    id: 'input'  },
   { type: 'source', position: Position.Bottom, id: 'output' },
   { type: 'source', position: Position.Right,  id: 'error'  },
 ];
-
-const ACCENT = '#e6a020';
 
 const CallSvg = () => (
   <svg
@@ -78,15 +74,6 @@ const CallSvg = () => (
   </svg>
 );
 
-// ── Data & normalization ──────────────────────────────────────────────────────
-
-interface StartNodeEntry { id: string; label: string; }
-interface FlowEntry {
-  name: string;
-  startNodes?: Array<{ id?: string; label?: string }>;
-  startNodeIds?: string[];
-}
-interface FlowsResponse { success?: boolean; flows?: FlowEntry[]; }
 interface Data {
   label: string;
   subtitle?: string;
@@ -94,249 +81,24 @@ interface Data {
   [k: string]: unknown;
 }
 
-function normalizeFlows(raw: FlowsResponse): Array<{ name: string; startNodes: StartNodeEntry[] }> {
-  const incoming = Array.isArray(raw.flows) ? raw.flows : [];
-  return incoming.map((flow) => {
-    const fromStartNodes = Array.isArray(flow.startNodes)
-      ? flow.startNodes
-          .map((n) => ({ id: String(n.id ?? ''), label: String(n.label ?? n.id ?? '') }))
-          .filter((n) => n.id)
-      : [];
-    const fromStartNodeIds = Array.isArray(flow.startNodeIds)
-      ? flow.startNodeIds.map((id) => ({ id: String(id), label: String(id) }))
-      : [];
-    return {
-      name: String(flow.name ?? 'Unnamed Flow'),
-      startNodes: fromStartNodes.length > 0 ? fromStartNodes : fromStartNodeIds,
-    };
-  });
-}
+export const CallNode: React.FC<NodeProps<Node<Data>>> = ({ id, data, selected }) => {
+  const target = data?.callTarget;
 
-// ── Picker styles (matches JumpNode) ─────────────────────────────────────────
-
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-`;
-
-const PickerPanel = styled.div`
-  position: absolute;
-  top: calc(50% + 42px);
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 210px;
-  max-width: 300px;
-  max-height: 280px;
-  overflow-y: auto;
-  background: #1a2535;
-  border: 1px solid #2e4668;
-  border-radius: 8px;
-  z-index: 1000;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
-  animation: ${fadeIn} 0.12s ease;
-  pointer-events: all;
-`;
-
-const PickerHeader = styled.div`
-  padding: 6px 10px 5px;
-  font-size: 8.5px;
-  font-weight: 700;
-  color: #e6a020;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  border-bottom: 1px solid #2e4668;
-  font-family: 'Consolas', 'Courier New', monospace;
-  position: sticky;
-  top: 0;
-  background: #1a2535;
-`;
-
-const GroupHeader = styled.div`
-  padding: 5px 10px 3px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: #4a6a9a;
-  font-family: 'Consolas', 'Courier New', monospace;
-  border-top: 1px solid #1e3050;
-  &:first-of-type { border-top: none; }
-`;
-
-const PickerItem = styled.div<{ $active: boolean }>`
-  padding: 5px 10px 5px 12px;
-  cursor: pointer;
-  background: ${({ $active }) => ($active ? 'rgba(230,160,32,0.18)' : 'transparent')};
-  border-left: 2px solid ${({ $active }) => ($active ? '#e6a020' : 'transparent')};
-  transition: background 0.1s;
-
-  &:hover { background: rgba(230, 160, 32, 0.1); }
-`;
-
-const PickerItemLabel = styled.div<{ $active: boolean }>`
-  font-size: 11px;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-weight: 600;
-  color: ${({ $active }) => ($active ? '#ffd066' : '#c8d8ee')};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const PickerItemMeta = styled.div`
-  margin-top: 1px;
-  font-size: 9.5px;
-  font-family: 'Consolas', 'Courier New', monospace;
-  color: #4a6a9a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const StatusMsg = styled.div`
-  padding: 12px 10px;
-  font-size: 10px;
-  color: #4a6a9a;
-  text-align: center;
-  font-family: 'Consolas', 'Courier New', monospace;
-`;
-
-const HintBadge = styled.div`
-  position: absolute;
-  bottom: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
-  color: #7c7c9c;
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
-`;
-
-// ── Component ─────────────────────────────────────────────────────────────────
-
-export const CallNode: React.FC<NodeProps<Node<Data>>> = ({ id, data }) => {
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [ctrlHeld, setCtrlHeld] = useState(false);
-  const [flows, setFlows] = useState<Array<{ name: string; startNodes: StartNodeEntry[] }>>([]);
-  const [loading, setLoading] = useState(false);
-  const pickerRef = useRef<HTMLDivElement>(null);
-  const updateNodeData = useNodeDataUpdate();
-
-  // Fetch flows when picker opens
-  useEffect(() => {
-    if (!isPickerOpen) return;
-    setLoading(true);
-    vscodeApi?.postMessage({ type: 'request-flow-start-nodes' });
-  }, [isPickerOpen]);
-
-  // Listen for flow-start-nodes-response
-  useEffect(() => {
-    const onMessage = (event: MessageEvent) => {
-      if (event.data?.type !== 'flow-start-nodes-response') return;
-      setFlows(normalizeFlows((event.data.data ?? {}) as FlowsResponse));
-      setLoading(false);
-    };
-    window.addEventListener('message', onMessage);
-    return () => window.removeEventListener('message', onMessage);
-  }, []);
-
-  // Track Ctrl/Cmd key while hovered
-  useEffect(() => {
-    if (!hovered) { setCtrlHeld(false); return; }
-    const onDown = (e: KeyboardEvent) => { if (e.key === 'Control' || e.key === 'Meta') setCtrlHeld(true); };
-    const onUp   = (e: KeyboardEvent) => { if (e.key === 'Control' || e.key === 'Meta') setCtrlHeld(false); };
-    document.addEventListener('keydown', onDown);
-    document.addEventListener('keyup',   onUp);
-    return () => {
-      document.removeEventListener('keydown', onDown);
-      document.removeEventListener('keyup',   onUp);
-    };
-  }, [hovered]);
-
-  // Close picker when clicking outside
-  useEffect(() => {
-    if (!isPickerOpen) return;
-    const handleOutside = (e: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as unknown as globalThis.Node)) {
-        setIsPickerOpen(false);
-      }
-    };
-    const timer = setTimeout(() => document.addEventListener('mousedown', handleOutside), 50);
-    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleOutside); };
-  }, [isPickerOpen]);
-
-  const handleSelect = (flowName: string, node: StartNodeEntry, e: React.MouseEvent) => {
-    e.stopPropagation();
-    updateNodeData(id, {
-      ...(data as Record<string, unknown>),
-      callTarget: { flow: flowName, nodeId: node.id, label: node.label },
-      subtitle: `${flowName} › ${node.label}`,
-    });
-    setIsPickerOpen(false);
-  };
-
-  const canGoto = !!(ctrlHeld && hovered && data?.callTarget);
-  const accentColor = canGoto ? '#4da6ff' : ACCENT;
+  const tags: NodeTag[] = [];
+  if (target) {
+    const text = `${target.flow} › ${target.label}`;
+    tags.push({ text, tone: 'target', title: `${text} (${target.nodeId})` });
+  }
 
   return (
-    <BaseNode
-      nodeId={id}
-      selected={false}
-      icon={<CallSvg />}
+    <StandardNode
+      id={id}
+      selected={selected}
       label={data?.label || 'Call'}
-      subtitle={data?.subtitle}
+      glyph={<CallSvg />}
       handles={handles}
-      accentColor={accentColor}
-      transparentInner
       rotation={data?.rotation as 0 | 90 | 180 | 270 | undefined}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setCtrlHeld(false); }}
-      onDoubleClick={(e) => { e.stopPropagation(); setIsPickerOpen(prev => !prev); }}
-    >
-      {data?.callTarget && !isPickerOpen && (
-        <HintBadge>{data.callTarget.flow} › {data.callTarget.label}</HintBadge>
-      )}
-
-      {isPickerOpen && (
-        <PickerPanel
-          ref={pickerRef}
-          className="nodrag nopan"
-          onMouseDown={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <PickerHeader>Call Pipeline › Start Node</PickerHeader>
-
-          {loading && <StatusMsg>Loading flows…</StatusMsg>}
-
-          {!loading && flows.length === 0 && (
-            <StatusMsg>No pipelines found</StatusMsg>
-          )}
-
-          {!loading && flows.map(flow => (
-            <React.Fragment key={flow.name}>
-              <GroupHeader>{flow.name}</GroupHeader>
-              {flow.startNodes.length === 0 && <StatusMsg>No start nodes</StatusMsg>}
-              {flow.startNodes.map(node => {
-                const isActive = data?.callTarget?.flow === flow.name && data?.callTarget?.nodeId === node.id;
-                return (
-                  <PickerItem
-                    key={node.id}
-                    $active={isActive}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onClick={(e) => handleSelect(flow.name, node, e)}
-                  >
-                    <PickerItemLabel $active={isActive}>{node.label}</PickerItemLabel>
-                    <PickerItemMeta>{node.id}</PickerItemMeta>
-                  </PickerItem>
-                );
-              })}
-            </React.Fragment>
-          ))}
-        </PickerPanel>
-      )}
-    </BaseNode>
+      tags={tags}
+    />
   );
 };

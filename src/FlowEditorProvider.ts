@@ -210,22 +210,6 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider, Flow
         void this.handleOpenFlowAndGotoNode(String(message.flow), String(message.nodeId));
       }
 
-      if (message.type === 'request-flow-start-nodes') {
-        void this.fetchFlowsFromEngine()
-          .then((data) => {
-            webviewPanel.webview.postMessage({
-              type: 'flow-start-nodes-response',
-              data,
-            });
-          })
-          .catch((err: Error) => {
-            webviewPanel.webview.postMessage({
-              type: 'flow-start-nodes-response',
-              data: { success: false, flows: [], error: err.message },
-            });
-          });
-      }
-
       if (message.type === 'flow-changed') {
         const mergedFlow = this.mergeFlowWithCurrentDocument(document, message.data);
         const newContent = JSON.stringify(mergedFlow, null, 2);
