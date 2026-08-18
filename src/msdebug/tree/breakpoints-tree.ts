@@ -148,5 +148,15 @@ class BreakpointItem extends vscode.TreeItem {
       bp.verified ? 'debug-breakpoint' : 'debug-breakpoint-unverified',
     );
     this.contextValue = 'distributedBreakpoint';
+
+    // DAG breakpoint'i bir .flow dosyasindaki node'a aittir. Tiklaninca metin
+    // editoru degil DAG diyagram editoru acilmali ve dogrudan o node'a gidilmeli.
+    if (bp.nodeId && bp.file) {
+      this.command = {
+        command: 'reactdnd.openFlowNode',
+        title: 'Open Flow Node',
+        arguments: [{ file: bp.file, nodeId: bp.nodeId }],
+      };
+    }
   }
 }

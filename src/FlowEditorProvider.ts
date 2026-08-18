@@ -36,6 +36,10 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider, Flow
       }),
       vscode.commands.registerCommand('reactdnd.disableDagDebugMode', async (uri?: vscode.Uri) => {
         await provider.setDebugMode(uri, false);
+      }),
+      vscode.commands.registerCommand('reactdnd.openFlowNode', async (arg?: { file?: string; nodeId?: string }) => {
+        if (!arg?.file || !arg?.nodeId) { return; }
+        await provider.openFlowNode(arg.file, arg.nodeId);
       })
     );
   }
@@ -315,6 +319,48 @@ export class FlowEditorProvider implements vscode.CustomTextEditorProvider, Flow
     return Array.from(this.activeEditors).find((entry) => entry.panel.active)
       ?? Array.from(this.activeEditors).find((entry) => entry.panel.visible)
       ?? Array.from(this.activeEditors)[0];
+  }
+
+  /**
+   * Bir .flow dosyasini DAG diyagram editorunde acar ve dogrudan ilgili node'a
+   * gider. Text editor kullanilmaz -- .flow'un kendi custom editoru var.
+   *
+   * Dosya zaten acik ise `vscode.openWith` yeniden 'ready' gondermez, bu yuzden
+   * bekleyen goto yerine mesaji dogrudan o panele yolluyoruz.
+   */
+  public async openFlowNode(file: string, nodeId: string): Promise<void> {
+    const uri = await this.resolveFlowUri(file);
+    if (!uri) {
+      void vscode.window.showWarningMessage(`Flow file not found: ${file}`);
+      return;
+    }
+
+    const alreadyOpen = Array.from(this.activeEditors).find(
+      (entry) => entry.document.uri.toString() === uri.toString(),
+    );
+    if (alreadyOpen) {
+      alreadyOpen.panel.reveal(alreadyOpen.panel.viewColumn);
+      void alreadyOpen.panel.webview.postMessage({ type: 'goto-node', nodeId });
+      return;
+    }
+
+    this.pendingGotoNode = { nodeId };
+    await vscode.commands.executeCommand('vscode.openWith', uri, FlowEditorProvider.viewType);
+  }
+
+  /** Tam yol, dosya adi ya da uzantisiz flow adi kabul eder. */
+  private async resolveFlowUri(file: string): Promise<vscode.Uri | undefined> {
+    if (file.includes('/') || file.includes('\\')) {
+      const direct = vscode.Uri.file(file);
+      try {
+        await vscode.workspace.fs.stat(direct);
+        return direct;
+      } catch { /* calisma alaninda ara */ }
+    }
+    const base = file.split(/[\\/]/).pop() ?? file;
+    const withExt = base.toLowerCase().endsWith('.flow') ? base : `${base}.flow`;
+    const found = await vscode.workspace.findFiles(`**/${withExt}`, '**/node_modules/**', 1);
+    return found[0];
   }
 
   private async handleOpenFlowAndGotoNode(flowName: string, nodeId: string): Promise<void> {

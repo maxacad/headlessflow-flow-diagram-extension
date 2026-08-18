@@ -216,10 +216,16 @@ export class MsDebugSessionController {
   }
 
   private async resolveStopSources(stop: MsDebugStop): Promise<MsDebugStop> {
-    const fallbackPath = await resolveSourcePath(stop.file);
+    // .flow dosyalarinin kendi custom editoru (DAG diyagram) var. DAP'a bir
+    // source.path verirsek VS Code onu METIN editorunde acar ve diyagramin
+    // yaninda ikinci bir sekme belirir. Bu yuzden .flow icin path cozmuyoruz;
+    // yalnizca goruntulenecek ad kaliyor. Node'a gitmek Distributed Breakpoints
+    // panelindeki 'reactdnd.openFlowNode' komutuyla yapiliyor.
+    const fallbackPath = isFlowSource(stop.file) ? undefined : await resolveSourcePath(stop.file);
     const resolvedFrames = await Promise.all((stop.stackFrames ?? []).map(async (frame) => {
       // Try resolving the frame's own source path first, then fall back to the main file path
-      const sourcePath = await resolveSourcePath(frame.source?.path) ?? fallbackPath;
+      const ownPath = isFlowSource(frame.source?.path) ? undefined : await resolveSourcePath(frame.source?.path);
+      const sourcePath = ownPath ?? fallbackPath;
       return {
         ...frame,
         source: sourcePath
@@ -674,4 +680,12 @@ function toSourceFileName(candidate: string): string | undefined {
 
 function isUsableFilePath(path: string | undefined): path is string {
   return !!path && path.startsWith('/');
+}
+
+/**
+ * Kaynak bir .flow dosyasi mi? Bu dosyalar DAG diyagram editorunde acilir,
+ * metin editorunde degil.
+ */
+function isFlowSource(candidate?: string): boolean {
+  return typeof candidate === 'string' && candidate.toLowerCase().endsWith('.flow');
 }
