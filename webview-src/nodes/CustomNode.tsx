@@ -1,52 +1,59 @@
+import React from 'react';
 import { Handle, Position, useConnection } from '@xyflow/react';
-import styled from 'styled-components';
-import { NodeWrapper, NodeInner } from './BaseNode';
-import { NODE_WIDTH, NODE_HEIGHT } from '../constants';
+import { StandardNode } from './StandardNode';
 
-const ACCENT = '#e3b341';
-
-const CustomIcon = ({ isTarget }: { isTarget: boolean }) => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="1" y="1" width="30" height="30" rx="6" fill="#1e1e1e"/>
-    {isTarget ? (
-      /* Drop target: downward arrow */
-      <>
-        <line x1="16" y1="7" x2="16" y2="22" stroke={ACCENT} strokeWidth="2.5" strokeLinecap="round"/>
-        <polyline points="9,16 16,23 23,16" fill="none" stroke={ACCENT} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </>
-    ) : (
-      /* Source: two-sided arrows / connect icon */
-      <>
-        <circle cx="16" cy="16" r="4" fill="none" stroke={ACCENT} strokeWidth="2"/>
-        <line x1="4" y1="16" x2="10" y2="16" stroke={ACCENT} strokeWidth="2" strokeLinecap="round"/>
-        <line x1="22" y1="16" x2="28" y2="16" stroke={ACCENT} strokeWidth="2" strokeLinecap="round"/>
-        <polyline points="7,13 4,16 7,19" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <polyline points="25,13 28,16 25,19" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </>
-    )}
+/** Baglanti hedefi: asagi ok + toplayici tabla */
+const TargetIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <defs>
+      <linearGradient id="CustomNodeTarget_Gradient_1" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="45" y2="45" spreadMethod="pad">
+        <stop offset="0%" stopColor="#FFDC87" />
+        <stop offset="100%" stopColor="#EEC04E" />
+      </linearGradient>
+    </defs>
+    <g transform="translate(7 7.4)">
+      <rect x="6" y="6" width="42" height="42" rx="9" fill="#FFA800" />
+      <rect x="3" y="3" width="42" height="42" rx="9" fill="url(#CustomNodeTarget_Gradient_1)" />
+      <path fill="none" stroke="#6695FF" strokeWidth="3.2" strokeLinecap="round" d="M24 10 L24 28" />
+      <path fill="none" stroke="#47ADC6" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" d="M16 21 L24 29 L32 21" />
+      <path fill="none" stroke="#426DB8" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" d="M13 34 L13 38 L35 38 L35 34" />
+      <rect x="3" y="3" width="42" height="42" rx="9" fill="none" stroke="#333333" strokeWidth="1" strokeLinejoin="bevel" />
+    </g>
   </svg>
 );
 
-const Label = styled.div`
-  position: absolute;
-  bottom: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
-  font-family: var(--vscode-font-family, sans-serif);
-  color: #888;
-  white-space: nowrap;
-  pointer-events: none;
-`;
+/** Baglanti kaynagi: iki yonlu konnektor */
+const SourceIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <defs>
+      <linearGradient id="CustomNodeSource_Gradient_1" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="45" y2="45" spreadMethod="pad">
+        <stop offset="0%" stopColor="#FFDC87" />
+        <stop offset="100%" stopColor="#EEC04E" />
+      </linearGradient>
+    </defs>
+    <g transform="translate(7 7.4)">
+      <rect x="6" y="6" width="42" height="42" rx="9" fill="#FFA800" />
+      <rect x="3" y="3" width="42" height="42" rx="9" fill="url(#CustomNodeSource_Gradient_1)" />
+      <circle cx="24" cy="24" r="6" fill="none" stroke="#426DB8" strokeWidth="2.6" />
+      <path fill="none" stroke="#6695FF" strokeWidth="2.6" strokeLinecap="round" d="M8 24 L15 24 M33 24 L40 24" />
+      <path fill="none" stroke="#47ADC6" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" d="M12 20 L8 24 L12 28 M36 20 L40 24 L36 28" />
+      <rect x="3" y="3" width="42" height="42" rx="9" fill="none" stroke="#333333" strokeWidth="1" strokeLinejoin="bevel" />
+    </g>
+  </svg>
+);
 
 export default function CustomNode({ id, selected }: { id: string; selected?: boolean }) {
   const connection = useConnection();
   const isTarget = connection.inProgress && connection.fromNode.id !== id;
-  const label = isTarget ? 'Drop here' : 'Drag to connect';
 
   return (
-    <NodeWrapper $width={NODE_WIDTH} $height={NODE_HEIGHT}>
-      {/* Target handle — left side */}
+    <StandardNode
+      id={id}
+      selected={!!selected}
+      label={isTarget ? 'Drop here' : 'Drag to connect'}
+      glyph={isTarget ? <TargetIcon /> : <SourceIcon />}
+      handles={[]}
+    >
       {(!connection.inProgress || isTarget) && (
         <Handle
           className="node-handle"
@@ -57,18 +64,6 @@ export default function CustomNode({ id, selected }: { id: string; selected?: bo
           isConnectableStart={false}
         />
       )}
-
-      {/* Inner visual box */}
-      <NodeInner
-        className="node-inner-box"
-        $selected={!!selected}
-        $accentColor={ACCENT}
-      >
-        <CustomIcon isTarget={isTarget} />
-        <Label>{label}</Label>
-      </NodeInner>
-
-      {/* Source handle — right side */}
       {!connection.inProgress && (
         <Handle
           className="node-handle"
@@ -78,6 +73,6 @@ export default function CustomNode({ id, selected }: { id: string; selected?: bo
           id="source"
         />
       )}
-    </NodeWrapper>
+    </StandardNode>
   );
 }
