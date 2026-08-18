@@ -74,6 +74,7 @@ export class DagDebugService implements vscode.Disposable {
       service: config.service,
       runtime: 'dag',
       flowId,
+      file: this.flowFileForDocument(document),
       nodeId: input.nodeId,
       nodeLabel: input.nodeLabel,
       condition: input.condition,
@@ -382,6 +383,17 @@ export class DagDebugService implements vscode.Disposable {
       : basename(document.uri.fsPath).replace(/\.flow$/i, '');
   }
 
+  /**
+   * Breakpoint kaydinda kullanilacak dosya adi. Kaydedilmemis (untitled)
+   * belgelerde fsPath anlamli olmadigi icin `<flowId>.flow` uretiyoruz.
+   */
+  private flowFileForDocument(document: vscode.TextDocument): string {
+    if (document.uri.scheme === 'untitled') {
+      return `${this.flowIdForDocument(document)}.flow`;
+    }
+    return document.uri.fsPath;
+  }
+
   private readFlowObject(text: string): Record<string, unknown> {
     try {
       const parsed = JSON.parse(text || '{}');
@@ -455,6 +467,7 @@ export class DagDebugService implements vscode.Disposable {
         service: bp.service,
         runtime: bp.runtime,
         flowId: bp.flowId,
+        file: bp.file,
         nodeId: bp.nodeId,
         nodeLabel: bp.nodeLabel,
         condition: bp.condition,

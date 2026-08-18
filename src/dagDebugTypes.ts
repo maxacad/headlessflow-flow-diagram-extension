@@ -22,6 +22,12 @@ export interface DagBreakpoint {
   service: string;
   runtime: DagRuntime;
   flowId: string;
+  /**
+   * Breakpoint'in konuldugu .flow dosyasi. Flow engine bunu almazsa
+   * `dag-<flowId>.js` gibi uydurma bir ad kullaniyor; gercek dosyayi
+   * gonderdigimizde orkestratorde de dogru ad gorunur.
+   */
+  file?: string;
   nodeId: string;
   nodeLabel?: string;
   condition?: string;
