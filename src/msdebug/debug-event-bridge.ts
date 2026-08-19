@@ -103,16 +103,22 @@ export class DebugEventBridge {
       void h(msg);
     });
     switch (msg.type) {
+      // Bir durus iki sebepten olabilir: breakpoint'e denk gelmek
+      // (debug.breakpoint.hit) ya da adimlamanin bir sonraki node'da durmasi
+      // (debug.execution.paused). Ikisi de kullanici acisindan "program durdu"
+      // demektir ve ayni isleme ihtiyaci vardir: Debug araç cubugunu duraklatmak,
+      // Call Stack'i ve degiskenleri tazelemek.
+      //
+      // Eskiden execution.paused yutuluyordu ("cift bildirim olmasin" diye), ama
+      // step duraklamasinda YALNIZCA bu olay yayiliyor -- breakpoint.hit gelmiyor.
+      // Sonuc: Step Over komutu gidiyor, motor sonraki node'da duruyor, extension
+      // hicbir sey yapmiyordu. Cift bildirim zaten asagidaki recentBreakpointEvents
+      // dedupe'u ile engelleniyor (ayni durus icin iki olay 1200ms icinde gelir).
       case 'debug.breakpoint.hit':
-        // Only show notification for breakpoint.hit, not execution.paused
-        // to avoid duplicate notifications
+      case 'debug.execution.paused':
         this.breakpointHitHandlers.forEach((h) => {
           void h(msg);
         });
-        break;
-      case 'debug.execution.paused':
-        // execution.paused is used for internal state updates only
-        // Don't trigger notification handlers
         break;
       case 'trace.span.ended':
       case 'graph.node.completed':

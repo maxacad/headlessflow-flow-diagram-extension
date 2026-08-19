@@ -599,7 +599,11 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
     // Use location as part of the key so consecutive breakpoints on the same thread
     // still produce separate user prompts.
     const eventTs = Number(evt.timestamp) || Date.now();
-    const dedupeKey = `${sessionId}|${service}|${d.threadName ?? ''}|${file}|${line}`;
+    // nodeId anahtarin PARCASI olmali. DAG'da adim duraklamasinda kayitli
+    // breakpoint olmadigi icin satir hep 1 kalir; nodeId olmadan arka arkaya
+    // farkli node'lardaki adimlar ayni anahtari uretip birbirini eler ve
+    // Step Over ikinci basistan sonra hicbir sey yapmiyormus gibi gorunur.
+    const dedupeKey = `${sessionId}|${service}|${d.threadName ?? ''}|${d.nodeId ?? ''}|${file}|${line}`;
     const lastTs = recentBreakpointEvents.get(dedupeKey);
     if (lastTs && Math.abs(eventTs - lastTs) <= BREAKPOINT_DEDUPE_WINDOW_MS) {
       return;
@@ -614,12 +618,15 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
     }
 
     // Show notification AFTER dedupe check to avoid duplicate notifications
+    // Durus sebebi: breakpoint mi, adimlama mi? Ikisi de ayni yoldan gecer.
+    const isStepPause = evt.type === 'debug.execution.paused';
+    const stopLabel = isStepPause ? '⏭️ Step paused' : '🔴 Breakpoint hit';
     void vscode.window.showInformationMessage(
-      `🔴 Breakpoint hit: ${service} at ${where}`,
-      'Open File',
+      `${stopLabel}: ${service} at ${where}`,
+      isFlowFile(file) ? 'Go to Node' : 'Open File',
       'Continue'
     ).then(async (action) => {
-      if (action === 'Open File' && file && line) {
+      if ((action === 'Open File' || action === 'Go to Node') && file && line) {
         await revealBreakpointLocation(file, line, d.nodeId);
       } else if (action === 'Continue') {
         try {
@@ -649,7 +656,7 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
 
     // 2. Fetch variables and log everything to the output channel
     const ts = new Date(evt.timestamp).toISOString();
-    output.appendLine(`\n[${ts}] 🔴 BREAKPOINT HIT — ${service} at ${where} [thread: ${d.threadName ?? '?'}]`);
+    output.appendLine(`\n[${ts}] ${isStepPause ? '⏭️ STEP PAUSE' : '🔴 BREAKPOINT HIT'} — ${service} at ${where} [thread: ${d.threadName ?? '?'}]`);
 
     if (d.stackFrames?.length) {
       output.appendLine('  Stack:');
