@@ -120,6 +120,72 @@ açık bir `line` gönderdiyse o değer önceliklidir.
   `/debug/breakpoint` → agent `setBreakpoints`.
 - `/flow/start-debug` ve `agent:event` olay yolu korunur.
 
+### 5.1 Session sahipliği
+
+Kanıt (canlı orkestratör, 2026-08-21): aynı `dag-flow-service` agent'ı için 1 ms
+arayla iki session oluşuyor —
+
+| sessionId | name | status | kaynak |
+| --- | --- | --- | --- |
+| `59a5bbbb…` | `dag-flow-service` | active | extension, `rebindSessionsForActiveAgents` |
+| `a0792db5…` | `untitled` | paused | flow engine, `startOrReuseSession` |
+
+Zincir: motor `registerAgent()` çağırır → orkestratör `agent.registered` yayar →
+extension bunu görüp "bayat session'ları durdur, taze bir tane aç" yolunu
+işletir → bu sırada motorun kendi `POST /debug/session/start` isteği hâlâ yolda
+olduğu için görülmez. Extension'ın Sessions ağacı `session.name` bastığı için
+kullanıcıya iki agent varmış gibi görünür.
+
+`DagDebugService.ensureSession` orkestratör session'ı açmaz; `dag-<base36>`
+biçiminde yerel bir kimlik uydurur. Yani DAG tarafında gerçek session'ı açan iki
+taraf vardır ve ikisi de diğerinden habersizdir.
+
+Karar: **gerçek agent debug session'ı açmaz.** cdp-sidecar ve java-sidecar
+`/debug/session/start` çağırmaz; session'ı istemci açar.
+
+- Flow engine'den `startOrReuseSession`, `/debug/session/start` ve
+  `/debug/session/stop` çağrıları kalkar.
+- Session sahibi extension olur. `DagDebugService` uydurma `dag-…` kimliği
+  yerine `rebindSessionsForActiveAgents`'in service için zaten açtığı session'ı
+  kullanır — yeni session açmasına gerek yoktur.
+- Motor, `publishDebugEvent`'te kullanacağı `sessionId`'yi `/flow/debug/session`
+  ve `/flow/start-debug` payload'ından alır. Extension bu alanı bugün de
+  gönderiyor; yalnızca içindeki değer sahte.
+
+Reddedilen alternatif: motorun `startOrReuseSession`'ını gerçekten "reuse"
+yapmak (önce listele, aktif olanı benimse). Yarışı kapatmaz — iki taraf da aynı
+anda listeleyip açabilir — ve sahipliği yanlış tarafta bırakır.
+
+### 5.2 Komut yolunun kopuk olduğu yer (kök neden kanıtı)
+
+Continue ve Step Over'ın hiçbir şey yapmamasının sebebi olay yönü değil, komut
+yönüdür. Canlı sistemde ölçüldü:
+
+1. **Taşıma.** `USE_HTTP_AGENT_COMMANDS` orkestratör sürecinde set değil →
+   `propagateBreakpoint` NATS'a düşer. NATS ayakta (4222) olduğu için yayın
+   *başarılı* olur, ama DAG agent'ı o subject'i dinlemez. Komut sessizce
+   kaybolur: ne hata, ne log. Birincil sebep.
+2. **Port.** `index.js:14` varsayılanı `PORT || 3033`, `debugBridge.js:218` ve
+   `:530` varsayılanı `PORT || 3000`. Motor 3033'te dinlerken kendini 3000
+   olarak kaydeder. Bayrak açılsa bile HTTP yanlış porta gider.
+3. **Çift önek.** `agentUrl` `.../api/v1` ile kaydedilir, orkestratör üstüne
+   `/api/v1/agent/command` ekler.
+
+Motorun komut yüzeyinin sağlam olduğu doğrulandı: DAP `continue` doğrudan
+`http://127.0.0.1:3033/api/v1/agent/command` adresine gönderildiğinde 345
+saniyedir bekleyen duraklama anında çözüldü
+(`{"success":true,"payload":{"resumed":true,"nodeId":"node-12"}}`).
+
+Bu üç kusur yalnız Continue'yu değil, orkestratörden inen her komutu keser:
+Step Over/Into/Out, `evaluate`, `setBreakpoints`.
+
+### 5.3 Debug görünümü odağı
+
+Breakpoint'e denk gelindiğinde VS Code'un yerleşik Debug görünümü öne geçiyor;
+MS Distributed Debug view'ı odakta kalmıyor. Bu gerçek bir kusurdur ama komut
+yolunu kırmaz — 5.2'deki ölçüm, komutların extension'dan çıkıp orkestratöre
+ulaştığını ve orada öldüğünü gösteriyor. Sırası 5.2'den sonradır.
+
 ### 6. Test
 
 flowengine'de test koşucusu yok. Yerleşik `node:test` eklenir (yeni bağımlılık
@@ -134,6 +200,10 @@ yok), `npm test` → `node --test`.
   (HTTP kayıt → HTTP, NATS kayıt → NATS).
 - Uçtan uca elle senaryo: engine + orkestratör ayakta, breakpoint'li akış,
   Continue / Step Over / değişken genişletme.
+- Kırmızı test (5.1): aynı service için agent kaydından sonra orkestratörde
+  **tek** aktif session kalmalı.
+- Kırmızı test (5.2): agent kaydındaki `port` ve `agentUrl`, motorun gerçekten
+  dinlediği portu göstermeli; `agentUrl` `/api/v1` ile bitmemeli.
 
 ## Riskler
 
