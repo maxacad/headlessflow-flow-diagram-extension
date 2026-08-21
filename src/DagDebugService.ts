@@ -106,18 +106,14 @@ export class DagDebugService implements vscode.Disposable {
 
   async enableDebugMode(document: vscode.TextDocument): Promise<void> {
     const flowId = this.flowIdForDocument(document);
-    const sessionId = await this.ensureSession(flowId);
+    let sessionId = await this.ensureSession(flowId);
     const config = this.readConfig();
     this.debugModeFlowIds.add(flowId);
     this.activeFlowId = flowId;
-    this.sessionId = sessionId;
-    this.socketBridge.setActiveWorkspace(config.workspaceId);
-    this.socketBridge.setActiveSession(sessionId);
-    this.applySessionToFlowBreakpoints(flowId, sessionId, config.service, true);
 
     const flowData = this.stripDebugBreakpointsFromFlow(this.readFlowObject(document.getText()));
-    const modeMessage = {
-      sessionId,
+    const buildModeMessage = (id: string) => ({
+      sessionId: id,
       workspaceId: config.workspaceId,
       service: config.service,
       runtime: 'dag',
@@ -128,11 +124,34 @@ export class DagDebugService implements vscode.Disposable {
         flowId,
         workspaceId: config.workspaceId,
       },
-    };
+    });
 
-    await this.sendFlowEngineDebugMode(modeMessage).catch((err: Error) => {
+    // Yumurta-tavuk: orkestrator oturumu ancak agent kaydolunca aciliyor, agent
+    // ise motora bu mode mesaji ulasinca kaydoluyor. Bu yuzden mesaji ONCE
+    // gonderiyoruz -- kimligimiz henuz bos olsa bile.
+    await this.sendFlowEngineDebugMode(buildModeMessage(sessionId)).catch((err: Error) => {
       this.output.appendLine(`[dag-debug] flow engine debug mode sync failed: ${err.message}`);
     });
+
+    if (!sessionId) {
+      sessionId = await this.waitForSession(flowId);
+      if (sessionId) {
+        // Motor bos kimlik gordugunde kendi kimligini uretti; gercek kimligi
+        // simdi bildiriyoruz ki oturumunu ona tasisin. Aksi halde bundan sonraki
+        // her mesaj (breakpoint'ler, akis baslatma) motorda hicbir oturuma
+        // denk gelmez: breakpoint'ler islenmez, akis debug kapali kosar.
+        await this.sendFlowEngineDebugMode(buildModeMessage(sessionId)).catch((err: Error) => {
+          this.output.appendLine(`[dag-debug] flow engine debug mode re-sync failed: ${err.message}`);
+        });
+      } else {
+        this.output.appendLine('[dag-debug] Orchestrator session did not appear; debug mode is running unattached.');
+      }
+    }
+
+    this.sessionId = sessionId;
+    this.socketBridge.setActiveWorkspace(config.workspaceId);
+    this.socketBridge.setActiveSession(sessionId);
+    this.applySessionToFlowBreakpoints(flowId, sessionId, config.service, true);
     await this.syncFlowEngineBreakpoints(flowId);
 
     this.handleDebugEvent({
@@ -325,6 +344,31 @@ export class DagDebugService implements vscode.Disposable {
     this.socketBridge.setActiveSession(sessionId);
     this.broadcastState();
     return sessionId;
+  }
+
+  /**
+   * Agent kaydinin dogurdugu orkestrator oturumunu bekler.
+   *
+   * Oturumu msdebug tarafi aciyor ve bu, motorun agent olarak kaydolmasindan
+   * SONRA gerceklesiyor; yani mode mesajini gonderdigimiz anda oturum henuz
+   * yoktur. Kisa bir geri cekilmeyle bekliyoruz.
+   */
+  private async waitForSession(flowId: string, attempts = 5, delayMs = 400): Promise<string> {
+    const config = this.readConfig();
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      try {
+        const sessionId = await this.client.findActiveSessionId(config.service, config.workspaceId);
+        if (sessionId) {
+          this.sessionId = sessionId;
+          this.activeFlowId = flowId;
+          return sessionId;
+        }
+      } catch (err) {
+        this.output.appendLine(`[dag-debug] session lookup failed: ${(err as Error).message}`);
+      }
+    }
+    return '';
   }
 
   private handleDebugEvent(event: DagDebugEventEnvelope): void {
