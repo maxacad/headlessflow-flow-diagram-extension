@@ -309,12 +309,22 @@ export class DagDebugService implements vscode.Disposable {
       return this.sessionId;
     }
     const config = this.readConfig();
-    this.sessionId = `dag-${Date.now().toString(36)}`;
+
+    // Orkestratorde bu service icin zaten bir session var: msdebug tarafi
+    // agent kaydini gorunce aciyor. Kendi kimligimizi uydurursak motorun
+    // yaydigi olaylar hicbir session'a denk gelmez.
+    const sessionId = await this.client.findActiveSessionId(config.service, config.workspaceId);
+    if (!sessionId) {
+      this.output.appendLine('[dag-debug] No active orchestrator session for this service yet.');
+      return '';
+    }
+
+    this.sessionId = sessionId;
     this.activeFlowId = flowId;
     this.socketBridge.setActiveWorkspace(config.workspaceId);
-    this.socketBridge.setActiveSession(this.sessionId);
+    this.socketBridge.setActiveSession(sessionId);
     this.broadcastState();
-    return this.sessionId;
+    return sessionId;
   }
 
   private handleDebugEvent(event: DagDebugEventEnvelope): void {
