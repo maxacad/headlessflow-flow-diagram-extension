@@ -290,10 +290,9 @@ export class DagDebugService implements vscode.Disposable {
         ...(payload ?? {}),
       },
     };
-    await this.sendFlowEngineDebugCommand(command).catch((err: Error) => {
-      this.output.appendLine(`[dag-debug] flow engine command failed: ${err.message}`);
-    });
-
+    // Tek komut yolu: orkestrator. Oradan agent'a (flow engine) HTTP ile iner.
+    // Eskiden komut once dogrudan motora, sonra orkestratore gidiyordu; motor
+    // ayni durusu iki kez cozmeye calisiyordu.
     try {
       await this.client.sendCommand(command);
     } catch (err) {
@@ -610,58 +609,6 @@ export class DagDebugService implements vscode.Disposable {
       }
     }
     throw lastError ?? new Error('Flow engine POST failed');
-  }
-
-  private async sendFlowEngineDebugCommand(command: Record<string, unknown>): Promise<void> {
-    try {
-      await this.sendFlowEngineDebugCommandWs(command);
-      return;
-    } catch (err) {
-      this.output.appendLine(`[dag-debug] flow engine websocket command failed: ${(err as Error).message}`);
-    }
-
-    const url = `${this.readConfig().flowEngineUrl.replace(/\/+$/, '')}/flow/debug/command`;
-    await this.client.postToAbsoluteUrl<unknown>(url, command);
-  }
-
-  private sendFlowEngineDebugCommandWs(command: Record<string, unknown>): Promise<void> {
-    const config = this.readConfig();
-    return new Promise<void>((resolve, reject) => {
-      const ws = new WebSocket(config.flowEngineWsUrl);
-      const timer = setTimeout(() => {
-        ws.close();
-        reject(new Error('Flow engine command websocket timeout'));
-      }, 5000);
-
-      ws.on('open', () => {
-        const commandType = typeof command.type === 'string' ? command.type : undefined;
-        ws.send(JSON.stringify({
-          type: 'debug:command',
-          event: 'debug:command',
-          command: commandType,
-          sessionId: command.sessionId,
-          workspaceId: command.workspaceId,
-          service: command.service,
-          flowId: command.flowId,
-          flowRunId: command.flowRunId,
-          threadId: command.threadId,
-          payload: command,
-        }), (err) => {
-          clearTimeout(timer);
-          ws.close();
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
-        });
-      });
-
-      ws.on('error', (err) => {
-        clearTimeout(timer);
-        reject(err);
-      });
-    });
   }
 
   private postFlowRun(flowData: Record<string, unknown>): Promise<string> {
