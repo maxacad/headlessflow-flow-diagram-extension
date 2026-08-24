@@ -1,7 +1,9 @@
 # DAG Flow Engine'i Gerçek Bir Debug Agent'ına Dönüştürme
 
 Tarih: 2026-08-21
-Durum: Onaylandı (tasarım), uygulama planı bekliyor
+Durum: Bölüm 1, 2 (komut yolu), 5, 5.1, 5.2 **uygulandı ve uçtan uca doğrulandı**
+(2026-08-24). Bölüm 3, 4, 5.3 ve breakpoint sahipliği hâlâ açık; bunlar ayrı bir
+plana bırakıldı. Uygulama planı: `docs/superpowers/plans/2026-08-21-dag-agent-command-path.md`
 
 ## Sorun
 
@@ -215,6 +217,7 @@ yok), `npm test` → `node --test`.
   `setBreakpoints` ile doldurulmalıdır.
 - Flow engine bir git deposu değil; değişiklikler sürüm kontrolü altında
   değildir. Uygulamaya başlamadan önce orada `git init` yapılması önerilir.
+  (Uygulama sırasında yapıldı; uzak deposu hâlâ yok.)
 
 ## Başarı ölçütü
 
@@ -222,3 +225,45 @@ VS Code Debug UI'ında DAG oturumu için Continue, Step Over/Into/Out, Call
 Stack, Scopes, iç içe değişken genişletme, Watch ve hover evaluate çalışır —
 ve komutların tamamı orkestratör üzerinden akar; extension flow engine'e hiçbir
 debug komutu göndermez.
+
+
+## Uygulama sonrası: uygulamanın ortaya çıkardığı kusur
+
+Bölüm 5.1 ve 5.2 uygulandıktan sonra ortaya çıkan ve giderilen bir kusur, spec'in
+kaydına ait olduğu için burada duruyor.
+
+**Belirti:** Breakpoint'ler orkestratöre kaydoluyor, ama akış hiç durmuyor,
+motorda hiç breakpoint görünmüyor ve Distributed Debug listesinde breakpoint
+çıkmıyor. Buna karşılık agent ve session tekilleşmiş durumda.
+
+**Kök neden — yumurta-tavuk:** Orkestratör oturumu ancak agent kaydolunca
+açılıyor, agent ise motora debug-mode mesajı ulaşınca kaydoluyor. Dolayısıyla
+ilk açılışta `ensureSession` boş kimlik döndürüyor, motor da `handleDebugMode`
+içinde `dbg-xxxxxx` biçiminde bir kimlik **uyduruyor**. İstemci gerçek kimliği
+sonradan öğrenip tüm mesajlarını onunla gönderiyor, ama motordaki kayıt
+uydurulmuş kimlikte kaldığı için `findActiveDebugSession` tam eşleşme arayıp
+hiçbirini bulamıyor:
+
+- `handleDebugBreakpoints` → "No active debug mode session", motorda breakpoint kalmıyor
+- `normalizeDebugConfig` → `enabled: false`, akış debug **kapalı** koşuyor
+- `debugBridge` ayrı bir harita tuttuğu ve `flowId` ile eşleştiği için çalışmaya
+  devam ediyor, breakpoint'leri orkestratöre **uydurulmuş kimlik altında**
+  kaydediyor — orkestratörde görünüp extension'ın listelediği oturumda
+  görünmemelerinin sebebi bu
+
+**Düzeltme, iki parça:**
+
+1. *Kaynak (extension).* `enableDebugMode` mode mesajını **önce** gönderiyor —
+   agent kaydını tetikleyen şey bu. Kaydın doğurduğu oturum kısa bir geri
+   çekilmeyle (5 × 400 ms) bekleniyor ve gerçek kimlik motora yeniden
+   bildiriliyor.
+2. *Dayanıklılık (motor).* `findOrAdoptDebugSession`, aynı `flowId` için gerçek
+   kimlikli bir mesaj geldiğinde motorun **kendi ürettiği** kimlikle duran
+   oturumu o kimliğe taşıyor. Yalnızca üretilmiş kimlikler taşınır; istemcinin
+   verdiği iki gerçek kimlik aynı flow üzerinde çalışıyorsa (iki pencere)
+   birbirine dokunulmaz.
+
+Alınan ders: iki ayrı oturum deposunun (`activeDebugSessions` ve
+`debugBridge.sessions`) farklı eşleştirme kuralları kullanması, sistemin
+tamamen kırılmak yerine **yarım** çalışmasına yol açtı; teşhisi zorlaştıran şey
+buydu. Bölüm 3'ün planlanırken bu iki deponun tekilleştirilmesi değerlendirilmeli.

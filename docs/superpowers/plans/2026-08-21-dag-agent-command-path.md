@@ -10,6 +10,10 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-21-dag-agent-inspector-design.md`
 
+**Durum: tamamlandı (2026-08-24).** Task 1-7 uygulandı, Task 8 kullanıcı
+tarafından uçtan uca doğrulandı. Uygulama sırasındaki sapmalar ve sonradan
+ortaya çıkan kusur en altta "Uygulama notları" başlığında.
+
 **Kapsam notu:** Bu plan spec'in 1, 2 (komut yolu kısmı), 5, 5.1, 5.2 bölümlerini uygular. Inspector durum modeli (spec 3), satır↔node eşlemesi (spec 4), `setBreakpoints`/`scopes`/`variables`/`evaluate` yüzeyi, breakpoint sahipliğinin orkestratöre taşınması (spec 5, üçüncü madde) ve Debug görünümü odağı (spec 5.3) **ayrı bir plana** bırakılmıştır; bu plan tek başına çalışan yazılım üretir (Continue ve Step Over uçtan uca çalışır, tek session kalır).
 
 ## Global Constraints
@@ -53,7 +57,7 @@ test koşucusu da yok.
 - Consumes: yok (ilk task)
 - Produces: `npm test` → `node --test test/` komutu, `services/flow/test/` dizini
 
-- [ ] **Step 1: Depoyu başlat**
+- [x] **Step 1: Depoyu başlat**
 
 ```bash
 cd ~/flowengine
@@ -63,7 +67,7 @@ git add -A
 git commit -m "chore: flowengine icin surum kontrolu baslat"
 ```
 
-- [ ] **Step 2: Başarısız bir duman testi yaz**
+- [x] **Step 2: Başarısız bir duman testi yaz**
 
 `~/flowengine/services/flow/test/smoke.test.js`:
 
@@ -78,12 +82,12 @@ test('debugBridge modulu DagDebugBridge sinifini disari verir', () => {
 });
 ```
 
-- [ ] **Step 3: Testi koş, koşucunun olmadığını gör**
+- [x] **Step 3: Testi koş, koşucunun olmadığını gör**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: FAIL — `Error: no test specified` (mevcut placeholder script)
 
-- [ ] **Step 4: Test script'ini ekle**
+- [x] **Step 4: Test script'ini ekle**
 
 `~/flowengine/services/flow/package.json` içinde `scripts.test` değerini değiştir:
 
@@ -91,12 +95,12 @@ Expected: FAIL — `Error: no test specified` (mevcut placeholder script)
 "test": "node --test test/"
 ```
 
-- [ ] **Step 5: Testi koş, geçtiğini gör**
+- [x] **Step 5: Testi koş, geçtiğini gör**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: PASS — 1 test geçer
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd ~/flowengine
@@ -118,7 +122,7 @@ git commit -m "test: node:test ile test altyapisi kur"
 - Consumes: Task 1'den `npm test`
 - Produces: `DagDebugBridge` örneğinin `agentUrl` alanı `/api/v1` ile bitmez ve varsayılan portu 3033'tür.
 
-- [ ] **Step 1: Başarısız testleri yaz**
+- [x] **Step 1: Başarısız testleri yaz**
 
 `~/flowengine/services/flow/test/debugBridge.test.js` (yeni dosya):
 
@@ -162,12 +166,12 @@ test('kayit yuku kosullu breakpoint yetenegini bildirir', async () => {
 });
 ```
 
-- [ ] **Step 2: Testleri koş, başarısız olduklarını gör**
+- [x] **Step 2: Testleri koş, başarısız olduklarını gör**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: FAIL — `agentUrl` `'http://127.0.0.1:3000/api/v1'` gelir, `port` `3000` gelir
 
-- [ ] **Step 3: En küçük uygulamayı yaz**
+- [x] **Step 3: En küçük uygulamayı yaz**
 
 `debugBridge.js` başına, diğer yardımcıların yanına ekle:
 
@@ -203,12 +207,12 @@ Aynı `registerAgent` çağrısında yetenek listesini spec Bölüm 1'e göre g�
       capabilities: ['breakpoints', 'conditional_breakpoints', 'evaluate'],
 ```
 
-- [ ] **Step 4: Testleri koş, geçtiklerini gör**
+- [x] **Step 4: Testleri koş, geçtiklerini gör**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: PASS — 5 test geçer
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd ~/flowengine
@@ -236,7 +240,7 @@ ustune /api/v1/agent/command ekliyordu."
 - Consumes: yok
 - Produces: `AgentService.registerAgent(req, agentUrl, skipRepublish?, transport?: 'http' | 'nats')` — dördüncü parametre varsayılanı `'nats'`. `AgentService.getCommandTransport(service): 'http' | 'nats'`.
 
-- [ ] **Step 1: Başarısız testleri yaz**
+- [x] **Step 1: Başarısız testleri yaz**
 
 `~/MSdistributedDebugging/apps/debug-orchestrator/src/agent/agent.service.spec.ts` (yeni dosya):
 
@@ -280,12 +284,12 @@ describe('AgentService komut tasimasi', () => {
 });
 ```
 
-- [ ] **Step 2: Testleri koş, başarısız olduklarını gör**
+- [x] **Step 2: Testleri koş, başarısız olduklarını gör**
 
 Run: `cd ~/MSdistributedDebugging/apps/debug-orchestrator && npx jest src/agent/agent.service.spec.ts`
 Expected: FAIL — `svc.getCommandTransport is not a function`
 
-- [ ] **Step 3: En küçük uygulamayı yaz**
+- [x] **Step 3: En küçük uygulamayı yaz**
 
 `agent.service.ts` — alan listesine ekle (`agentUrlsById` yanına):
 
@@ -352,17 +356,17 @@ Expected: FAIL — `svc.getCommandTransport is not a function`
             await this.agentService.registerAgent(payload, agentUrl, true, 'nats');
 ```
 
-- [ ] **Step 4: Testleri koş, geçtiklerini gör**
+- [x] **Step 4: Testleri koş, geçtiklerini gör**
 
 Run: `cd ~/MSdistributedDebugging/apps/debug-orchestrator && npx jest src/agent/agent.service.spec.ts`
 Expected: PASS — 3 test geçer
 
-- [ ] **Step 5: Derlemeyi doğrula**
+- [x] **Step 5: Derlemeyi doğrula**
 
 Run: `cd ~/MSdistributedDebugging/apps/debug-orchestrator && npm run build`
 Expected: hatasız
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd ~/MSdistributedDebugging
@@ -390,7 +394,7 @@ Agent komut tüketir, komut üretmez. `forwardCommand` komutları orkestratöre 
 - Consumes: Task 2'den `DagDebugBridge`
 - Produces: `DagDebugBridge.prototype.forwardCommand` artık yoktur. `POST /flow/debug/command` artık yoktur.
 
-- [ ] **Step 1: Başarısız testi yaz**
+- [x] **Step 1: Başarısız testi yaz**
 
 `test/debugBridge.test.js` sonuna ekle:
 
@@ -400,18 +404,18 @@ test('agent komut uretmez: forwardCommand kaldirildi', () => {
 });
 ```
 
-- [ ] **Step 2: Testi koş, başarısız olduğunu gör**
+- [x] **Step 2: Testi koş, başarısız olduğunu gör**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: FAIL — `forwardCommand` hâlâ bir fonksiyon
 
-- [ ] **Step 3: Uygulamayı yap**
+- [x] **Step 3: Uygulamayı yap**
 
 `debugBridge.js` içinden `async forwardCommand(command) { ... }` metodunun tamamını sil.
 
 `index.js` içinden `app.post('/flow/debug/command', ...)` bloğunun tamamını sil (yorum başlığı dahil). `index.js:8`'deki `handleDebugCommand` ve `:11`'deki `normalizeCommandType` import'ları bu rotadan sonra kullanılmıyorsa onları da sil. `:315`'teki `COMMAND` log satırını sil.
 
-- [ ] **Step 4: Testi koş ve motorun ayağa kalktığını doğrula**
+- [x] **Step 4: Testi koş ve motorun ayağa kalktığını doğrula**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: PASS
@@ -419,7 +423,7 @@ Expected: PASS
 Run: `cd ~/flowengine/services/flow && node -e "require('./index.js')" & sleep 2; curl -s -o /dev/null -w '%{http_code}\n' -X POST http://127.0.0.1:3033/flow/debug/command -H 'Content-Type: application/json' -d '{}'; kill %1`
 Expected: `404`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd ~/flowengine
@@ -444,7 +448,7 @@ orkestratorun /api/v1/agent/command cagrisidir."
 - Consumes: Task 4'ten kaldırılmış `/flow/debug/command`
 - Produces: `DagDebugService.sendCommand` yalnızca `this.client.sendCommand(command)` çağırır.
 
-- [ ] **Step 1: Çift gönderimi kaldır**
+- [x] **Step 1: Çift gönderimi kaldır**
 
 `src/DagDebugService.ts` içinde `sendCommand`'in sonundaki bloğu:
 
@@ -473,19 +477,19 @@ orkestratorun /api/v1/agent/command cagrisidir."
     }
 ```
 
-- [ ] **Step 2: Ölü kodu sil**
+- [x] **Step 2: Ölü kodu sil**
 
 `sendFlowEngineDebugCommand` ve `sendFlowEngineDebugCommandWs` metotlarının tamamını sil. Başka çağıranı olmadığını doğrula:
 
 Run: `cd ~/Development/Workspace/react/reactdnd && grep -rn "sendFlowEngineDebugCommand" src/`
 Expected: çıktı yok
 
-- [ ] **Step 3: Derlemeyi doğrula**
+- [x] **Step 3: Derlemeyi doğrula**
 
 Run: `cd ~/Development/Workspace/react/reactdnd && npx tsc --noEmit -p tsconfig.json`
 Expected: hatasız
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd ~/Development/Workspace/react/reactdnd
@@ -510,7 +514,7 @@ tarafindaki ucun kaldirilmasiyla tek yol kaldi."
 - Consumes: Task 4'ten temizlenmiş `DagDebugBridge`
 - Produces: `ensureDebugSession(debug, payload)` — `debug.orchestratorSessionId` yalnızca çağrandan gelir; bridge hiçbir zaman `/debug/session/start` POST etmez.
 
-- [ ] **Step 1: Başarısız testi yaz**
+- [x] **Step 1: Başarısız testi yaz**
 
 `test/debugBridge.test.js` sonuna ekle:
 
@@ -535,12 +539,12 @@ test('bridge session acmaz: verilen orchestratorSessionId oldugu gibi kullanilir
 });
 ```
 
-- [ ] **Step 2: Testi koş, başarısız olduğunu gör**
+- [x] **Step 2: Testi koş, başarısız olduğunu gör**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: FAIL — `/debug/session/start` POST'u yapılmış olur
 
-- [ ] **Step 3: Uygulamayı yap**
+- [x] **Step 3: Uygulamayı yap**
 
 `debugBridge.js` içinde `startOrReuseSession` ve `stopAutoSessions` metotlarının
 tamamını sil. `ensureDebugSession` içindeki
@@ -581,12 +585,12 @@ satırlarını şununla değiştir:
   }
 ```
 
-- [ ] **Step 4: Testleri koş, geçtiklerini gör**
+- [x] **Step 4: Testleri koş, geçtiklerini gör**
 
 Run: `cd ~/flowengine/services/flow && npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd ~/flowengine
@@ -613,7 +617,7 @@ olusuyor ve kullaniciya iki agent gibi gorunuyordu."
 - Consumes: Task 6'dan `ensureDebugSession`'ın payload'dan okuduğu `sessionId`
 - Produces: `ensureSession(flowId): Promise<string>` — orkestratörde bu service için aktif olan session'ın gerçek kimliğini döndürür.
 
-- [ ] **Step 1: `ensureSession`'ı gerçek session'a bağla**
+- [x] **Step 1: `ensureSession`'ı gerçek session'a bağla**
 
 `src/DagDebugService.ts` içindeki `ensureSession` gövdesini değiştir:
 
@@ -642,7 +646,7 @@ olusuyor ve kullaniciya iki agent gibi gorunuyordu."
   }
 ```
 
-- [ ] **Step 2: `findActiveSessionId`'yi ekle**
+- [x] **Step 2: `findActiveSessionId`'yi ekle**
 
 `src/OrchestratorClient.ts` içine, `stopSession` yanına:
 
@@ -676,12 +680,12 @@ olusuyor ve kullaniciya iki agent gibi gorunuyordu."
   }
 ```
 
-- [ ] **Step 3: Derlemeyi doğrula**
+- [x] **Step 3: Derlemeyi doğrula**
 
 Run: `cd ~/Development/Workspace/react/reactdnd && npx tsc --noEmit -p tsconfig.json`
 Expected: hatasız
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd ~/Development/Workspace/react/reactdnd
@@ -702,7 +706,7 @@ olmali; aksi halde yayilan olaylar hicbir session'a denk gelmez."
 **Interfaces:**
 - Consumes: Task 1-7
 
-- [ ] **Step 1: Her şeyi yeniden başlat**
+- [x] **Step 1: Her şeyi yeniden başlat**
 
 ```bash
 # Orkestratör
@@ -713,33 +717,75 @@ cd ~/flowengine && npm run start:flow &
 
 Extension'ı Extension Development Host'ta yeniden başlat.
 
-- [ ] **Step 2: Agent kaydının doğru adresi bildirdiğini doğrula**
+- [x] **Step 2: Agent kaydının doğru adresi bildirdiğini doğrula**
 
 Run: `curl -s http://127.0.0.1:4000/api/v1/agent | python3 -m json.tool | grep -E 'agentUrl|service|runtime'`
 Expected: `"agentUrl": "http://127.0.0.1:3033"` — `/api/v1` yok, port 3033
 
-- [ ] **Step 3: Tek session olduğunu doğrula**
+- [x] **Step 3: Tek session olduğunu doğrula**
 
 Bir `.flow` dosyasında debug modunu aç, bir node'a breakpoint koy, akışı başlat.
 
 Run: `curl -s "http://127.0.0.1:4000/api/v1/debug/session?limit=20&offset=0" | python3 -c "import json,sys; d=json.load(sys.stdin); print([(s['name'], s['status']) for s in d['sessions']])"`
 Expected: `dag-flow-service` için **tek** aktif session
 
-- [ ] **Step 4: Continue'nun uçtan uca çalıştığını doğrula**
+- [x] **Step 4: Continue'nun uçtan uca çalıştığını doğrula**
 
 Breakpoint'e denk gelindiğinde VS Code'da Continue'ya bas.
 
 Run: `curl -s http://127.0.0.1:3033/flow/debug/state | python3 -c "import json,sys; print(json.load(sys.stdin)['pendingDebugPauses'])"`
 Expected: `[]` — duraklama çözülmüş
 
-- [ ] **Step 5: Step Over'ın uçtan uca çalıştığını doğrula**
+- [x] **Step 5: Step Over'ın uçtan uca çalıştığını doğrula**
 
 Akışı yeniden başlat, breakpoint'te dur, Step Over'a bas. Motorun sonraki node'da durduğunu ve extension'ın bunu gösterdiğini doğrula:
 
 Run: `curl -s http://127.0.0.1:3033/flow/debug/state | python3 -c "import json,sys; print(json.load(sys.stdin)['pendingDebugPauses'])"`
 Expected: `nodeId` bir sonraki node — yani duraklama yeni bir node'a taşınmış
 
-- [ ] **Step 6: Sidecar'ların bozulmadığını doğrula**
+- [x] **Step 6: Sidecar'ların bozulmadığını doğrula**
 
 cdp-sidecar veya java-sidecar ile bir oturum aç, breakpoint koy, Continue çalıştır.
 Expected: eskisi gibi çalışır (NATS taşıması korunmuştur)
+
+
+---
+
+## Uygulama notları (2026-08-24)
+
+Planı yazarken bilmediğim, uygulama sırasında ortaya çıkan şeyler. Planın
+kendisi değil, gerçekte olan kayıt altına alınıyor.
+
+### Plandan sapmalar
+
+| Nerede | Plan ne diyordu | Ne yapıldı ve neden |
+| --- | --- | --- |
+| Task 1 | `"test": "node --test test/"` | Bu Node sürümü `test/` dizinini modül olarak çözmeye çalışıp patladı. `node --test test/*.test.js` kullanıldı. |
+| Task 3 | Yalnızca jest testi yazılacaktı | Pakette ts-jest kuruluydu ama **jest yapılandırması ve `@types/jest` yoktu** — monorepo'da hiç test koşmamış. `jest.config.js` eklendi, `@types/jest` devDependency olarak kuruldu. |
+| Task 4 | Yalnızca HTTP rotası (`/flow/debug/command`) silinecekti | Rotanın bir **WS ikizi** vardı: `onDebugCommand` işleyicisi ve `wsServer.js` içindeki komut yolu. Task 5 extension'ın WS komut yolunu kaldırdığı için bunlar da ölü kod olacaktı; aynı gerekçeyle aynı task'ta silindi. |
+| Task 8 | Ben doğrulayacaktım | Agent yalnızca editörden debug modu açılınca kaydolduğu için UI adımlarını kullanıcı sürdü. |
+
+### Uygulamanın ortaya çıkardığı kusur
+
+Task 6-7'den sonra breakpoint'ler orkestratöre kaydoluyor ama akış hiç durmuyor,
+motorda breakpoint görünmüyordu. Kök neden bir yumurta-tavuk sıralamasıydı:
+orkestratör oturumu agent kaydından, agent kaydı ise debug-mode mesajından
+sonra doğuyor. Motor boş kimlik görünce `dbg-xxxxxx` uyduruyor ve sonradan
+gelen gerçek kimlikli mesajlar hiçbir oturumu bulamıyor. Ayrıntılı analiz ve
+iki parçalı düzeltme spec'in "Uygulama sonrası" bölümünde.
+
+Düzeltme commit'leri:
+
+- flowengine `d22083f` — `findOrAdoptDebugSession`: üretilmiş kimlikli oturumu
+  gerçek kimliğe taşı (5 test)
+- reactdnd `ae62bfc` — `enableDebugMode`: önce agent kaydını tetikle, sonra
+  oturuma bağlan
+
+### Test kapsamı boşluğu
+
+Extension deposunda test altyapısı yok (`package.json`'da test script'i bile
+yok). Bu yüzden extension tarafındaki değişiklikler (Task 5, Task 7 ve
+sıralama düzeltmesi) **birim testiyle korunmuyor**; yalnızca `tsc --noEmit` ve
+uçtan uca deneme ile kapandı. Motor ve orkestratör tarafı testli.
+
+Bu, ayrı bir iş olarak ele alınmalı.
