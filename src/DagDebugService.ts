@@ -106,18 +106,14 @@ export class DagDebugService implements vscode.Disposable {
 
   async enableDebugMode(document: vscode.TextDocument): Promise<void> {
     const flowId = this.flowIdForDocument(document);
-    const sessionId = await this.ensureSession(flowId);
+    let sessionId = await this.ensureSession(flowId);
     const config = this.readConfig();
     this.debugModeFlowIds.add(flowId);
     this.activeFlowId = flowId;
-    this.sessionId = sessionId;
-    this.socketBridge.setActiveWorkspace(config.workspaceId);
-    this.socketBridge.setActiveSession(sessionId);
-    this.applySessionToFlowBreakpoints(flowId, sessionId, config.service, true);
 
     const flowData = this.stripDebugBreakpointsFromFlow(this.readFlowObject(document.getText()));
-    const modeMessage = {
-      sessionId,
+    const buildModeMessage = (id: string) => ({
+      sessionId: id,
       workspaceId: config.workspaceId,
       service: config.service,
       runtime: 'dag',
@@ -128,11 +124,34 @@ export class DagDebugService implements vscode.Disposable {
         flowId,
         workspaceId: config.workspaceId,
       },
-    };
+    });
 
-    await this.sendFlowEngineDebugMode(modeMessage).catch((err: Error) => {
+    // Yumurta-tavuk: orkestrator oturumu ancak agent kaydolunca aciliyor, agent
+    // ise motora bu mode mesaji ulasinca kaydoluyor. Bu yuzden mesaji ONCE
+    // gonderiyoruz -- kimligimiz henuz bos olsa bile.
+    await this.sendFlowEngineDebugMode(buildModeMessage(sessionId)).catch((err: Error) => {
       this.output.appendLine(`[dag-debug] flow engine debug mode sync failed: ${err.message}`);
     });
+
+    if (!sessionId) {
+      sessionId = await this.waitForSession(flowId);
+      if (sessionId) {
+        // Motor bos kimlik gordugunde kendi kimligini uretti; gercek kimligi
+        // simdi bildiriyoruz ki oturumunu ona tasisin. Aksi halde bundan sonraki
+        // her mesaj (breakpoint'ler, akis baslatma) motorda hicbir oturuma
+        // denk gelmez: breakpoint'ler islenmez, akis debug kapali kosar.
+        await this.sendFlowEngineDebugMode(buildModeMessage(sessionId)).catch((err: Error) => {
+          this.output.appendLine(`[dag-debug] flow engine debug mode re-sync failed: ${err.message}`);
+        });
+      } else {
+        this.output.appendLine('[dag-debug] Orchestrator session did not appear; debug mode is running unattached.');
+      }
+    }
+
+    this.sessionId = sessionId;
+    this.socketBridge.setActiveWorkspace(config.workspaceId);
+    this.socketBridge.setActiveSession(sessionId);
+    this.applySessionToFlowBreakpoints(flowId, sessionId, config.service, true);
     await this.syncFlowEngineBreakpoints(flowId);
 
     this.handleDebugEvent({
@@ -290,10 +309,9 @@ export class DagDebugService implements vscode.Disposable {
         ...(payload ?? {}),
       },
     };
-    await this.sendFlowEngineDebugCommand(command).catch((err: Error) => {
-      this.output.appendLine(`[dag-debug] flow engine command failed: ${err.message}`);
-    });
-
+    // Tek komut yolu: orkestrator. Oradan agent'a (flow engine) HTTP ile iner.
+    // Eskiden komut once dogrudan motora, sonra orkestratore gidiyordu; motor
+    // ayni durusu iki kez cozmeye calisiyordu.
     try {
       await this.client.sendCommand(command);
     } catch (err) {
@@ -310,12 +328,47 @@ export class DagDebugService implements vscode.Disposable {
       return this.sessionId;
     }
     const config = this.readConfig();
-    this.sessionId = `dag-${Date.now().toString(36)}`;
+
+    // Orkestratorde bu service icin zaten bir session var: msdebug tarafi
+    // agent kaydini gorunce aciyor. Kendi kimligimizi uydurursak motorun
+    // yaydigi olaylar hicbir session'a denk gelmez.
+    const sessionId = await this.client.findActiveSessionId(config.service, config.workspaceId);
+    if (!sessionId) {
+      this.output.appendLine('[dag-debug] No active orchestrator session for this service yet.');
+      return '';
+    }
+
+    this.sessionId = sessionId;
     this.activeFlowId = flowId;
     this.socketBridge.setActiveWorkspace(config.workspaceId);
-    this.socketBridge.setActiveSession(this.sessionId);
+    this.socketBridge.setActiveSession(sessionId);
     this.broadcastState();
-    return this.sessionId;
+    return sessionId;
+  }
+
+  /**
+   * Agent kaydinin dogurdugu orkestrator oturumunu bekler.
+   *
+   * Oturumu msdebug tarafi aciyor ve bu, motorun agent olarak kaydolmasindan
+   * SONRA gerceklesiyor; yani mode mesajini gonderdigimiz anda oturum henuz
+   * yoktur. Kisa bir geri cekilmeyle bekliyoruz.
+   */
+  private async waitForSession(flowId: string, attempts = 5, delayMs = 400): Promise<string> {
+    const config = this.readConfig();
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      try {
+        const sessionId = await this.client.findActiveSessionId(config.service, config.workspaceId);
+        if (sessionId) {
+          this.sessionId = sessionId;
+          this.activeFlowId = flowId;
+          return sessionId;
+        }
+      } catch (err) {
+        this.output.appendLine(`[dag-debug] session lookup failed: ${(err as Error).message}`);
+      }
+    }
+    return '';
   }
 
   private handleDebugEvent(event: DagDebugEventEnvelope): void {
@@ -610,58 +663,6 @@ export class DagDebugService implements vscode.Disposable {
       }
     }
     throw lastError ?? new Error('Flow engine POST failed');
-  }
-
-  private async sendFlowEngineDebugCommand(command: Record<string, unknown>): Promise<void> {
-    try {
-      await this.sendFlowEngineDebugCommandWs(command);
-      return;
-    } catch (err) {
-      this.output.appendLine(`[dag-debug] flow engine websocket command failed: ${(err as Error).message}`);
-    }
-
-    const url = `${this.readConfig().flowEngineUrl.replace(/\/+$/, '')}/flow/debug/command`;
-    await this.client.postToAbsoluteUrl<unknown>(url, command);
-  }
-
-  private sendFlowEngineDebugCommandWs(command: Record<string, unknown>): Promise<void> {
-    const config = this.readConfig();
-    return new Promise<void>((resolve, reject) => {
-      const ws = new WebSocket(config.flowEngineWsUrl);
-      const timer = setTimeout(() => {
-        ws.close();
-        reject(new Error('Flow engine command websocket timeout'));
-      }, 5000);
-
-      ws.on('open', () => {
-        const commandType = typeof command.type === 'string' ? command.type : undefined;
-        ws.send(JSON.stringify({
-          type: 'debug:command',
-          event: 'debug:command',
-          command: commandType,
-          sessionId: command.sessionId,
-          workspaceId: command.workspaceId,
-          service: command.service,
-          flowId: command.flowId,
-          flowRunId: command.flowRunId,
-          threadId: command.threadId,
-          payload: command,
-        }), (err) => {
-          clearTimeout(timer);
-          ws.close();
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
-        });
-      });
-
-      ws.on('error', (err) => {
-        clearTimeout(timer);
-        reject(err);
-      });
-    });
   }
 
   private postFlowRun(flowData: Record<string, unknown>): Promise<string> {
