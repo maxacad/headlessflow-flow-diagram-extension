@@ -360,49 +360,28 @@ export function activateMsDebug(context: vscode.ExtensionContext): void {
     }
   };
 
+  /**
+   * Agent'lar icin gorunumleri tazeler. Session ACMAZ, session DURDURMAZ.
+   *
+   * Eskiden bu fonksiyon her cagrildiginda (aktivasyon, her agent.registered,
+   * agent secimi) once "bayat" session'lari durdurup yenisini aciyordu. Session
+   * acmak agent durumunu degistirdigi icin bu kendini besliyordu: bir dakika
+   * icinde uc session ve saniyede bir tekrarlanan session.stopped olaylari.
+   * Breakpoint'ler de saniyeler icinde durdurulan bir session'a yazildigi icin
+   * Distributed Breakpoints listesinde gorunmuyordu.
+   *
+   * Orkestrator session'ini artik YALNIZCA DAG editorundeki debug action acar
+   * (bkz. DagDebugService.enableDebugMode). Sidecar tabanli akislarda session
+   * "Start Session" / "Select Agent" komutlariyla elle acilir.
+   */
   const rebindSessionsForActiveAgents = async (reason: string): Promise<void> => {
     if (activationSessionRebindInFlight) return;
     activationSessionRebindInFlight = true;
     try {
       const agents = await client.listAgents(workspaceId);
       if (!agents.length) {
-        output.appendLine(`[msdebug] No active agents for session rebind (${reason})`);
+        output.appendLine(`[msdebug] No active agents (${reason})`);
         return;
-      }
-
-      const services = Array.from(new Set(agents.map((agent) => agent.service).filter(Boolean)));
-      const sessions = await client.listSessions();
-      const activeStatuses = new Set(['running', 'active', 'initializing', 'paused', 'stepping', 'replaying', 'stopping']);
-
-      for (const service of services) {
-        const existing = sessions
-          .filter((session) => belongsToWorkspace(session.workspaceId, workspaceId))
-          .filter((session) => session.services.includes(service))
-          .filter((session) => activeStatuses.has(session.status))
-          .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
-
-        for (const stale of existing) {
-          try {
-            await client.stopSession(stale.id);
-            ownedSessionIds.delete(stale.id);
-            output.appendLine(`[msdebug] Stopped stale session ${stale.id.slice(0, 8)} for ${service} (${reason})`);
-          } catch (err) {
-            output.appendLine(`[msdebug] Failed to stop stale session ${stale.id.slice(0, 8)} for ${service}: ${String(err)}`);
-          }
-        }
-
-        try {
-          const session = await client.startSession({
-            name: service,
-            services: [service],
-            workspaceId,
-          });
-          ownedSessionIds.add(session.id);
-          lastSyncedSessionId = session.id;
-          output.appendLine(`[msdebug] Created fresh session ${session.id.slice(0, 8)} for ${service} (${reason})`);
-        } catch (err) {
-          output.appendLine(`[msdebug] Failed to create fresh session for ${service}: ${String(err)}`);
-        }
       }
 
       nextSyncForceRepropagation = true;

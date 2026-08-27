@@ -16,9 +16,8 @@ const Icon = () => (
     viewBox="0 0 64 64"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    style={{ display: 'block', transform: 'translateY(3px)' }}
   >
-    <rect x="2" y="2" width="60" height="60" rx="8" fill="#8c939c" />
+    <rect x="2" y="2" width="60" height="60" rx="8" fill="#EEC04E" />
 
     <path
       d="M10 4H54C57.3137 4 60 6.68629 60 10V54"
@@ -30,15 +29,15 @@ const Icon = () => (
 
     <path
       d="M4 54V10C4 6.68629 6.68629 4 10 4"
-      stroke="#50575f"
+      stroke="#C98A10"
       strokeOpacity="0.6"
       strokeWidth="1.5"
       strokeLinecap="round"
     />
 
-    <rect x="6" y="6" width="52" height="52" rx="6" fill="#a4adb8" />
+    <rect x="6" y="6" width="52" height="52" rx="6" fill="#FFDC87" />
 
-    <rect x="2.5" y="2.5" width="59" height="59" rx="7.5" stroke="#50575f" strokeOpacity="0.4" />
+    <rect x="2.5" y="2.5" width="59" height="59" rx="7.5" stroke="#C98A10" strokeOpacity="0.4" />
     <rect x="3.5" y="3.5" width="57" height="57" rx="7" stroke="white" strokeOpacity="0.35" />
   </svg>
 );

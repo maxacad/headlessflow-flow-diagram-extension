@@ -126,15 +126,15 @@ export class DagDebugService implements vscode.Disposable {
       },
     });
 
-    // Yumurta-tavuk: orkestrator oturumu ancak agent kaydolunca aciliyor, agent
-    // ise motora bu mode mesaji ulasinca kaydoluyor. Bu yuzden mesaji ONCE
-    // gonderiyoruz -- kimligimiz henuz bos olsa bile.
+    // Yumurta-tavuk: motor ancak bu mode mesajini alinca agent olarak
+    // kaydoluyor, session ise agent kayitli olmadan acilamiyor. Bu yuzden
+    // mesaji ONCE gonderiyoruz -- kimligimiz henuz bos olsa bile.
     await this.sendFlowEngineDebugMode(buildModeMessage(sessionId)).catch((err: Error) => {
       this.output.appendLine(`[dag-debug] flow engine debug mode sync failed: ${err.message}`);
     });
 
     if (!sessionId) {
-      sessionId = await this.waitForSession(flowId);
+      sessionId = await this.openSession(flowId);
       if (sessionId) {
         // Motor bos kimlik gordugunde kendi kimligini uretti; gercek kimligi
         // simdi bildiriyoruz ki oturumunu ona tasisin. Aksi halde bundan sonraki
@@ -144,7 +144,7 @@ export class DagDebugService implements vscode.Disposable {
           this.output.appendLine(`[dag-debug] flow engine debug mode re-sync failed: ${err.message}`);
         });
       } else {
-        this.output.appendLine('[dag-debug] Orchestrator session did not appear; debug mode is running unattached.');
+        this.output.appendLine('[dag-debug] Could not open an orchestrator session; debug mode is running unattached.');
       }
     }
 
@@ -189,6 +189,20 @@ export class DagDebugService implements vscode.Disposable {
     }).catch((err: Error) => {
       this.output.appendLine(`[dag-debug] flow engine debug mode stop failed: ${err.message}`);
     });
+
+    // Session'i acan taraf kapatir. Acan biziz (enableDebugMode -> openSession),
+    // dolayisiyla kapatmak da bize dusuyor; aksi halde orkestratorde yasayan
+    // session birikir ve sonraki acilis onu yeniden kullanir.
+    if (sessionId) {
+      await this.client.stopSession({
+        sessionId,
+        workspaceId: config.workspaceId,
+        service: config.service,
+        flowId,
+      }).catch((err: Error) => {
+        this.output.appendLine(`[dag-debug] orchestrator session stop failed: ${err.message}`);
+      });
+    }
 
     if (this.activeFlowId === flowId) {
       this.activeFlowId = undefined;
@@ -323,52 +337,68 @@ export class DagDebugService implements vscode.Disposable {
     this.socketBridge.dispose();
   }
 
+  /**
+   * Bu akis icin elimizdeki session kimligi. Session ACMAZ -- acma isi
+   * enableDebugMode -> openSession yolunda, yani yalnizca kullanici DAG
+   * editorunde debug action'ina bastiginda olur.
+   */
   private async ensureSession(flowId: string): Promise<string> {
     if (this.sessionId && this.activeFlowId === flowId) {
       return this.sessionId;
     }
-    const config = this.readConfig();
-
-    // Orkestratorde bu service icin zaten bir session var: msdebug tarafi
-    // agent kaydini gorunce aciyor. Kendi kimligimizi uydurursak motorun
-    // yaydigi olaylar hicbir session'a denk gelmez.
-    const sessionId = await this.client.findActiveSessionId(config.service, config.workspaceId);
-    if (!sessionId) {
-      this.output.appendLine('[dag-debug] No active orchestrator session for this service yet.');
-      return '';
-    }
-
-    this.sessionId = sessionId;
-    this.activeFlowId = flowId;
-    this.socketBridge.setActiveWorkspace(config.workspaceId);
-    this.socketBridge.setActiveSession(sessionId);
-    this.broadcastState();
-    return sessionId;
+    return '';
   }
 
   /**
-   * Agent kaydinin dogurdugu orkestrator oturumunu bekler.
+   * Orkestrator session'ini acar. Bu, DAG debug oturumunun TEK acilis noktasi.
    *
-   * Oturumu msdebug tarafi aciyor ve bu, motorun agent olarak kaydolmasindan
-   * SONRA gerceklesiyor; yani mode mesajini gonderdigimiz anda oturum henuz
-   * yoktur. Kisa bir geri cekilmeyle bekliyoruz.
+   * Once agent kaydini bekleriz: agent kayitli degilken session acilirsa
+   * orchestrator-client'in resolveSessionService'i sessizce
+   * `runtime: 'java', agentUrl: http://localhost:9250` uyduruyor ve yanlis
+   * runtime'li bir session olusuyor.
+   *
+   * register-or-get ucu idempotent: ayni workspace ve servis icin yasayan bir
+   * session varsa onu dondurur, yenisini uretmez.
    */
-  private async waitForSession(flowId: string, attempts = 5, delayMs = 400): Promise<string> {
+  private async openSession(flowId: string): Promise<string> {
     const config = this.readConfig();
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-      try {
-        const sessionId = await this.client.findActiveSessionId(config.service, config.workspaceId);
-        if (sessionId) {
-          this.sessionId = sessionId;
-          this.activeFlowId = flowId;
-          return sessionId;
-        }
-      } catch (err) {
-        this.output.appendLine(`[dag-debug] session lookup failed: ${(err as Error).message}`);
-      }
+    if (!await this.waitForAgent(config.service)) {
+      this.output.appendLine(`[dag-debug] Agent ${config.service} did not register; not opening a session.`);
+      return '';
     }
-    return '';
+
+    try {
+      const session = await this.client.registerOrGetSession(config.service, flowId, config.workspaceId);
+      const sessionId = session.sessionId;
+      if (!sessionId) {
+        this.output.appendLine('[dag-debug] Orchestrator returned a session without an id.');
+        return '';
+      }
+      this.sessionId = sessionId;
+      this.activeFlowId = flowId;
+      this.socketBridge.setActiveWorkspace(config.workspaceId);
+      this.socketBridge.setActiveSession(sessionId);
+      this.broadcastState();
+      this.output.appendLine(`[dag-debug] Debug session ${sessionId} opened for flow ${flowId}.`);
+      return sessionId;
+    } catch (err) {
+      this.output.appendLine(`[dag-debug] Opening a debug session failed: ${(err as Error).message}`);
+      return '';
+    }
+  }
+
+  /** Motorun agent olarak kaydolmasini bekler. */
+  private async waitForAgent(service: string, attempts = 5, delayMs = 400): Promise<boolean> {
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      try {
+        const agent = await this.client.getAgent(service);
+        if (agent) return true;
+      } catch (err) {
+        this.output.appendLine(`[dag-debug] agent lookup failed: ${(err as Error).message}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+    return false;
   }
 
   private handleDebugEvent(event: DagDebugEventEnvelope): void {

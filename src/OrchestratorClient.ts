@@ -122,35 +122,6 @@ export class OrchestratorClient {
     );
   }
 
-  /**
-   * Bu service icin orkestratorde aktif olan session'in kimligi.
-   * DAG tarafi session ACMAZ: session'i msdebug tarafi agent kaydinda aciyor,
-   * biz yalnizca ona baglaniriz. Kendi kimligimizi uydurursak motorun yaydigi
-   * olaylar hicbir session'a denk gelmez.
-   */
-  async findActiveSessionId(service: string, workspaceId?: string): Promise<string> {
-    const active = new Set(['running', 'active', 'initializing', 'paused', 'stepping', 'replaying']);
-    const body = await this.request<{ sessions?: Array<Record<string, unknown>> }>(
-      'GET',
-      '/debug/session?limit=100&offset=0',
-    );
-    const sessions = Array.isArray(body.sessions) ? body.sessions : [];
-    const match = sessions
-      .filter((s) => active.has(String(s.status ?? '')))
-      .filter((s) => {
-        const services = Array.isArray(s.services) ? s.services : [];
-        return services.some((svc) => (svc as { service?: string })?.service === service);
-      })
-      .filter((s) => {
-        const metadata = (s.metadata ?? {}) as Record<string, unknown>;
-        const candidate = typeof s.workspaceId === 'string' ? s.workspaceId : metadata.workspaceId;
-        return !workspaceId || !candidate || candidate === workspaceId;
-      })
-      .sort((a, b) => Number(b.createdAt ?? 0) - Number(a.createdAt ?? 0))[0];
-
-    return typeof match?.sessionId === 'string' ? match.sessionId : '';
-  }
-
   async registerAgent(input: Record<string, unknown>): Promise<unknown> {
     return this.request<unknown>('POST', '/agent/register', input);
   }
